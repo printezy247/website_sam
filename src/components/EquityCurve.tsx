@@ -19,5 +19,5 @@ export function EquityCurve({ data }: { data: { t: number; v: number }[] }) {
     chart.timeScale().fitContent();
     return () => chart.remove();
   }, [data]);
-  return <div ref={ref} className="w-full" />;
+  return <div ref={ref} className="w-full h-72" />;
 }
