@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #050505;
+  --color-surface: #0b0e14;
+  --color-surface-2: #11151d;
+  --color-border: #1e2330;
+  --color-fg: #f3f4f6;
+  --color-muted: #9aa3b2;
+  --color-gold: #d4af37;
+  --color-gold-2: #f5d76e;
+  --color-win: #00c46a;
+  --color-loss: #ff4d4f;
+  --font-sans: var(--font-geist-sans), Inter, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+html { color-scheme: dark; }
+body { background: var(--color-bg); color: var(--color-fg); }
+
+.glass {
+  background: color-mix(in oklab, var(--color-surface) 80%, transparent);
+  border: 1px solid var(--color-border);
+  backdrop-filter: blur(12px);
+}
+.glow-gold { box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-gold) 60%, transparent), 0 0 40px -10px var(--color-gold); }
+.text-gold { color: var(--color-gold); }
+.grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(212,175,55,.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(212,175,55,.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+}
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.animate-ticker { animation: ticker 40s linear infinite; }
