@@ -1,4 +1,5 @@
 import { db } from "./index";
+import { count } from "drizzle-orm";
 import { products, signals, users } from "./schema";
 
 async function main() {
@@ -94,7 +95,9 @@ async function main() {
   }
 
   await db.insert(products).values(sampleProducts).onConflictDoNothing();
-  await db.insert(signals).values(sampleSignals());
+  const [{ n }] = await db.select({ n: count() }).from(signals);
+  if (n === 0) await db.insert(signals).values(sampleSignals());
+  else console.log(`signals already seeded (${n}), skipping`);
   if (process.env.SEED_ADMIN_EMAIL) {
     await db
       .insert(users)
