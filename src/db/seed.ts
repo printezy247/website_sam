@@ -106,7 +106,7 @@ async function main() {
         role: "admin",
         name: "Admin",
       })
-      .onConflictDoNothing();
+      .onConflictDoUpdate({ target: users.email, set: { role: "admin" } });
   }
   console.log("seeded");
   process.exit(0);

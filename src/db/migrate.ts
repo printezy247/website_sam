@@ -8,7 +8,7 @@ async function main() {
     console.error("DATABASE_URL missing");
     process.exit(1);
   }
-  const sql = postgres(url, { max: 1 });
+  const sql = postgres(url, { max: 1, onnotice: () => {} });
   await migrate(drizzle(sql), { migrationsFolder: "./drizzle" });
   await sql.end();
   console.log("migrations applied");
