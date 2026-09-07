@@ -216,8 +216,7 @@ npm run dev
 
 1. **New Project → Deploy from GitHub** → this repo, branch `main`. Add **PostgreSQL**.
 2. On the web service → **Variables**: `DATABASE_URL=${{Postgres.DATABASE_URL}}` plus everything in [`.env.example`](.env.example). Generate a domain, set `AUTH_URL` and `NEXT_PUBLIC_SITE_URL` to it.
-3. `npm start` runs migrations automatically before booting Next.
-4. **First deploy only**: Settings → Deploy → Custom Start Command = `npm run start:seed` (seeds tiers, products, 20 sample signals and the admin from `SEED_ADMIN_EMAIL`). Then clear the field so future boots use plain `npm start`.
+3. `npm start` runs migrations and the idempotent seed on every boot. Set `SEED_ADMIN_EMAIL` to your email and that user becomes admin (`/admin`). Sample signals/products are inserted only when the tables are empty.
 5. Telegram: `curl "https://api.telegram.org/bot<TOKEN>/setWebhook" -d url="https://<domain>/api/telegram/webhook" -d secret_token="<TELEGRAM_WEBHOOK_SECRET>"`.
 6. Stripe: webhook `https://<domain>/api/stripe/webhook` with `checkout.session.completed`, `customer.subscription.*`.
 7. Optional cron service (same repo): start command `npm run jobs`, schedule `0 3 * * *`.
