@@ -8,6 +8,7 @@ import { closedSignals, computeStats, monthlyBreakdown } from "@/lib/stats";
 import { BRAND } from "@/config/brand";
 import { fmtPct } from "@/lib/utils";
 import { evaluateRunningSignals } from "@/lib/evaluate";
+import { latestRecap } from "@/lib/recap";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,7 @@ export default async function Results({ params, searchParams }: { params: Promis
   const tc = await getTranslations("chart");
   await evaluateRunningSignals().catch((e) => console.error("[evaluate]", e));
   const rows = await closedSignals(instrument).catch(() => []);
+  const recap = await latestRecap().catch(() => null);
   const s = computeStats(rows);
   const months = monthlyBreakdown(rows);
   const instruments = [...new Set(rows.map((r) => r.instrument))];
@@ -45,6 +47,12 @@ export default async function Results({ params, searchParams }: { params: Promis
         <StatTile label={t("max_dd")} value={s.n ? `-${s.maxDdR.toFixed(2)}` : "—"} />
       </div>
       <div className="mt-10 grid gap-4 lg:grid-cols-[2fr_1fr]"><GoldChart labels={{ title: tc("title"), entry: tc("entry"), sl: tc("sl"), tp: tc("tp"), empty: tc("empty"), asOf: tc("asOf") }} /><NewsCalendar /></div>
+      {recap && (
+        <div className="mt-10 glass rounded-2xl p-5 glow-gold">
+          <div className="flex items-center justify-between gap-3"><h2 className="font-semibold">{t("recap")}</h2><span className="text-xs text-muted font-mono">{recap.weekStart}</span></div>
+          <p className="mt-3 text-sm leading-relaxed">{locale === "ms" ? recap.textMs : recap.textEn}</p>
+        </div>
+      )}
       <div className="mt-10 glass rounded-2xl p-5">
         <h2 className="font-semibold mb-3">{t("equity")}</h2>
         <EquityCurve data={s.equity} />

@@ -16,6 +16,7 @@ export const users = pgTable("user", {
   tgUsername: text("tg_username"),
   referralCode: text("referral_code").unique().$defaultFn(() => crypto.randomUUID().slice(0, 8)),
   referredBy: text("referred_by"),
+  campaign: text("campaign"), // first-touch ?ref / utm campaign
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 export const accounts = pgTable("account", {
@@ -228,5 +229,26 @@ export const leads = pgTable("leads", {
   source: text("source"), // campaign / ref code / page
   step: integer("step").notNull().default(0), // drip emails sent so far
   lastEmailAt: timestamp("last_email_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// ---- Analytics: page views aggregated per day / campaign / path ----
+export const visits = pgTable("visits", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  day: text("day").notNull(), // YYYY-MM-DD (UTC)
+  campaign: text("campaign").notNull().default("(direct)"),
+  path: text("path").notNull(),
+  hits: integer("hits").notNull().default(0),
+}, (t) => [uniqueIndex("visits_day_campaign_path_uq").on(t.day, t.campaign, t.path)]);
+
+// ---- Weekly recaps posted to the public channel ----
+export const recaps = pgTable("recaps", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  weekStart: text("week_start").notNull().unique(), // YYYY-MM-DD (Monday, UTC)
+  textMs: text("text_ms").notNull(),
+  textEn: text("text_en").notNull(),
+  stats: jsonb("stats").$type<Record<string, unknown>>(),
+  model: text("model"),
+  postedAt: timestamp("posted_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
