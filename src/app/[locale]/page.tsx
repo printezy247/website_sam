@@ -10,8 +10,9 @@ import { SignalCard } from "@/components/SignalCard";
 import { TierCards } from "@/components/TierCards";
 import { closedSignals, computeStats, latestSignals, recent } from "@/lib/stats";
 import { db } from "@/db";
-import { products } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { products, signals } from "@/db/schema";
+import { GoldChart } from "@/components/GoldChart";
+import { desc, eq } from "drizzle-orm";
 import { fmtPct } from "@/lib/utils";
 import { JsonLd, pageMetadata } from "@/lib/seo";
 
@@ -32,6 +33,9 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
     db.select().from(products).where(eq(products.active, true)).limit(6).catch(() => []),
   ]);
   const stats = computeStats(recent(closed, 90));
+  const [running] = await db.select().from(signals).where(eq(signals.status, "running")).orderBy(desc(signals.publishedAt)).limit(1).catch(() => []);
+  const lines = running ? { entry: Number(running.entry), sl: Number(running.sl), tps: [running.tp1, running.tp2, running.tp3].filter(Boolean).map(Number), side: running.side } : null;
+  const chartLabels = { title: t("chart.title"), entry: t("chart.entry"), sl: t("chart.sl"), tp: t("chart.tp"), empty: t("chart.empty"), asOf: t("chart.asOf") };
 
   const faq = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: [1, 2, 3, 4].map((i) => ({ "@type": "Question", name: t(`faq.q${i}`), acceptedAnswer: { "@type": "Answer", text: t(`faq.a${i}`) } })) };
   return (
@@ -65,6 +69,9 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         <StatTile label={t("stats.signals_month")} value={String(recent(closed, 30).length)} />
         <StatTile label={t("stats.since")} value={String(BRAND.since)} />
       </section>
+
+      {/* Live chart */}
+      <section className="mx-auto max-w-6xl px-4 mt-10"><GoldChart lines={lines} labels={chartLabels} /></section>
 
       {/* Two doors */}
       <section className="mx-auto max-w-6xl px-4 mt-24">

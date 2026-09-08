@@ -208,5 +208,13 @@
     "share_tg": "Kongsi di Telegram",
     "share_wa": "WhatsApp",
     "share_text": "Saya guna {brand} untuk signal emas XAUUSD. Sertai percuma:"
+  },
+  "chart": {
+    "title": "Carta emas live",
+    "entry": "Entry",
+    "sl": "SL",
+    "tp": "TP",
+    "empty": "Data carta tidak tersedia buat masa ini.",
+    "asOf": "Dikemas kini"
   }
 }

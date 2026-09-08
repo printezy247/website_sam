@@ -91,3 +91,33 @@ export async function getCandlesSince(symbol: string, since: number): Promise<Ca
     return [];
   });
 }
+
+export type Timeframe = "1h" | "4h" | "1d";
+const TF: Record<Timeframe, { interval: string; range: string; group: number }> = {
+  "1h": { interval: "1h", range: "5d", group: 1 },
+  "4h": { interval: "1h", range: "1mo", group: 4 },
+  "1d": { interval: "1d", range: "6mo", group: 1 },
+};
+/** OHLC candles for a chart timeframe. 4h is aggregated from 1h bars (Yahoo has no 4h). */
+export async function getCandles(symbol: string, tf: Timeframe): Promise<Candle[]> {
+  const spec = SYMBOLS.find((s) => s.symbol === symbol);
+  const cfg = TF[tf];
+  if (!spec || !cfg) return [];
+  return cached(`tf:${symbol}:${tf}`, TTL_MS, async () => {
+    for (const y of spec.yahoo) {
+      const j = await fetchYahooChart(y, cfg.interval, cfg.range);
+      const c = j ? parseCandles(j) : [];
+      if (!c.length) continue;
+      if (cfg.group === 1) return c;
+      const out: Candle[] = [];
+      for (const k of c) {
+        const bucket = Math.floor(k.t / (cfg.group * 3600)) * cfg.group * 3600;
+        const last = out[out.length - 1];
+        if (last && last.t === bucket) { last.h = Math.max(last.h, k.h); last.l = Math.min(last.l, k.l); last.c = k.c; }
+        else out.push({ t: bucket, o: k.o, h: k.h, l: k.l, c: k.c });
+      }
+      return out;
+    }
+    return [];
+  });
+}
