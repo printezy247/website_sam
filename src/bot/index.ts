@@ -21,7 +21,7 @@ const T = {
     status: (tier: string, exp: string) => `Pelan semasa: <b>${tier.toUpperCase()}</b>${exp}`,
     no_link: "Akaun Telegram ini belum dipautkan ke akaun web. Log masuk di laman web dan pautkan Telegram, atau guna /verify.",
     plans: "Pelan (bayar bulanan, atau percuma melalui HFM):",
-    support: "Hubungi sokongan:", help: "Arahan: /start /verify /status /upgrade /plans /products /ebook /news /support",
+    support: "Hubungi sokongan:", help: "Arahan: /start /verify /status /upgrade /plans /products /ebook /news /mystats /leaderboard /language /support",
   },
   en: {
     welcome: (n: string) => `Welcome to <b>${n}</b> 👋\n\nGold (XAUUSD) signals with full transparency. Two ways in:\n\n<b>A.</b> Open an HFM account under our link — Free with no deposit, Pro $100, Elite $500.\n<b>B.</b> Pay a monthly plan on your own broker.\n\n⚠️ CFD trading carries high risk. Education only, not financial advice.`,
@@ -32,10 +32,22 @@ const T = {
     status: (tier: string, exp: string) => `Current plan: <b>${tier.toUpperCase()}</b>${exp}`,
     no_link: "This Telegram account is not linked to a web account yet. Sign in on the website and link Telegram, or use /verify.",
     plans: "Plans (pay monthly, or free via HFM):",
-    support: "Contact support:", help: "Commands: /start /verify /status /upgrade /plans /products /ebook /news /support",
+    support: "Contact support:", help: "Commands: /start /verify /status /upgrade /plans /products /ebook /news /mystats /leaderboard /language /support",
   },
 };
-const lang = (ctx: Context) => (ctx.from?.language_code?.startsWith("ms") || ctx.from?.language_code?.startsWith("id") ? "ms" : "en");
+const fromCode = (code?: string | null) => (code?.startsWith("ms") || code?.startsWith("id") ? "ms" : code?.startsWith("en") ? "en" : null);
+/** Reply language: /language choice, else linked web account locale, else the Telegram client language. */
+async function langOf(ctx: Context): Promise<"ms" | "en"> {
+  const id = ctx.from?.id;
+  if (id) {
+    const [r] = await db.select({ code: telegramAccounts.languageCode, locale: users.locale })
+      .from(telegramAccounts).leftJoin(users, eq(users.telegramId, telegramAccounts.telegramId))
+      .where(eq(telegramAccounts.telegramId, String(id))).catch(() => []);
+    if (r?.code === "ms" || r?.code === "en") return r.code;
+    if (r?.locale === "ms" || r?.locale === "en") return r.locale;
+  }
+  return fromCode(ctx.from?.language_code) ?? "ms";
+}
 
 async function upsertTg(ctx: Context, campaign?: string) {
   if (!ctx.from) return;
@@ -50,6 +62,11 @@ async function getState(id: number) {
 }
 async function setState(id: number, verify: VerifyState | null) {
   await db.update(telegramAccounts).set({ state: verify ? { verify } : {} }).where(eq(telegramAccounts.telegramId, String(id)));
+}
+
+async function setLanguage(id: number, code: "ms" | "en") {
+  await db.update(telegramAccounts).set({ languageCode: code }).where(eq(telegramAccounts.telegramId, String(id)));
+  await db.update(users).set({ locale: code }).where(eq(users.telegramId, String(id))).catch(() => {});
 }
 
 export function createBot(token: string) {
@@ -74,7 +91,7 @@ export function createBot(token: string) {
       await db.update(telegramAccounts).set({ userId }).where(eq(telegramAccounts.telegramId, String(ctx.from.id)));
       await ctx.reply("🔗 Telegram linked to your web account.");
     }
-    const t = T[lang(ctx)];
+    const t = T[await langOf(ctx)];
     const kb = new InlineKeyboard()
       .url(t.btn_channel, BRAND.telegram.publicChannel).row()
       .url(t.btn_hfm, BRAND.broker.links.my).url(t.btn_guide, BRAND.telegram.registerGuide).row()
@@ -84,7 +101,7 @@ export function createBot(token: string) {
 
   const startVerify = async (ctx: Context) => {
     await upsertTg(ctx);
-    const t = T[lang(ctx)];
+    const t = T[await langOf(ctx)];
     await setState(ctx.from!.id, { step: "region" });
     await ctx.reply(t.region, { reply_markup: new InlineKeyboard().text("🇲🇾 🇸🇬 🇧🇳 MY / SG / BN", "region:my").text("🇮🇩 Indonesia", "region:id") });
   };
@@ -93,14 +110,14 @@ export function createBot(token: string) {
 
   bot.callbackQuery(/^region:(my|id)$/, async (ctx) => {
     await ctx.answerCallbackQuery();
-    const t = T[lang(ctx)];
+    const t = T[await langOf(ctx)];
     await setState(ctx.from.id, { step: "account", region: ctx.match[1] });
     await ctx.reply(t.ask_account);
   });
 
   bot.command("status", async (ctx) => {
     await upsertTg(ctx);
-    const t = T[lang(ctx)];
+    const t = T[await langOf(ctx)];
     const [u] = await db.select().from(users).where(eq(users.telegramId, String(ctx.from!.id)));
     if (!u) return ctx.reply(t.no_link);
     const tier = await effectiveTier(u.id);
@@ -108,7 +125,7 @@ export function createBot(token: string) {
   });
 
   bot.command("plans", async (ctx) => {
-    const t = T[lang(ctx)];
+    const t = T[await langOf(ctx)];
     const lines = TIERS.filter((x) => x.key !== "public").map((x) => `• <b>${x.key.toUpperCase()}</b> — ${fmtUsd(x.priceMonthCents)}/mo · HFM ${x.ibMinDepositUsd ? "+$" + x.ibMinDepositUsd : "no deposit"}`);
     await ctx.reply(`${t.plans}\n\n${lines.join("\n")}`, { parse_mode: "HTML", reply_markup: new InlineKeyboard().url(t.btn_plans, `${BRAND.siteUrl}/pricing`) });
   });
@@ -117,8 +134,8 @@ export function createBot(token: string) {
     const [u] = await db.select().from(users).where(eq(users.telegramId, String(ctx.from!.id)));
     const tier = u ? await effectiveTier(u.id) : "public";
     const next = TIERS.find((x) => x.rank === (tierByKey(tier)?.rank ?? 0) + 1);
-    if (!next) return ctx.reply(lang(ctx) === "ms" ? "Anda sudah di pelan tertinggi 🎉" : "You are already on the top plan 🎉");
-    const ms = lang(ctx) === "ms";
+    if (!next) return ctx.reply((await langOf(ctx)) === "ms" ? "Anda sudah di pelan tertinggi 🎉" : "You are already on the top plan 🎉");
+    const ms = (await langOf(ctx)) === "ms";
     const text = ms
       ? `Pelan semasa: <b>${tier.toUpperCase()}</b>\nNaik ke <b>${next.key.toUpperCase()}</b>:\n• Deposit HFM sehingga $${next.ibMinDepositUsd} lalu /verify semula\n• atau bayar ${fmtUsd(next.priceMonthCents)}/bulan`
       : `Current plan: <b>${tier.toUpperCase()}</b>\nUpgrade to <b>${next.key.toUpperCase()}</b>:\n• Deposit HFM up to $${next.ibMinDepositUsd} then /verify again\n• or pay ${fmtUsd(next.priceMonthCents)}/month`;
@@ -127,14 +144,14 @@ export function createBot(token: string) {
 
   bot.command("products", async (ctx) => {
     const rows = await db.select().from(products).where(eq(products.active, true));
-    const ms = lang(ctx) === "ms";
+    const ms = (await langOf(ctx)) === "ms";
     const lines = rows.map((p) => `• <b>${p.name}</b> — ${p.priceCents ? "$" + p.priceCents / 100 : (ms ? "Percuma" : "Free")}${p.tierIncluded ? ` (${ms ? "termasuk" : "included"} ${p.tierIncluded.toUpperCase()})` : ""}`);
     await ctx.reply(`${ms ? "Kedai" : "Store"}:\n\n${lines.join("\n")}`, { parse_mode: "HTML", reply_markup: new InlineKeyboard().url(ms ? "Buka kedai" : "Open store", `${BRAND.siteUrl}/products`) });
   });
 
   bot.command("ebook", async (ctx) => {
     const [p] = await db.select().from(products).where(eq(products.slug, "ebook-gold-starter"));
-    const ms = lang(ctx) === "ms";
+    const ms = (await langOf(ctx)) === "ms";
     if (p?.filePath?.startsWith("tg:")) return ctx.replyWithDocument(p.filePath.slice(3), { caption: p.name });
     await ctx.reply(ms ? "Ebook akan dihantar tidak lama lagi. Sementara itu sertai channel awam 👇" : "Ebook coming shortly. Meanwhile join the public channel 👇", { reply_markup: new InlineKeyboard().url("📢 Channel", BRAND.telegram.publicChannel) });
   });
@@ -151,15 +168,61 @@ export function createBot(token: string) {
   });
 
   bot.command("news", async (ctx) => {
-    const ms = lang(ctx) === "ms";
+    const ms = (await langOf(ctx)) === "ms";
     const { getHighImpact, fmtMyt } = await import("@/lib/news");
     const ev = (await getHighImpact().catch(() => [])).slice(0, 8);
     if (!ev.length) return ctx.reply(ms ? "Tiada berita impak tinggi USD dalam feed buat masa ini." : "No high-impact USD news in the feed right now.");
     const lines = ev.map((e) => `🔴 <b>${escapeHtml(e.title)}</b>\n${fmtMyt(e.date)} MYT${e.forecast ? ` · ${ms ? "ramalan" : "fcst"} ${escapeHtml(e.forecast)}` : ""}`);
     return ctx.reply(`${ms ? "📅 <b>Berita impak tinggi minggu ini</b>" : "📅 <b>High-impact news this week</b>"}\n\n${lines.join("\n\n")}\n\n<i>${ms ? "Elak entry baru 30 minit sebelum/selepas berita merah." : "Avoid new entries 30 min before/after red news."}</i>`, { parse_mode: "HTML" });
   });
-  bot.command("support", async (ctx) => ctx.reply(`${T[lang(ctx)].support} ${BRAND.telegram.support}`));
-  bot.command("help", async (ctx) => ctx.reply(T[lang(ctx)].help));
+  bot.command("language", async (ctx) => {
+    await upsertTg(ctx);
+    const arg = (ctx.match ?? "").toString().trim().toLowerCase();
+    if (arg !== "ms" && arg !== "en") {
+      return ctx.reply("🌐 /language ms — Bahasa Melayu\n🌐 /language en — English", { reply_markup: new InlineKeyboard().text("Bahasa Melayu", "lang:ms").text("English", "lang:en") });
+    }
+    await setLanguage(ctx.from!.id, arg);
+    return ctx.reply(arg === "ms" ? "Bahasa ditukar ke Bahasa Melayu ✅" : "Language set to English ✅");
+  });
+  bot.callbackQuery(/^lang:(ms|en)$/, async (ctx) => {
+    const code = ctx.match[1] as "ms" | "en";
+    await setLanguage(ctx.from.id, code);
+    await ctx.answerCallbackQuery({ text: code === "ms" ? "Bahasa Melayu ✅" : "English ✅" });
+    await ctx.editMessageText(code === "ms" ? "Bahasa ditukar ke Bahasa Melayu ✅" : "Language set to English ✅").catch(() => {});
+  });
+
+  bot.command("mystats", async (ctx) => {
+    await upsertTg(ctx);
+    const ms = (await langOf(ctx)) === "ms";
+    const [u] = await db.select().from(users).where(eq(users.telegramId, String(ctx.from!.id)));
+    if (!u) return ctx.reply(T[ms ? "ms" : "en"].no_link);
+    const { memberDashboard } = await import("@/lib/dashboard");
+    const d = await memberDashboard(u.id);
+    const s = d.stats;
+    const pct = (v: number) => `${Math.round(v * 100)}%`;
+    const r = (v: number) => `${v >= 0 ? "+" : ""}${v.toFixed(2)}R`;
+    const basis = d.basis === "followed" ? (ms ? `${d.followedCount} signal yang anda tanda` : `${d.followedCount} signals you marked`) : (ms ? "semua signal pelan anda" : "all signals on your plan");
+    const text = ms
+      ? `📊 <b>Statistik saya</b> · ${d.tier.toUpperCase()}\nAsas: ${basis}\n\nDitutup: <b>${s.n}</b>\nKadar menang: <b>${s.n ? pct(s.winRate) : "—"}</b>\nPurata R: <b>${s.n ? s.avgR.toFixed(2) : "—"}</b>\nJumlah R: <b>${s.n ? r(s.totalR) : "—"}</b>\nR bulan ini: <b>${s.n ? r(d.monthR) : "—"}</b>\nSedang berjalan: <b>${d.running}</b>`
+      : `📊 <b>My stats</b> · ${d.tier.toUpperCase()}\nBasis: ${basis}\n\nClosed: <b>${s.n}</b>\nWin rate: <b>${s.n ? pct(s.winRate) : "—"}</b>\nAverage R: <b>${s.n ? s.avgR.toFixed(2) : "—"}</b>\nTotal R: <b>${s.n ? r(s.totalR) : "—"}</b>\nR this month: <b>${s.n ? r(d.monthR) : "—"}</b>\nRunning: <b>${d.running}</b>`;
+    await ctx.reply(text, { parse_mode: "HTML", reply_markup: new InlineKeyboard().url(ms ? "Buka dashboard" : "Open dashboard", `${BRAND.siteUrl}/dashboard`) });
+  });
+
+  bot.command("leaderboard", async (ctx) => {
+    await upsertTg(ctx);
+    const ms = (await langOf(ctx)) === "ms";
+    const [u] = await db.select().from(users).where(eq(users.telegramId, String(ctx.from!.id)));
+    const { referralLeaderboard } = await import("@/lib/dashboard");
+    const lb = await referralLeaderboard(10, u?.id);
+    const medal = (i: number) => (i === 1 ? "🥇" : i === 2 ? "🥈" : i === 3 ? "🥉" : `${i}.`);
+    const lines = lb.top.map((r) => `${medal(r.rank)} ${escapeHtml(r.label)} — <b>${r.activated}</b>${u && r.userId === u.id ? (ms ? " (anda)" : " (you)") : ""}`);
+    const mine = lb.mine ? (ms ? `\n\nKedudukan anda: <b>#${lb.mine.rank}</b> daripada ${lb.total}` : `\n\nYour rank: <b>#${lb.mine.rank}</b> of ${lb.total}`) : (ms ? "\n\nBelum ada rujukan aktif." : "\n\nNo active referrals yet.");
+    const link = u?.referralCode ? `\n${ms ? "Link rujukan anda" : "Your referral link"}: ${BRAND.siteUrl}/?ref=${u.referralCode}` : `\n${ms ? "Pautkan akaun web untuk dapat link rujukan." : "Link your web account to get a referral link."}`;
+    await ctx.reply(`🏆 <b>${ms ? "Papan pendahulu rujukan" : "Referral leaderboard"}</b>\n${ms ? "Rakan yang aktifkan pelan dikira." : "Friends who activated a plan count."}\n\n${lines.join("\n") || "—"}${mine}${link}`, { parse_mode: "HTML", link_preview_options: { is_disabled: true } });
+  });
+
+  bot.command("support", async (ctx) => ctx.reply(`${T[await langOf(ctx)].support} ${BRAND.telegram.support}`));
+  bot.command("help", async (ctx) => ctx.reply(T[await langOf(ctx)].help));
 
   // Admin approve/reject from the notification message.
   bot.callbackQuery(/^ib:(approve|reject):(.+)$/, async (ctx) => {
@@ -175,7 +238,7 @@ export function createBot(token: string) {
     if (!ctx.from) return;
     const st = await getState(ctx.from.id);
     if (!st) return;
-    const t = T[lang(ctx)];
+    const t = T[await langOf(ctx)];
     const text = ctx.message.text?.trim();
     if (st.step === "account") {
       if (!text || !/^\d{5,12}$/.test(text)) return ctx.reply(t.bad_account);
