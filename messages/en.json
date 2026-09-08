@@ -115,7 +115,8 @@
     "included": "Included in {tier}",
     "lifetime": "lifetime",
     "monthly": "/mo",
-    "one_time": "one-time"
+    "one_time": "one-time",
+    "sticky_included": "Included in the {tier} plan. Members don't need to buy."
   },
   "faq": {
     "title": "Questions",
@@ -237,5 +238,37 @@
     "bot": "Open Telegram bot",
     "error": "Invalid email. Try again.",
     "fine": "No spam. 3 short emails, unsubscribe anytime."
+  },
+  "support": {
+    "open": "Support",
+    "title": "Need help?",
+    "subtitle": "Quick answers, or jump straight to Telegram.",
+    "human": "Chat with Sam",
+    "bot": "Open bot",
+    "hours": "Replies usually within a few hours, MYT."
+  },
+  "compare": {
+    "title": "Door A or Door B?",
+    "subtitle": "Both unlock the same plans. Only the way you pay differs.",
+    "a": "A · HFM account",
+    "b": "B · Own broker",
+    "fee_label": "Monthly fee",
+    "fee_a": "$0. HFM pays us a commission.",
+    "fee_b": "$9 / $49 / $129 per month (2 months free yearly).",
+    "requirement_label": "Requirement",
+    "requirement_a": "HFM account under our link. $100 deposit for Pro, $500 for Elite.",
+    "requirement_b": "None. Any broker.",
+    "money_label": "Your money",
+    "money_a": "Stays in your own trading account, withdraw anytime.",
+    "money_b": "Not involved. You only pay the subscription.",
+    "cancel_label": "Cancelling",
+    "cancel_a": "Access continues while the account stays active and above the deposit band.",
+    "cancel_b": "Cancel anytime from your account page.",
+    "payment_label": "Payment",
+    "payment_a": "Nothing paid to us.",
+    "payment_b": "Card (Stripe) or USDT.",
+    "suits_label": "Best for",
+    "suits_a": "New traders or anyone without a broker yet.",
+    "suits_b": "Traders already happy with their broker."
   }
 }
