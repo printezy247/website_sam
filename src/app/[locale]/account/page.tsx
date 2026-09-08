@@ -1,5 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
+import { Link } from "@/i18n/navigation";
+import { pageMetadata } from "@/lib/seo";
 import { count, desc, eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { attachReferrer } from "@/lib/referral";
@@ -14,6 +16,11 @@ import { BRAND, botDeepLink } from "@/config/brand";
 import { TIERS, fmtUsd } from "@/config/tiers";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  return pageMetadata({ locale, path: "/account", title: locale === "ms" ? "Akaun" : "Account", description: "", noindex: true });
+}
 
 export default async function Account({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ checkout?: string; interval?: string; product?: string; paid?: string }> }) {
   const { locale } = await params; setRequestLocale(locale);
@@ -40,6 +47,7 @@ export default async function Account({ params, searchParams }: { params: Promis
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">{ms ? "Akaun" : "Account"}</h1>
           <p className="text-muted">{session.user.email ?? u?.name}</p>
+          <Link href="/dashboard" className="text-sm text-gold underline">{ms ? "Buka dashboard ahli →" : "Open member dashboard →"}</Link>
         </div>
         <form action={async () => { "use server"; await signOut({ redirectTo: `/${locale}` }); }}><button className="text-sm text-muted underline">{ms ? "Log keluar" : "Sign out"}</button></form>
       </div>

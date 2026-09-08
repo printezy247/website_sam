@@ -13,6 +13,13 @@ import { db } from "@/db";
 import { products } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { fmtPct } from "@/lib/utils";
+import { JsonLd, pageMetadata } from "@/lib/seo";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "seo" });
+  return { ...pageMetadata({ locale, path: "/", title: t("home_title"), description: t("default_description") }), title: { absolute: `${BRAND.name} · ${t("home_title")}` } };
+}
 
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -26,8 +33,10 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   ]);
   const stats = computeStats(recent(closed, 90));
 
+  const faq = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: [1, 2, 3, 4].map((i) => ({ "@type": "Question", name: t(`faq.q${i}`), acceptedAnswer: { "@type": "Answer", text: t(`faq.a${i}`) } })) };
   return (
     <div>
+      <JsonLd data={faq} />
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 grid-bg" />

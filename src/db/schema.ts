@@ -209,3 +209,12 @@ export const articles = pgTable("articles", {
   publishedAt: timestamp("published_at").notNull().defaultNow(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 }, (t) => [index("articles_pub_idx").on(t.publishedAt)]);
+
+// ---- Member dashboard ----
+/** A member marks a signal as "taken"; personal stats are computed from these. */
+export const signalFollows = pgTable("signal_follows", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  signalId: text("signal_id").notNull().references(() => signals.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (t) => [uniqueIndex("signal_follows_user_signal_uq").on(t.userId, t.signalId)]);

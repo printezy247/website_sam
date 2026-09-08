@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/auth";
 import { Link } from "@/i18n/navigation";
+export const metadata = { title: "Admin", robots: { index: false, follow: false } };
 export default async function AdminLayout({ children, params }: { children: React.ReactNode; params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!(await requireAdmin())) redirect(`/${locale}/signin?callbackUrl=/${locale}/admin`);

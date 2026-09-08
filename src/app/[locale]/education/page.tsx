@@ -1,7 +1,14 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { pageMetadata } from "@/lib/seo";
 import { Link } from "@/i18n/navigation";
 import { listArticles, CATEGORIES } from "@/lib/articles";
 export const dynamic = "force-dynamic";
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "seo" });
+  return pageMetadata({ locale, path: "/education", title: t("education_title"), description: t("education_description") });
+}
+
 export default async function Education({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ c?: string }> }) {
   const { locale } = await params; setRequestLocale(locale);
   const { c } = await searchParams;

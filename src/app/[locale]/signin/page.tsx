@@ -2,6 +2,11 @@ import { setRequestLocale } from "next-intl/server";
 import { signIn } from "@/auth";
 import { BRAND } from "@/config/brand";
 import { TelegramLogin } from "@/components/TelegramLogin";
+import { pageMetadata } from "@/lib/seo";
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  return pageMetadata({ locale, path: "/signin", title: locale === "ms" ? "Log masuk" : "Sign in", description: "", noindex: true });
+}
 export default async function SignIn({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ sent?: string; callbackUrl?: string }> }) {
   const { locale } = await params; setRequestLocale(locale);
   const { sent, callbackUrl } = await searchParams;
