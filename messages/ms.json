@@ -7,22 +7,23 @@
     "account": "Akaun",
     "signin": "Log masuk",
     "cta": "Dapatkan signal percuma",
-    "education": "Pendidikan"
+    "education": "Pendidikan",
+    "dashboard": "Dashboard"
   },
   "risk": {
-    "strip": "Dagangan emas, forex dan CFD secara margin berisiko tinggi dan anda boleh kehilangan lebih daripada deposit awal. 70–80% akaun pelabur runcit rugi apabila berdagang CFD. Prestasi lepas bukan jaminan prestasi akan datang. Semua kandungan untuk tujuan pendidikan sahaja, bukan nasihat kewangan.",
-    "ib": "{brand} ialah rakan Introducing Broker HFM dan menerima komisen daripada akaun yang dirujuk."
+    "strip": "Dagangan emas, forex dan CFD secara margin melibatkan risiko yang tinggi dan anda boleh kehilangan lebih daripada deposit awal. 70–80% akaun pelabur runcit mengalami kerugian apabila berdagang CFD. Prestasi lepas bukan petunjuk prestasi akan datang. Semua kandungan adalah untuk tujuan pendidikan sahaja dan bukan nasihat kewangan.",
+    "ib": "{brand} ialah rakan kongsi Introducing Broker (IB) HFM dan menerima komisen daripada akaun yang dirujuk."
   },
   "hero": {
-    "badge": "Sejak {since} · Pakar Emas (XAUUSD)",
-    "title": "Signal emas dengan ketelusan penuh.",
+    "badge": "Sejak {since} · Fokus emas (XAUUSD)",
+    "title": "Signal emas, telus sepenuhnya.",
     "title2": "Dua cara masuk.",
-    "subtitle": "Setup XAUUSD live dengan entry, stop dan target, rekod prestasi awam, dan komuniti yang belajar bersama. Sertai percuma melalui link HFM kami, atau bayar bulanan dengan mana-mana broker.",
+    "subtitle": "Setup XAUUSD secara live lengkap dengan entry, stop loss dan target, rekod prestasi yang terbuka untuk semua, dan komuniti yang belajar bersama-sama. Masuk percuma melalui link HFM kami, atau langgan bulanan dengan mana-mana broker.",
     "cta_primary": "Dapatkan signal percuma",
     "cta_secondary": "Lihat pelan",
     "sample": "Contoh",
     "sample_note": "Format ilustrasi sahaja. Signal sebenar dihantar kepada ahli.",
-    "live_note": "Setup live daripada data pasaran, dikemas kini ikut harga. Pendidikan sahaja, bukan nasihat."
+    "live_note": "Setup live daripada data pasaran dan dikemas kini mengikut pergerakan harga. Untuk pendidikan sahaja, bukan nasihat."
   },
   "stats": {
     "members": "Ahli",
@@ -33,14 +34,14 @@
   },
   "doors": {
     "title": "Dua cara masuk",
-    "subtitle": "Setiap pelan boleh dibuka dengan dua cara. Pilih yang sesuai.",
-    "a_title": "Buka akaun HFM guna link kami",
-    "a_body": "Tiada yuran bulanan. Pelan Free hanya perlu akaun. Pro perlu deposit $100, Elite $500. Duit anda kekal dalam akaun dagangan anda sendiri.",
+    "subtitle": "Setiap pelan boleh dibuka dengan dua cara. Pilih yang paling sesuai untuk anda.",
+    "a_title": "Buka akaun HFM melalui link kami",
+    "a_body": "Tiada yuran bulanan. Pelan Free cuma perlukan akaun. Pro perlukan deposit $100, Elite $500. Modal anda kekal dalam akaun dagangan anda sendiri.",
     "a_cta": "Daftar HFM",
     "b_title": "Guna broker sendiri",
-    "b_body": "Kekal dengan broker anda dan bayar pelan bulanan. Kad atau USDT.",
+    "b_body": "Kekal dengan broker pilihan anda dan langgan pelan bulanan. Bayar dengan kad atau USDT.",
     "b_cta": "Lihat pelan",
-    "guide": "Panduan langkah demi langkah pendaftaran"
+    "guide": "Panduan pendaftaran langkah demi langkah"
   },
   "tiers": {
     "public": "Awam",
@@ -57,7 +58,7 @@
     "toggle_ib": "Akaun HFM",
     "toggle_pay": "Broker sendiri",
     "monthly": "Bulanan",
-    "annual": "Tahunan (percuma 2 bulan)",
+    "annual": "Tahunan (jimat 2 bulan)",
     "choose": "Pilih {tier}",
     "join_channel": "Sertai channel awam"
   },
@@ -65,17 +66,17 @@
     "daily_bias": "Bias emas harian",
     "weekly_outlook": "Tinjauan mingguan",
     "ebook_free": "Ebook percuma",
-    "free_signals_weekly": "2 signal penuh / minggu",
-    "full_xauusd_signals": "Semua signal XAUUSD live",
+    "free_signals_weekly": "2 signal penuh seminggu",
+    "full_xauusd_signals": "Semua signal XAUUSD secara live",
     "pro_group": "Group private",
     "monthly_report": "Laporan bulanan",
     "tv_basic_indicator": "Indicator TradingView",
     "all_instruments": "Semua instrumen",
     "mt5_suite": "Suite indicator MT5",
-    "copier": "Copier Telegram→MT5",
-    "live_analysis": "Analisis live mingguan",
-    "priority_qa": "Q&A keutamaan",
-    "public_signal_delayed": "1 signal tertunda / hari"
+    "copier": "Copier Telegram ke MT5",
+    "live_analysis": "Sesi analisis live mingguan",
+    "priority_qa": "Soal jawab keutamaan",
+    "public_signal_delayed": "1 signal tertunda sehari"
   },
   "signals": {
     "latest": "Signal awam terkini",
@@ -92,7 +93,7 @@
   },
   "results": {
     "title": "Rekod prestasi",
-    "subtitle": "Setiap signal yang ditutup, dikira automatik. Dipaparkan dalam R dan pip, bukan dolar.",
+    "subtitle": "Setiap signal yang ditutup dikira secara automatik. Dipaparkan dalam R dan pip, bukan dalam dolar.",
     "winrate": "Kadar menang",
     "avg_r": "Purata R",
     "expectancy": "Jangkaan (R)",
@@ -105,11 +106,11 @@
     "pips": "Pip",
     "r": "R",
     "verified": "Pengesahan pihak ketiga",
-    "no_widget": "Widget Myfxbook / FXBlue akan dipaparkan di sini selepas disambung."
+    "no_widget": "Widget Myfxbook / FXBlue akan dipaparkan di sini selepas disambungkan."
   },
   "products": {
     "title": "Kedai",
-    "subtitle": "Indicator, ebook dan alat. Ahli Elite dapat suite penuh.",
+    "subtitle": "Indicator, ebook dan alat bantu dagangan. Ahli Elite dapat suite penuh.",
     "buy": "Beli",
     "included": "Termasuk dalam {tier}",
     "lifetime": "seumur hidup",
@@ -119,12 +120,12 @@
   "faq": {
     "title": "Soalan lazim",
     "q1": "Perlu deposit untuk dapat signal?",
-    "a1": "Tidak. Pelan Free hanya perlu akaun HFM guna link kami. Pro dan Elite perlu $100 / $500 dalam akaun anda sendiri, atau bayar bulanan dengan mana-mana broker.",
-    "q2": "Macam mana akaun HFM saya disahkan?",
-    "a2": "Hantar nombor akaun, nama dan screenshot baki dalam bot atau halaman akaun. Kami padankan dengan laporan partner dan buka akses, biasanya dalam 24 jam.",
-    "q3": "Rekod prestasi ni betul?",
-    "a3": "Halaman rekod dikira daripada setiap signal yang kami hantar, termasuk yang rugi. Pengesahan pihak ketiga ditambah bila ada.",
-    "q4": "Boleh batal?",
+    "a1": "Tidak perlu. Pelan Free hanya perlukan akaun HFM yang didaftar melalui link kami. Pro dan Elite perlukan $100 / $500 dalam akaun anda sendiri, atau langgan bulanan dengan mana-mana broker.",
+    "q2": "Bagaimana akaun HFM saya disahkan?",
+    "a2": "Hantar nombor akaun, nama dan screenshot baki melalui bot atau halaman akaun. Kami padankan dengan laporan partner HFM dan buka akses, selalunya dalam masa 24 jam.",
+    "q3": "Rekod prestasi ini betul-betul sebenar?",
+    "a3": "Halaman rekod dikira daripada setiap signal yang kami hantar, termasuk yang rugi. Pengesahan pihak ketiga akan ditambah apabila tersedia.",
+    "q4": "Boleh batal bila-bila masa?",
     "a4": "Boleh. Pelan berbayar boleh dibatalkan bila-bila masa dari halaman akaun. Akses IB kekal selagi akaun HFM anda aktif."
   },
   "footer": {
@@ -133,7 +134,7 @@
     "terms": "Terma",
     "privacy": "Privasi",
     "ib": "Pendedahan IB",
-    "rights": "Pendidikan sahaja. Bukan nasihat kewangan."
+    "rights": "Untuk pendidikan sahaja. Bukan nasihat kewangan."
   },
   "cta_bar": {
     "text": "Signal XAUUSD percuma di Telegram",
@@ -141,7 +142,7 @@
   },
   "education": {
     "title": "Pendidikan",
-    "subtitle": "Satu artikel baharu setiap hari tentang masalah sebenar trader dan cara mengatasinya.",
+    "subtitle": "Satu artikel baharu setiap hari tentang masalah sebenar yang trader hadapi, dan cara mengatasinya.",
     "all": "Semua",
     "empty": "Artikel pertama sedang dalam perjalanan.",
     "cat_mindset": "Mindset",
@@ -150,7 +151,62 @@
     "cat_execution": "Pelaksanaan",
     "cat_tools": "Alat",
     "cta_title": "Nak bincang setup ini?",
-    "cta_body": "Sertai channel percuma dan tanya dalam komuniti.",
+    "cta_body": "Sertai channel percuma dan tanya terus dalam komuniti.",
     "cta_button": "Sertai di Telegram"
+  },
+  "seo": {
+    "default_title": "Signal emas XAUUSD dengan rekod telus",
+    "default_description": "Signal emas (XAUUSD) secara live dengan entry, stop loss dan target. Rekod prestasi awam, dua cara masuk: akaun HFM atau langganan bulanan. Pendidikan sahaja.",
+    "home_title": "Signal emas XAUUSD · Rekod telus · Dua cara masuk",
+    "pricing_title": "Pelan & harga",
+    "pricing_description": "Free, Pro dan Elite. Buka melalui akaun HFM (tanpa deposit, $100 atau $500) atau langgan bulanan $9 / $49 / $129 dengan mana-mana broker.",
+    "results_title": "Rekod prestasi signal XAUUSD",
+    "results_description": "Setiap signal yang ditutup dikira secara automatik: kadar menang, purata R, jangkaan dan drawdown. Dalam R dan pip, termasuk yang rugi.",
+    "education_title": "Pendidikan trading emas",
+    "education_description": "Artikel harian tentang mindset, risiko, strategi dan pelaksanaan untuk trader XAUUSD. Bahasa Melayu dan English.",
+    "products_title": "Kedai: indicator, ebook dan alat",
+    "products_description": "Indicator TradingView dan MT5, ebook dan alat bantu untuk trader emas. Termasuk dalam pelan Pro dan Elite.",
+    "signin_title": "Log masuk",
+    "account_title": "Akaun",
+    "dashboard_title": "Dashboard ahli"
+  },
+  "dashboard": {
+    "title": "Dashboard ahli",
+    "subtitle": "Statistik peribadi anda, signal yang anda ikut, dan kedudukan rujukan.",
+    "tier": "Pelan semasa",
+    "member_since": "Ahli sejak",
+    "access": "Akses signal",
+    "upgrade": "Naik taraf untuk lihat semua signal",
+    "followed": "Signal diikuti",
+    "followed_hint": "Tanda signal yang anda ambil. Statistik peribadi dikira daripada signal ini sahaja.",
+    "fallback_hint": "Anda belum tanda mana-mana signal. Statistik di bawah merangkumi semua signal yang boleh anda akses sejak menjadi ahli.",
+    "winrate": "Kadar menang",
+    "avg_r": "Purata R",
+    "total_r": "Jumlah R",
+    "this_month": "R bulan ini",
+    "running": "Sedang berjalan",
+    "closed": "Ditutup",
+    "equity": "Lengkung ekuiti peribadi (R kumulatif)",
+    "empty": "Tiada signal ditutup lagi dalam tempoh keahlian anda.",
+    "recent": "Signal terkini untuk pelan anda",
+    "follow": "Saya ambil",
+    "unfollow": "Buang tanda",
+    "taken": "Diambil",
+    "leaderboard": "Papan pendahulu rujukan",
+    "leaderboard_sub": "Rakan yang aktifkan pelan (HFM atau berbayar) sahaja dikira. Nama disamarkan.",
+    "rank": "#",
+    "member": "Ahli",
+    "activated": "Rakan aktif",
+    "you": "anda",
+    "your_rank": "Kedudukan anda: #{rank} daripada {total}",
+    "no_rank": "Belum ada rujukan aktif. Kongsi link anda untuk masuk senarai.",
+    "bonus_days": "Hari bonus diperoleh",
+    "share": "Kongsi link rujukan",
+    "share_hint": "Setiap rakan yang aktifkan pelan beri anda +7 hari.",
+    "copy": "Salin",
+    "copied": "Disalin ✓",
+    "share_tg": "Kongsi di Telegram",
+    "share_wa": "WhatsApp",
+    "share_text": "Saya guna {brand} untuk signal emas XAUUSD. Sertai percuma:"
   }
 }

@@ -1,9 +1,16 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { pageMetadata } from "@/lib/seo";
 import { Link } from "@/i18n/navigation";
 import { db } from "@/db";
 import { products } from "@/db/schema";
 import { eq } from "drizzle-orm";
 export const dynamic = "force-dynamic";
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "seo" });
+  return pageMetadata({ locale, path: "/products", title: t("products_title"), description: t("products_description") });
+}
+
 export default async function Products({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params; setRequestLocale(locale);
   const t = await getTranslations("products");

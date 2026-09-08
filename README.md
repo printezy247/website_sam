@@ -204,6 +204,8 @@ npm run dev
 
 | 📄 | |
 |---|---|
+| **Member dashboard** `/dashboard` | Personal stats from signals you mark as taken, personal equity curve, referral leaderboard (masked names), one-click share links |
+| **SEO** | Per-page titles/descriptions (ms/en), canonical + hreflang, Open Graph image (`/opengraph-image`), JSON-LD (Organization, WebSite, FAQ, Article, Product), `robots.txt`, `sitemap.xml` (static + articles + products, both locales) |
 | [Product & monetization spec](docs/product-spec.md) | Tiers, store, analysis products, funnels, data model, pages |
 | [Bot spec](docs/bot-spec.md) | Commands, gatekeeping, fan-out, security |
 | [HFM verification runbook](docs/hfm-verification-runbook.md) | IB account matching, deposit bands, re-verification |
@@ -227,9 +229,11 @@ npm run dev
 
 - [x] Market & repo research, product design
 - [x] **P0** Landing, results, pricing, legal · tiers & HFM verification · bot core · admin · Stripe
-- [ ] **P1** USDT payments · CSV IB import · referrals · email drips · broadcasts · Telegram login
-- [ ] **P2** Store (TV/MT5 licences, ebooks) · copier · TV access queue
-- [ ] **P3** Multi-instrument · mentorship · prop-firm plans · PWA
+- [x] **P1** USDT payments · CSV IB import · referrals · broadcasts · Telegram login
+- [x] **P2** Store (TV/MT5 licences, ebooks) · TV access queue
+- [x] **P3** Education (daily bilingual articles, free LLM) · live Yahoo quotes · auto signals + TP/SL tally
+- [x] **P5** SEO (metadata, OG image, JSON-LD, sitemap) · Malay copy polish · member dashboard + referral leaderboard
+- [ ] **P6** Gold chart with timeframes · high-impact news calendar · ebook claim modal · support chat · copier · mentorship · PWA
 
 <br/>
 

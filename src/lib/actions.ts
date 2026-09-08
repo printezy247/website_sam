@@ -175,3 +175,12 @@ export async function adminToggleArticle(fd: FormData) {
   if (a) await db.update(articlesTable).set({ published: !a.published }).where(eq(articlesTable.id, id));
   revalidatePath("/education"); revalidatePath("/admin/articles");
 }
+
+// ---- member dashboard ----
+export async function toggleFollowSignal(fd: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("unauthenticated");
+  const { toggleFollow } = await import("@/lib/dashboard");
+  await toggleFollow(session.user.id, str(fd, "signalId"));
+  revalidatePath("/", "layout");
+}

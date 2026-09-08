@@ -1,6 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { BRAND } from "@/config/brand";
+import { pageMetadata } from "@/lib/seo";
 
 const PAGES: Record<string, { title: Record<string, string>; body: Record<string, string[]> }> = {
   risk: {
@@ -43,6 +44,13 @@ const PAGES: Record<string, { title: Record<string, string>; body: Record<string
 
 export function generateStaticParams() {
   return ["ms", "en"].flatMap((locale) => Object.keys(PAGES).map((slug) => ({ locale, slug })));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }) {
+  const { locale, slug } = await params;
+  const page = PAGES[slug];
+  if (!page) return {};
+  return pageMetadata({ locale, path: `/legal/${slug}`, title: page.title[locale] ?? page.title.en, description: (page.body[locale] ?? page.body.en)[0].slice(0, 160) });
 }
 
 export default async function Legal({ params }: { params: Promise<{ locale: string; slug: string }> }) {
