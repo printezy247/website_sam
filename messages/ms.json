@@ -115,7 +115,8 @@
     "included": "Termasuk dalam {tier}",
     "lifetime": "seumur hidup",
     "monthly": "/bulan",
-    "one_time": "sekali bayar"
+    "one_time": "sekali bayar",
+    "sticky_included": "Termasuk dalam pelan {tier}. Ahli tak perlu beli."
   },
   "faq": {
     "title": "Soalan lazim",
@@ -237,5 +238,37 @@
     "bot": "Buka bot Telegram",
     "error": "Emel tidak sah. Cuba lagi.",
     "fine": "Tiada spam. 3 emel pendek, batal bila-bila masa."
+  },
+  "support": {
+    "open": "Sokongan",
+    "title": "Perlukan bantuan?",
+    "subtitle": "Jawapan pantas, atau terus ke Telegram.",
+    "human": "Chat dengan Sam",
+    "bot": "Buka bot",
+    "hours": "Balasan biasanya dalam beberapa jam, waktu MYT."
+  },
+  "compare": {
+    "title": "Cara A atau Cara B?",
+    "subtitle": "Kedua-duanya buka pelan yang sama. Bezanya cara bayar.",
+    "a": "A · Akaun HFM",
+    "b": "B · Broker sendiri",
+    "fee_label": "Yuran bulanan",
+    "fee_a": "$0. Kami dibayar komisen oleh HFM.",
+    "fee_b": "$9 / $49 / $129 sebulan (jimat 2 bulan jika tahunan).",
+    "requirement_label": "Syarat",
+    "requirement_a": "Akaun HFM melalui link kami. Deposit $100 untuk Pro, $500 untuk Elite.",
+    "requirement_b": "Tiada. Guna mana-mana broker.",
+    "money_label": "Modal anda",
+    "money_a": "Kekal dalam akaun dagangan anda, boleh keluarkan bila-bila masa.",
+    "money_b": "Tidak terlibat. Anda bayar langganan sahaja.",
+    "cancel_label": "Batal",
+    "cancel_a": "Akses kekal selagi akaun aktif dan melebihi band deposit.",
+    "cancel_b": "Batal bila-bila masa dari halaman akaun.",
+    "payment_label": "Pembayaran",
+    "payment_a": "Tiada pembayaran kepada kami.",
+    "payment_b": "Kad (Stripe) atau USDT.",
+    "suits_label": "Sesuai untuk",
+    "suits_a": "Trader baru atau yang belum ada broker.",
+    "suits_b": "Trader yang sudah selesa dengan broker sendiri."
   }
 }

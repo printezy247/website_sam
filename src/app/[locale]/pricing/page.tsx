@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { pageMetadata } from "@/lib/seo";
 import { TierCards } from "@/components/TierCards";
+import { CompareDoors } from "@/components/CompareDoors";
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "seo" });
@@ -15,6 +16,7 @@ export default async function Pricing({ params }: { params: Promise<{ locale: st
       <h1 className="text-4xl font-semibold tracking-tight">{t("title")}</h1>
       <p className="text-muted mt-2 mb-10">{t("subtitle")}</p>
       <TierCards showMatrix />
+      <CompareDoors />
     </div>
   );
 }

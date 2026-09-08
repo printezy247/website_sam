@@ -10,6 +10,7 @@ import { Footer } from "@/components/Footer";
 import { RiskBanner } from "@/components/RiskBanner";
 import { Ticker } from "@/components/Ticker";
 import { StickyCta } from "@/components/StickyCta";
+import { SupportChat } from "@/components/SupportChat";
 import { JsonLd, absUrl, localePath, orgJsonLd, websiteJsonLd, OG_LOCALE } from "@/lib/seo";
 import "../globals.css";
 
@@ -53,6 +54,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
           <main className="flex-1 pb-20 md:pb-0">{children}</main>
           <Footer />
           <StickyCta />
+          <SupportChat />
         </NextIntlClientProvider>
       </body>
     </html>
