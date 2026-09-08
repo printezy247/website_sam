@@ -154,7 +154,19 @@
     "cat_tools": "Alat",
     "cta_title": "Nak bincang setup ini?",
     "cta_body": "Sertai channel percuma dan tanya terus dalam komuniti.",
-    "cta_button": "Sertai di Telegram"
+    "cta_button": "Sertai di Telegram",
+    "toc": "Kandungan",
+    "related": "Artikel berkaitan",
+    "prev": "Sebelum",
+    "next": "Seterusnya",
+    "copy_link": "Salin link",
+    "copied": "Disalin ✓",
+    "checklist_done": "Senarai semak",
+    "risk_note": "Dagangan CFD secara margin berisiko tinggi dan anda boleh kehilangan lebih daripada deposit. Artikel ini untuk pendidikan sahaja, bukan nasihat kewangan.",
+    "ai_written": "Ditulis dengan bantuan AI, disemak oleh Sam",
+    "by_brand": "Ditulis oleh {brand}",
+    "search": "Cari artikel…",
+    "new": "Baharu"
   },
   "seo": {
     "default_title": "Signal emas XAUUSD dengan rekod telus",

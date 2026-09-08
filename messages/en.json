@@ -154,7 +154,19 @@
     "cat_tools": "Tools",
     "cta_title": "Want to discuss this setup?",
     "cta_body": "Join the free channel and ask in the community.",
-    "cta_button": "Join on Telegram"
+    "cta_button": "Join on Telegram",
+    "toc": "Contents",
+    "related": "Related articles",
+    "prev": "Previous",
+    "next": "Next",
+    "copy_link": "Copy link",
+    "copied": "Copied ✓",
+    "checklist_done": "Checklist",
+    "risk_note": "Trading CFDs on margin carries high risk and you can lose more than your deposit. This article is education only, not financial advice.",
+    "ai_written": "Written with AI assistance, reviewed by Sam",
+    "by_brand": "Written by {brand}",
+    "search": "Search articles…",
+    "new": "New"
   },
   "seo": {
     "default_title": "XAUUSD gold signals with a transparent track record",
