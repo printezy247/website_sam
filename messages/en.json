@@ -208,5 +208,13 @@
     "share_tg": "Share on Telegram",
     "share_wa": "WhatsApp",
     "share_text": "I use {brand} for XAUUSD gold signals. Join free:"
+  },
+  "chart": {
+    "title": "Live gold chart",
+    "entry": "Entry",
+    "sl": "SL",
+    "tp": "TP",
+    "empty": "Chart data unavailable right now.",
+    "asOf": "Updated"
   }
 }

@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { pageMetadata } from "@/lib/seo";
 import { StatTile } from "@/components/StatTile";
 import { EquityCurve } from "@/components/EquityCurve";
+import { GoldChart } from "@/components/GoldChart";
 import { closedSignals, computeStats, monthlyBreakdown } from "@/lib/stats";
 import { BRAND } from "@/config/brand";
 import { fmtPct } from "@/lib/utils";
@@ -19,6 +20,7 @@ export default async function Results({ params, searchParams }: { params: Promis
   const { locale } = await params; setRequestLocale(locale);
   const { instrument } = await searchParams;
   const t = await getTranslations("results");
+  const tc = await getTranslations("chart");
   await evaluateRunningSignals().catch((e) => console.error("[evaluate]", e));
   const rows = await closedSignals(instrument).catch(() => []);
   const s = computeStats(rows);
@@ -41,6 +43,7 @@ export default async function Results({ params, searchParams }: { params: Promis
         <StatTile label={t("expectancy")} value={s.n ? s.expectancy.toFixed(2) : "—"} />
         <StatTile label={t("max_dd")} value={s.n ? `-${s.maxDdR.toFixed(2)}` : "—"} />
       </div>
+      <div className="mt-10"><GoldChart labels={{ title: tc("title"), entry: tc("entry"), sl: tc("sl"), tp: tc("tp"), empty: tc("empty"), asOf: tc("asOf") }} /></div>
       <div className="mt-10 glass rounded-2xl p-5">
         <h2 className="font-semibold mb-3">{t("equity")}</h2>
         <EquityCurve data={s.equity} />
