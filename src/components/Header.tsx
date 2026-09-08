@@ -17,6 +17,7 @@ export async function Header() {
         </Link>
         <nav className="hidden md:flex items-center gap-6 text-sm text-muted">
           <Link href="/results" className="hover:text-fg">{t("results")}</Link>
+          <Link href="/education" className="hover:text-fg">{t("education")}</Link>
           <Link href="/pricing" className="hover:text-fg">{t("pricing")}</Link>
           <Link href="/products" className="hover:text-fg">{t("products")}</Link>
           <Link href={session?.user ? "/account" : "/signin"} className="hover:text-fg">{session?.user ? t("account") : t("signin")}</Link>

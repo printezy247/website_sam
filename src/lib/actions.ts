@@ -152,3 +152,26 @@ export async function adminUpsertProduct(fd: FormData) {
   else await db.insert(productsTable).values(row);
   revalidatePath("/admin/products"); revalidatePath("/products");
 }
+
+// ---- P3: education ----
+import { articles as articlesTable } from "@/db/schema";
+import { announceArticle, generateArticle } from "@/lib/articles";
+
+export async function adminGenerateArticle(fd: FormData) {
+  if (!(await requireAdmin())) throw new Error("forbidden");
+  let msg: string;
+  try {
+    const row = await generateArticle(str(fd, "topic") || undefined);
+    if (fd.get("announce") === "on") await announceArticle(row.id).catch(() => {});
+    msg = `published: ${row.titleEn} (/education/${row.slug})`;
+  } catch (e) { msg = `error: ${(e as Error).message}`; }
+  revalidatePath("/education");
+  redirect(`/admin/articles?r=${encodeURIComponent(msg)}`);
+}
+export async function adminToggleArticle(fd: FormData) {
+  if (!(await requireAdmin())) throw new Error("forbidden");
+  const id = str(fd, "id");
+  const [a] = await db.select().from(articlesTable).where(eq(articlesTable.id, id));
+  if (a) await db.update(articlesTable).set({ published: !a.published }).where(eq(articlesTable.id, id));
+  revalidatePath("/education"); revalidatePath("/admin/articles");
+}

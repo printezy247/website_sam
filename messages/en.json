@@ -1,5 +1,14 @@
 {
-  "nav": { "signals": "Signals", "pricing": "Plans", "results": "Results", "products": "Store", "account": "Account", "signin": "Sign in", "cta": "Get free signals" },
+  "nav": {
+    "signals": "Signals",
+    "pricing": "Plans",
+    "results": "Results",
+    "products": "Store",
+    "account": "Account",
+    "signin": "Sign in",
+    "cta": "Get free signals",
+    "education": "Education"
+  },
   "risk": {
     "strip": "Trading gold, forex and CFDs on margin carries a high level of risk and you could lose more than your initial deposit. 70–80% of retail investor accounts lose money when trading CFDs. Past performance is not indicative of future results. All content is for education only and is not financial advice.",
     "ib": "{brand} is an Introducing Broker partner of HFM and earns commission on referred accounts."
@@ -14,7 +23,13 @@
     "sample": "Sample",
     "sample_note": "Illustrative format only. Real signals are posted to members."
   },
-  "stats": { "members": "Members", "signals_month": "Signals this month", "winrate": "Win rate (90d)", "avg_r": "Avg R", "since": "Trading since" },
+  "stats": {
+    "members": "Members",
+    "signals_month": "Signals this month",
+    "winrate": "Win rate (90d)",
+    "avg_r": "Avg R",
+    "since": "Trading since"
+  },
   "doors": {
     "title": "Two ways in",
     "subtitle": "Every plan can be unlocked two ways. Pick what suits you.",
@@ -27,34 +42,111 @@
     "guide": "Step-by-step registration guide"
   },
   "tiers": {
-    "public": "Public", "free": "Free", "pro": "Pro", "elite": "Elite",
-    "popular": "Most popular", "founding": "{n} founding places", "or": "or",
-    "ib_none": "HFM account, no deposit", "ib_deposit": "HFM account + ${n} deposit", "mo": "/mo", "yr": "/yr",
-    "toggle_ib": "HFM account", "toggle_pay": "Own broker", "monthly": "Monthly", "annual": "Annual (2 months free)",
-    "choose": "Choose {tier}", "join_channel": "Join public channel"
+    "public": "Public",
+    "free": "Free",
+    "pro": "Pro",
+    "elite": "Elite",
+    "popular": "Most popular",
+    "founding": "{n} founding places",
+    "or": "or",
+    "ib_none": "HFM account, no deposit",
+    "ib_deposit": "HFM account + ${n} deposit",
+    "mo": "/mo",
+    "yr": "/yr",
+    "toggle_ib": "HFM account",
+    "toggle_pay": "Own broker",
+    "monthly": "Monthly",
+    "annual": "Annual (2 months free)",
+    "choose": "Choose {tier}",
+    "join_channel": "Join public channel"
   },
   "features": {
-    "daily_bias": "Daily gold bias", "weekly_outlook": "Weekly outlook", "ebook_free": "Free ebook",
-    "free_signals_weekly": "2 full signals / week", "full_xauusd_signals": "All XAUUSD signals live",
-    "pro_group": "Private group", "monthly_report": "Monthly report", "tv_basic_indicator": "TradingView indicator",
-    "all_instruments": "All instruments", "mt5_suite": "MT5 indicator suite", "copier": "Telegram→MT5 copier",
-    "live_analysis": "Weekly live analysis", "priority_qa": "Priority Q&A", "public_signal_delayed": "1 delayed signal / day"
+    "daily_bias": "Daily gold bias",
+    "weekly_outlook": "Weekly outlook",
+    "ebook_free": "Free ebook",
+    "free_signals_weekly": "2 full signals / week",
+    "full_xauusd_signals": "All XAUUSD signals live",
+    "pro_group": "Private group",
+    "monthly_report": "Monthly report",
+    "tv_basic_indicator": "TradingView indicator",
+    "all_instruments": "All instruments",
+    "mt5_suite": "MT5 indicator suite",
+    "copier": "Telegram→MT5 copier",
+    "live_analysis": "Weekly live analysis",
+    "priority_qa": "Priority Q&A",
+    "public_signal_delayed": "1 delayed signal / day"
   },
-  "signals": { "latest": "Latest public signals", "entry": "Entry", "sl": "Stop", "tp": "TP", "status": "Status", "view_all": "Full track record", "buy": "BUY", "sell": "SELL" },
+  "signals": {
+    "latest": "Latest public signals",
+    "entry": "Entry",
+    "sl": "Stop",
+    "tp": "TP",
+    "status": "Status",
+    "view_all": "Full track record",
+    "buy": "BUY",
+    "sell": "SELL"
+  },
   "results": {
-    "title": "Track record", "subtitle": "Every closed signal, computed automatically. Shown in R and pips, never in dollars.",
-    "winrate": "Win rate", "avg_r": "Average R", "expectancy": "Expectancy (R)", "max_dd": "Max drawdown (R)", "total": "Closed signals",
-    "equity": "Equity curve (cumulative R)", "monthly": "Monthly performance", "month": "Month", "trades": "Trades", "pips": "Pips", "r": "R",
-    "verified": "Third-party verification", "no_widget": "Myfxbook / FXBlue widget will appear here once connected."
+    "title": "Track record",
+    "subtitle": "Every closed signal, computed automatically. Shown in R and pips, never in dollars.",
+    "winrate": "Win rate",
+    "avg_r": "Average R",
+    "expectancy": "Expectancy (R)",
+    "max_dd": "Max drawdown (R)",
+    "total": "Closed signals",
+    "equity": "Equity curve (cumulative R)",
+    "monthly": "Monthly performance",
+    "month": "Month",
+    "trades": "Trades",
+    "pips": "Pips",
+    "r": "R",
+    "verified": "Third-party verification",
+    "no_widget": "Myfxbook / FXBlue widget will appear here once connected."
   },
-  "products": { "title": "Store", "subtitle": "Indicators, ebooks and tools. Elite members get the suite included.", "buy": "Buy", "included": "Included in {tier}", "lifetime": "lifetime", "monthly": "/mo", "one_time": "one-time" },
+  "products": {
+    "title": "Store",
+    "subtitle": "Indicators, ebooks and tools. Elite members get the suite included.",
+    "buy": "Buy",
+    "included": "Included in {tier}",
+    "lifetime": "lifetime",
+    "monthly": "/mo",
+    "one_time": "one-time"
+  },
   "faq": {
     "title": "Questions",
-    "q1": "Do I have to deposit to get signals?", "a1": "No. The Free plan only needs an HFM account under our link. Pro and Elite need $100 / $500 in your own account, or you pay monthly on any broker.",
-    "q2": "How do you verify my HFM account?", "a2": "Send your account number, name and a balance screenshot in the bot or your account page. We match it against our partner report and unlock access, usually within 24 hours.",
-    "q3": "Are the results real?", "a3": "The results page is computed from every signal we post, including losses. Third-party verification is added where available.",
-    "q4": "Can I cancel?", "a4": "Yes. Paid plans cancel anytime from your account page. IB access continues while your HFM account stays active."
+    "q1": "Do I have to deposit to get signals?",
+    "a1": "No. The Free plan only needs an HFM account under our link. Pro and Elite need $100 / $500 in your own account, or you pay monthly on any broker.",
+    "q2": "How do you verify my HFM account?",
+    "a2": "Send your account number, name and a balance screenshot in the bot or your account page. We match it against our partner report and unlock access, usually within 24 hours.",
+    "q3": "Are the results real?",
+    "a3": "The results page is computed from every signal we post, including losses. Third-party verification is added where available.",
+    "q4": "Can I cancel?",
+    "a4": "Yes. Paid plans cancel anytime from your account page. IB access continues while your HFM account stays active."
   },
-  "footer": { "legal": "Legal", "risk": "Risk disclosure", "terms": "Terms", "privacy": "Privacy", "ib": "IB disclosure", "rights": "Education only. Not financial advice." },
-  "cta_bar": { "text": "Free XAUUSD signals on Telegram", "button": "Join" }
+  "footer": {
+    "legal": "Legal",
+    "risk": "Risk disclosure",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "ib": "IB disclosure",
+    "rights": "Education only. Not financial advice."
+  },
+  "cta_bar": {
+    "text": "Free XAUUSD signals on Telegram",
+    "button": "Join"
+  },
+  "education": {
+    "title": "Education",
+    "subtitle": "One new article every day on the problems real traders face, and how to fix them.",
+    "all": "All",
+    "empty": "First article is on its way.",
+    "cat_mindset": "Mindset",
+    "cat_risk": "Risk",
+    "cat_strategy": "Strategy",
+    "cat_execution": "Execution",
+    "cat_tools": "Tools",
+    "cta_title": "Want to discuss this setup?",
+    "cta_body": "Join the free channel and ask in the community.",
+    "cta_button": "Join on Telegram"
+  }
 }
