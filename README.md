@@ -4,9 +4,9 @@
 
 **The website, membership engine and Telegram bot behind Sam's XAUUSD signal & education channel.**
 
-[![Status](https://img.shields.io/badge/status-in%20development-F5B300?style=for-the-badge)](#-roadmap)
-[![Built with Lovable](https://img.shields.io/badge/built%20with-Lovable-ff4785?style=for-the-badge)](https://lovable.dev)
-[![Stack](https://img.shields.io/badge/stack-TanStack%20Start%20%C2%B7%20Supabase%20%C2%B7%20Stripe-0B0E14?style=for-the-badge)](#-tech-stack)
+[![Status](https://img.shields.io/badge/status-live%20on%20Railway-00c46a?style=for-the-badge)](#-deploy-on-railway)
+[![Stack](https://img.shields.io/badge/stack-Next.js%2016%20%C2%B7%20Postgres%20%C2%B7%20Stripe%20%C2%B7%20grammY-0B0E14?style=for-the-badge)](#-tech-stack)
+[![i18n](https://img.shields.io/badge/languages-Bahasa%20Melayu%20%C2%B7%20English-d4af37?style=for-the-badge)](#-tech-stack)
 [![License](https://img.shields.io/badge/license-MIT-2ea44f?style=for-the-badge)](LICENSE)
 
 <sub>⚠️ Everything here is for **education only**. Trading gold and CFDs on margin carries a high risk of loss. See <a href="docs/compliance-copy.md">compliance copy</a>.</sub>
@@ -25,6 +25,8 @@ A monetization system for a gold-trading channel, built to be brand-swappable (t
 | Two doors, one ladder | **Open an HFM account under our IB** *or* **pay monthly** on your own broker |
 | Sell more than signals | TradingView + MT5 indicators, ebooks, copier, mentorship |
 | Prove it | Public results page with win rate, RR, drawdown and third-party verification |
+| Show, don't tell | Live XAUUSD chart (1H/4H/1D), live setups tallied against Yahoo candles, weekly recap posted automatically |
+| Capture & convert | Ebook claim modal → 3-email drip · support chat · campaign analytics by `?ref` / UTM |
 
 <br/>
 
@@ -65,11 +67,14 @@ flowchart LR
 
 | Command | Does |
 |---|---|
-| `/start [ref]` | Onboards, tags the campaign, sends ebook + "two ways in" |
-| `/verify` | Takes an HFM account number → pending → approved → single-use invite link |
-| `/subscribe` | Stripe or USDT checkout per tier |
-| `/status` · `/upgrade` | Current tier, expiry, next step |
-| `/products` · `/ebook` · `/support` | Store, lead magnet, human handoff |
+| `/start [ref]` | Onboards, tags the campaign, links `link_<userId>` / `ref_CODE`, sends "two ways in" |
+| `/verify` | Region → account no → name → balance → screenshot → admin Approve/Reject → single-use invite link |
+| `/status` · `/upgrade` · `/plans` | Current tier, next step (deposit more or pay), tier list |
+| `/products` · `/ebook` | Store, lead magnet |
+| `/news` | This week's high-impact USD events (Forex Factory) in MYT |
+| `/mystats` · `/leaderboard` | Personal signal stats, referral leaderboard + your link |
+| `/language ms\|en` | Reply language (else linked account locale, else Telegram client language) |
+| `/support` · `/help` | Human handoff, command list |
 
 </details>
 
@@ -77,9 +82,11 @@ flowchart LR
 <summary><b>Automation</b></summary>
 
 - Join-request gatekeeping by entitlement, single-use invite links (24h)
-- Signal fan-out: post once → teaser to public, full text to Pro/Elite, edits in place
-- Expiry job → soft kick → win-back coupon
-- Segmented broadcasts (tier, language, campaign)
+- Signal fan-out: post once → teaser to public, full text to Free/Pro/Elite, TP/SL updates replied in place
+- Auto XAUUSD setups from live data (scalping / intraday / swing), paused ±30 min around red USD news
+- Every 5 min: running signals tallied against Yahoo candles → TP1/2/3, SL, BE, results page updates itself
+- Weekly recap (Mondays) → public channel, LLM-written when a key is set, factual template otherwise
+- Expiry job → soft kick → win-back message · segmented broadcasts (tier, language, campaign) · 3-step lead drip
 
 </details>
 
@@ -94,8 +101,12 @@ flowchart LR
 | Auth | Auth.js v5 · magic link via Resend · Telegram link |
 | Payments | Stripe (cards) · NOWPayments (USDT, P1) |
 | Messaging | grammY Telegram bot (webhook) |
-| Charts | TradingView lightweight-charts |
-| Hosting | Railway (`web` service + `jobs` cron) |
+| Charts | TradingView lightweight-charts (live Yahoo candles + equity curves) |
+| Data feeds | Yahoo Finance chart API (quotes, candles) · Forex Factory weekly calendar |
+| Content | Free LLM for daily articles + weekly recap: Gemini (default) · Groq · OpenRouter · Anthropic |
+| Email | Resend (magic links, lead drip) |
+| Security | CSP, HSTS, frame/referrer/permissions headers · Telegram hash-verified login · HMAC IPN |
+| Hosting | Railway (`web` service + `jobs` cron) · cron-job.org → `/api/cron/evaluate` |
 | Languages | Bahasa Melayu 🇲🇾 (default) · English 🇬🇧 |
 
 <br/>
@@ -204,8 +215,13 @@ npm run dev
 
 | 📄 | |
 |---|---|
+| **Landing** `/` | Hero field, live signal card, live gold chart with timeframe tabs, news calendar, two doors, tier cards, FAQ (JSON-LD), ebook claim modal |
+| **Results** `/results` | Win rate, avg R, expectancy, max DD, equity curve, monthly table, live chart + news, last week's recap, Myfxbook slot |
+| **Education** `/education` | One bilingual article per day (40-topic bank), category filters, Article JSON-LD |
 | **Member dashboard** `/dashboard` | Personal stats from signals you mark as taken, personal equity curve, referral leaderboard (masked names), one-click share links |
+| **Admin** `/admin` | Signals (post/update → fan-out), IB approvals + CSV import, broadcasts, TradingView queue, products, articles, users, leads, campaign analytics, weekly recap builder |
 | **SEO** | Per-page titles/descriptions (ms/en), canonical + hreflang, Open Graph image (`/opengraph-image`), JSON-LD (Organization, WebSite, FAQ, Article, Product), `robots.txt`, `sitemap.xml` (static + articles + products, both locales) |
+| **Growth** | `?ref=CODE` referrals (+7 days per activated friend), `camp` first-touch attribution (`?ref` / `utm_campaign` / `utm_source` / `?c`), first-party page-view beacon, support chat with page context |
 | [Product & monetization spec](docs/product-spec.md) | Tiers, store, analysis products, funnels, data model, pages |
 | [Bot spec](docs/bot-spec.md) | Commands, gatekeeping, fan-out, security |
 | [HFM verification runbook](docs/hfm-verification-runbook.md) | IB account matching, deposit bands, re-verification |
@@ -221,7 +237,10 @@ npm run dev
 3. `npm start` runs migrations and the idempotent seed on every boot. Set `SEED_ADMIN_EMAIL` to your email and that user becomes admin (`/admin`). Sample signals/products are inserted only when the tables are empty.
 5. Telegram: `curl "https://api.telegram.org/bot<TOKEN>/setWebhook" -d url="https://<domain>/api/telegram/webhook" -d secret_token="<TELEGRAM_WEBHOOK_SECRET>"`.
 6. Stripe: webhook `https://<domain>/api/stripe/webhook` with `checkout.session.completed`, `customer.subscription.*`.
-7. Optional cron service (same repo): start command `npm run jobs`, schedule `0 3 * * *`.
+7. **Signals tally + auto setups**: set `CRON_SECRET`, then on [cron-job.org](https://cron-job.org) call `https://<domain>/api/cron/evaluate?key=<CRON_SECRET>` every 5 minutes.
+8. **Daily article, weekly recap, drip emails, expiry**: second Railway service from the same repo, start command `npm run jobs`, cron `0 3 * * *`, same variables. Set `GEMINI_API_KEY` (free tier) or another `LLM_PROVIDER` key for articles + LLM recaps; without a key the recap uses the factual template and articles are skipped.
+9. **Leads**: `RESEND_API_KEY` + `AUTH_EMAIL_FROM` on a verified domain enable the welcome email and the 2-day / 5-day follow-ups. Leads are stored either way (`/admin/leads`).
+10. **Support chat**: `NEXT_PUBLIC_TG_SUPPORT=https://t.me/<your_handle>`; without it the widget falls back to the bot.
 
 <br/>
 
@@ -233,7 +252,8 @@ npm run dev
 - [x] **P2** Store (TV/MT5 licences, ebooks) · TV access queue
 - [x] **P3** Education (daily bilingual articles, free LLM) · live Yahoo quotes · auto signals + TP/SL tally
 - [x] **P5** SEO (metadata, OG image, JSON-LD, sitemap) · Malay copy polish · member dashboard + referral leaderboard
-- [ ] **P6** Gold chart with timeframes · high-impact news calendar · ebook claim modal · support chat · copier · mentorship · PWA
+- [x] **P6** Live gold chart (1H/4H/1D) + animated stats · news calendar + news lockout · ebook modal + Resend drip · sticky buy bar + door comparison · support chat · security headers · bot `/language` `/mystats` `/leaderboard` `/news` · campaign analytics · weekly recap
+- [ ] **P7** Telegram→MT5 copier · mentorship tier · prop-firm plans · PWA · Myfxbook verification
 
 <br/>
 
