@@ -28,7 +28,8 @@ async function main() {
   }
   try { console.log(`[jobs] db host: ${new URL(dbUrl).hostname}`); } catch { console.log("[jobs] db url unparsable"); }
   console.log("[jobs] evaluate", await evaluateRunningSignals({ force: true }).catch((e) => String(e)));
-  console.log("[jobs] auto-signal", (await ensureAutoSignal(true).catch((e) => String(e)))?.toString().slice(0, 60));
+  const auto = await ensureAutoSignal(true).catch((e) => ({ error: String(e) }));
+  console.log("[jobs] auto-signal", auto && "id" in auto ? `${auto.side} ${auto.type} @ ${auto.entry} (${auto.status})` : auto && "error" in auto ? auto.error : "none (gap/news/closed market)");
   const cutoff = new Date(Date.now() - GRACE_DAYS * 864e5);
   const stale = await db.select().from(entitlements).where(and(eq(entitlements.status, "active"), lt(entitlements.expiresAt, cutoff)));
   console.log(`[jobs] expiring ${stale.length} entitlements`);
