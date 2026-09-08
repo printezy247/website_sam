@@ -38,7 +38,7 @@ async function main() {
       slug: "ebook-gold-starter",
       type: "ebook",
       name: "Gold Trading Starter (ebook)",
-      description: "Free starter guide: structure, sessions, risk, journaling.",
+      description: "Starter guide: structure, sessions, risk, journaling.",
       priceCents: 0,
       billing: "one_time",
       tierIncluded: "free",

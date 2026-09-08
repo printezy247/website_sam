@@ -10,7 +10,7 @@
 
 **🔗 https://websitesam-production.up.railway.app** · 🤖 Telegram bot: [@samproducts_bot](https://t.me/samproducts_bot)
 
-<img src="https://readme-typing-svg.demolab.com/?font=JetBrains+Mono&size=20&duration=2800&pause=800&color=D4AF37&center=true&vCenter=true&width=720&lines=Gold+signals+with+full+transparency.;Two+ways+in%3A+HFM+account+or+monthly+plan.;Live+chart+%C2%B7+auto+TP%2FSL+tally+%C2%B7+weekly+recap.;Bahasa+Melayu+first%2C+English+second.;Education+only.+Not+financial+advice." alt="typing banner" />
+<img src="https://readme-typing-svg.demolab.com/?font=JetBrains+Mono&size=20&duration=2800&pause=800&color=D4AF37&center=true&vCenter=true&width=720&lines=Gold+signals+with+transparency.;Two+ways+in%3A+HFM+account+or+monthly+plan.;Live+chart+%C2%B7+auto+TP%2FSL+tally+%C2%B7+weekly+recap.;Bahasa+Melayu+first%2C+English+second.;Education+only.+Not+financial+advice." alt="typing banner" />
 
 <br/>
 
@@ -86,14 +86,14 @@
 | Tier | 🏦 Door A · HFM IB | 💳 Door B · own broker | Includes |
 |:--:|:--|:--|:--|
 | 🌐 **Public** | — | — | 1 delayed XAUUSD signal / day · daily bias · weekly recap |
-| 🟢 **Free** | account, **no deposit** | **$9 / mo** | Ebook · full daily bias · results · community · 2 full signals / week |
-| 🔵 **Pro** ⭐ | **≥ $100** deposit | **$49 / mo** | All XAUUSD signals live · Pro group · monthly report · TV indicator |
-| 🟣 **Elite** | **≥ $500** deposit | **$129 / mo** | Pro + all instruments · full TV/MT5 suite · copier · live sessions |
-| 👑 **Mentorship** | — | $499 / $199 mo | Elite + course + 1:1 *(phase 7)* |
+| 🟢 **General** `free` | account, **no deposit** | **$9 / mo** | Ebook · full daily bias · results · community · 2 full signals / week |
+| 🔵 **A-Team** ⭐ `pro` | **≥ $100** deposit | **$49 / mo** | All XAUUSD signals live · A-Team group · monthly report · TV indicator |
+| 🟣 **Rambo** `elite` | **≥ $500** deposit | **$129 / mo** | A-Team + all instruments · full TV/MT5 suite · copier · live sessions |
+| 👑 **Mentorship** | — | $499 / $199 mo | Rambo + course + 1:1 *(phase 7)* |
 
 </div>
 
-> 💡 Entitlement is always the **higher** of your IB tier and your paid tier. Annual = 2 months free. First **50** Pro places are founding seats (`BRAND.foundingMemberCap`).
+> 💡 Entitlement is always the **higher** of your IB tier and your paid tier. Annual = 2 months free. First **50** A-Team places are founding seats (`BRAND.foundingMemberCap`). Display names live in `TIER_LABELS` (`src/config/tiers.ts`) and `messages/*.json`; the internal keys `free / pro / elite` never change.
 
 <p align="right"><a href="#top">⬆ back to top</a></p>
 
@@ -105,10 +105,10 @@ flowchart LR
     B --> L[📘 Ebook modal<br/>3-email drip]
     B --> C[🤖 Bot /start<br/>two ways in]
     L --> C
-    C -->|open HFM account| D[🟢 Free]
+    C -->|open HFM account| D[🟢 General]
     C -->|$9 / mo| D
-    D -->|deposit $100 · or $49 / mo| E[🔵 Pro]
-    E -->|deposit $500 · or $129 / mo| F[🟣 Elite]
+    D -->|deposit $100 · or $49 / mo| E[🔵 A-Team]
+    E -->|deposit $500 · or $129 / mo| F[🟣 Rambo]
     F --> G[👑 Mentorship]
     D & E & F --> H[🛒 Store<br/>indicators · ebooks · copier]
     D & E & F --> R[🏆 Referrals<br/>+7 days per activated friend]
@@ -166,7 +166,7 @@ sequenceDiagram
     B->>A: Approve / Reject buttons
     A->>B: ✅ Approve
     B->>DB: entitlement by deposit band (30 days)
-    B->>U: single-use invite link (24h) to Free / Pro / Elite group
+    B->>U: single-use invite link (24h) to General / A-Team / Rambo group
     Note over DB: monthly CSV import re-verifies deposits
 ```
 
@@ -233,7 +233,7 @@ sequenceDiagram
 <br/>
 
 - 🚪 Join-request gatekeeping by entitlement, single-use invite links (24h)
-- 📣 Signal fan-out: teaser to public, full text to Free / Pro / Elite, TP/SL updates replied in place
+- 📣 Signal fan-out: teaser to public, full text to General / A-Team / Rambo, TP/SL updates replied in place
 - 🧭 Auto XAUUSD setups from live data, paused ±30 min around red USD news
 - ⏱️ Every 5 min: running signals tallied against Yahoo candles
 - 📈 Weekly recap (Mondays) → public channel, LLM-written when a key is set, factual template otherwise
@@ -339,7 +339,7 @@ curl "https://api.telegram.org/bot$TOKEN/setWebhook" \
 
 <br/>
 
-- **Stripe** → products Free / Pro / Elite (monthly + yearly) → paste `price_…` ids → webhook `https://<domain>/api/stripe/webhook` with `checkout.session.completed`, `customer.subscription.*`
+- **Stripe** → products General / A-Team / Rambo (env keys stay `STRIPE_PRICE_FREE_*` / `_PRO_*` / `_ELITE_*`) (monthly + yearly) → paste `price_…` ids → webhook `https://<domain>/api/stripe/webhook` with `checkout.session.completed`, `customer.subscription.*`
 - **NOWPayments** → `NOWPAYMENTS_API_KEY`, `NOWPAYMENTS_IPN_SECRET`, IPN URL `https://<domain>/api/crypto/ipn`
 
 </details>

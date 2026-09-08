@@ -120,7 +120,7 @@ export async function announceArticle(id: string) {
   const [a] = await db.select().from(articles).where(eq(articles.id, id));
   if (!bot || !a || !CHATS.public) return;
   await bot.api.sendMessage(CHATS.public,
-    `📚 <b>${a.titleMs}</b>\n${a.excerptMs}\n\n${BRAND.siteUrl}/education/${a.slug}`,
+    `<b>${a.titleMs}</b>\n${a.excerptMs}\n\n${BRAND.siteUrl}/education/${a.slug}`,
     { parse_mode: "HTML" });
 }
 

@@ -13,7 +13,7 @@ export default async function AdminSignals() {
         <input name="instrument" defaultValue="XAUUSD" className={inp} />
         <select name="type" defaultValue="intraday" className={inp}><option value="scalping">Scalping</option><option value="intraday">Intraday</option><option value="swing">Swing</option></select>
         <select name="side" className={inp}><option value="buy">BUY</option><option value="sell">SELL</option></select>
-        <select name="visibility" className={inp}><option value="pro">Pro + Elite</option><option value="elite">Elite only</option><option value="free">Free pick (all groups)</option><option value="public">Public (delayed/teaser)</option></select>
+        <select name="visibility" className={inp}><option value="pro">A-Team + Rambo</option><option value="elite">Rambo only</option><option value="free">General pick (all groups)</option><option value="public">Public (delayed/teaser)</option></select>
         <label className="text-sm flex items-center gap-2"><input type="checkbox" name="newsLockout" /> News lockout</label>
         <input name="entry" required placeholder="Entry" className={inp} /><input name="sl" required placeholder="SL" className={inp} />
         <input name="tp1" placeholder="TP1" className={inp} /><input name="tp2" placeholder="TP2" className={inp} /><input name="tp3" placeholder="TP3" className={inp} />

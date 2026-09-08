@@ -133,7 +133,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                 <div className="text-xs uppercase text-muted">{p.type.replace("_", " ")}</div>
                 <div className="mt-1 font-semibold">{p.name}</div>
                 <div className="mt-2 text-sm text-muted line-clamp-2">{p.description}</div>
-                <div className="mt-3 font-mono">{p.priceCents ? `$${p.priceCents / 100}` : "Free"}</div>
+                <div className="mt-3 font-mono">{p.priceCents ? `$${p.priceCents / 100}` : "$0"}</div>
               </Link>
             ))}
           </div>

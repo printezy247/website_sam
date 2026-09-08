@@ -76,8 +76,8 @@ export async function buildRecap(start = weekStartOf(), force = false) {
 
 export function formatRecapHtml(r: typeof recaps.$inferSelect) {
   const s = r.stats as RecapStats | null;
-  const head = s ? `📈 <b>Recap minggu ${s.weekStart} → ${s.weekEnd}</b>\n${s.n} ditutup · ${pct(s.winRate)} menang · <b>${R(s.totalR)}</b>` : "📈 <b>Recap mingguan</b>";
-  return `${head}\n\n${escapeHtml(r.textMs)}\n\n<i>${escapeHtml(r.textEn)}</i>\n\n🔗 ${BRAND.siteUrl}/results\n🤖 ${botDeepLink("recap")}`;
+  const head = s ? `<b>Recap minggu ${s.weekStart} → ${s.weekEnd}</b>\n${s.n} ditutup · ${pct(s.winRate)} menang · <b>${R(s.totalR)}</b>` : "<b>Recap mingguan</b>";
+  return `${head}\n\n${escapeHtml(r.textMs)}\n\n<i>${escapeHtml(r.textEn)}</i>\n\nRekod: ${BRAND.siteUrl}/results\nBot: ${botDeepLink("recap")}`;
 }
 
 /** Post to the public channel once per week. Returns the recap row (postedAt set when sent). */

@@ -23,7 +23,9 @@ html { color-scheme: dark; }
 .font-display { font-family: var(--font-display); font-weight: 400; letter-spacing: .01em; }
 .text-chrome { background: linear-gradient(180deg, #ffffff 0%, #d9dee6 45%, #8f99a8 50%, #b7c0ce 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .text-goldgrad { background: linear-gradient(180deg, #f5d76e 0%, #d4af37 50%, #a87d0f 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.wordmark { font-family: var(--font-display); font-style: italic; letter-spacing: .02em; line-height: 1; }
+.wordmark { font-family: var(--font-display); font-style: italic; letter-spacing: .02em; line-height: 1.15; white-space: nowrap; }
+/* background-clip:text clips at the box edge; italic Anton overhangs it, so give each part room. */
+.wordmark > span { display: inline-block; padding: .06em .14em .06em .02em; margin-right: -.12em; }
 body { background: var(--color-bg); color: var(--color-fg); }
 
 .glass {

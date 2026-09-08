@@ -13,9 +13,9 @@ export async function Header() {
   return (
     <header className="sticky top-0 z-40 glass border-x-0 border-t-0">
       <div className="mx-auto max-w-6xl px-4 h-14 flex items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-          <Glyph size={30} />
-          <Wordmark size="text-[22px]" />
+        <Link href="/" className="flex items-center gap-2.5 shrink-0 font-semibold tracking-tight">
+          <Glyph size={34} />
+          <Wordmark size="text-[24px]" />
         </Link>
         <nav className="hidden md:flex items-center gap-6 text-sm text-muted">
           <Link href="/results" className="hover:text-fg">{t("results")}</Link>
