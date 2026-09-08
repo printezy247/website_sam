@@ -121,3 +121,34 @@ export async function adminSendBroadcast(fd: FormData) {
   await sendBroadcast(str(fd, "id"));
   revalidatePath("/admin/broadcasts");
 }
+
+// ---- P2 ----
+import { products as productsTable, tvAccessRequests as tvTable } from "@/db/schema";
+import { sendHtml } from "@/lib/telegram";
+
+export async function adminTvDecision(fd: FormData) {
+  if (!(await requireAdmin())) throw new Error("forbidden");
+  const id = str(fd, "id"); const status = str(fd, "status") === "granted" ? "granted" : "rejected";
+  const [r] = await db.update(tvTable).set({ status }).where(eq(tvTable.id, id)).returning();
+  if (r) {
+    const [u] = await db.select().from(users).where(eq(users.id, r.userId));
+    if (u?.telegramId) await sendHtml(u.telegramId, status === "granted"
+      ? `✅ TradingView access granted for <b>${r.tvUsername}</b>. Open the indicator from your Invite-only scripts.`
+      : `❌ TradingView request for <b>${r.tvUsername}</b> was rejected. Check the username and try again from /account.`).catch(() => {});
+  }
+  revalidatePath("/admin/tv");
+}
+
+export async function adminUpsertProduct(fd: FormData) {
+  if (!(await requireAdmin())) throw new Error("forbidden");
+  const row = {
+    slug: str(fd, "slug"), name: str(fd, "name"), type: str(fd, "type"), billing: str(fd, "billing"),
+    priceCents: Number(str(fd, "priceCents") || 0), tierIncluded: str(fd, "tierIncluded") || null,
+    stripePriceId: str(fd, "stripePriceId") || null, filePath: str(fd, "filePath") || null,
+    description: str(fd, "description") || null, active: fd.get("active") === "on",
+  };
+  const id = str(fd, "id");
+  if (id) await db.update(productsTable).set(row).where(eq(productsTable.id, id));
+  else await db.insert(productsTable).values(row);
+  revalidatePath("/admin/products"); revalidatePath("/products");
+}

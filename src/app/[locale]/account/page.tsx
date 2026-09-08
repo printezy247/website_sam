@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { count, desc, eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { attachReferrer } from "@/lib/referral";
+import { accessibleProducts } from "@/lib/access";
 import { auth, signOut } from "@/auth";
 import { db } from "@/db";
 import { ibAccounts, tvAccessRequests, users, licenses, products } from "@/db/schema";
@@ -22,13 +23,14 @@ export default async function Account({ params, searchParams }: { params: Promis
   const uid = session.user.id;
   const ms = locale === "ms";
   await attachReferrer(uid, (await cookies()).get("ref")?.value).catch(() => {});
-  const [[u], tier, ents, ibs, tvs, lics, [refs]] = await Promise.all([
+  const [[u], tier, ents, ibs, tvs, lics, [refs], dl] = await Promise.all([
     db.select().from(users).where(eq(users.id, uid)),
     effectiveTier(uid), activeEntitlements(uid),
     db.select().from(ibAccounts).where(eq(ibAccounts.userId, uid)).orderBy(desc(ibAccounts.createdAt)),
     db.select().from(tvAccessRequests).where(eq(tvAccessRequests.userId, uid)),
     db.select({ l: licenses, p: products }).from(licenses).innerJoin(products, eq(products.id, licenses.productId)).where(eq(licenses.userId, uid)),
     db.select({ n: count() }).from(users).where(eq(users.referredBy, uid)),
+    accessibleProducts(uid),
   ]);
   const wantTier = TIERS.find((t) => t.key === sp.checkout);
 
@@ -95,10 +97,20 @@ export default async function Account({ params, searchParams }: { params: Promis
         {tvs.length > 0 && <ul className="mt-3 text-sm text-muted">{tvs.map((r) => <li key={r.id}>{r.tvUsername} · {r.status}</li>)}</ul>}
       </section>
 
+      {dl.length > 0 && (
+        <section className="glass rounded-2xl p-6">
+          <h2 className="font-semibold">{ms ? "Muat turun" : "Downloads"}</h2>
+          <ul className="mt-3 text-sm space-y-1">{dl.map((p) => (
+            <li key={p.id} className="flex justify-between gap-3"><span>{p.name}</span>
+              {p.filePath ? (p.filePath.startsWith("tg:") ? <span className="text-muted">{ms ? "hantar /ebook pada bot" : "send /ebook to the bot"}</span> : <a className="text-gold underline" href={`/api/downloads/${p.id}`}>{ms ? "muat turun" : "download"}</a>) : <span className="text-muted">{ms ? "akan datang" : "coming soon"}</span>}
+            </li>))}</ul>
+        </section>
+      )}
       {lics.length > 0 && (
         <section className="glass rounded-2xl p-6">
           <h2 className="font-semibold">{ms ? "Lesen MT5" : "MT5 licences"}</h2>
-          <ul className="mt-3 text-sm text-muted">{lics.map(({ l, p }) => <li key={l.id}>{p.name} · {l.mt5Account ?? (ms ? "belum diaktifkan" : "not activated")} · {l.activations}/{l.maxActivations}</li>)}</ul>
+          <p className="text-xs text-muted mt-1">{ms ? "Masukkan kunci lesen dalam input indicator. Terikat pada akaun MT5 pertama yang digunakan." : "Paste the licence key into the indicator inputs. It binds to the first MT5 accounts used."}</p>
+          <ul className="mt-3 text-sm space-y-1">{lics.map(({ l, p }) => <li key={l.id}>{p.name} · <code className="font-mono text-gold">{l.id}</code> · {l.mt5Account ?? (ms ? "belum diaktifkan" : "not activated")} · {l.activations}/{l.maxActivations}</li>)}</ul>
         </section>
       )}
 
