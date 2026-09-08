@@ -35,7 +35,7 @@ export async function requestTvAccess(fd: FormData) {
 export async function adminCreateSignal(fd: FormData) {
   if (!(await requireAdmin())) throw new Error("forbidden");
   const [s] = await db.insert(signals).values({
-    instrument: str(fd, "instrument") || "XAUUSD", side: str(fd, "side"), entry: str(fd, "entry"), sl: str(fd, "sl"),
+    instrument: str(fd, "instrument") || "XAUUSD", type: str(fd, "type") || "intraday", side: str(fd, "side"), entry: str(fd, "entry"), sl: str(fd, "sl"),
     tp1: str(fd, "tp1") || null, tp2: str(fd, "tp2") || null, tp3: str(fd, "tp3") || null, note: str(fd, "note") || null,
     visibility: str(fd, "visibility") || "pro", newsLockout: fd.get("newsLockout") === "on",
   }).returning();

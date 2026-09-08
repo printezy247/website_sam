@@ -1,0 +1,1 @@
+ALTER TABLE "signals" ADD COLUMN "type" text DEFAULT 'intraday' NOT NULL;

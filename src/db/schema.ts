@@ -125,6 +125,7 @@ export const tvAccessRequests = pgTable("tv_access_requests", {
 export const signals = pgTable("signals", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   instrument: text("instrument").notNull().default("XAUUSD"),
+  type: text("type").notNull().default("intraday"), // scalping | intraday | swing
   side: text("side").notNull(), // buy | sell
   entry: numeric("entry", { precision: 12, scale: 3 }).notNull(),
   sl: numeric("sl", { precision: 12, scale: 3 }).notNull(),

@@ -1,9 +1,9 @@
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
-export type SignalView = { instrument: string; side: string; entry: string; sl: string; tp1?: string | null; tp2?: string | null; tp3?: string | null; status: string; resultR?: string | null; publishedAt?: Date; sample?: boolean };
+export type SignalView = { instrument: string; type?: string; side: string; entry: string; sl: string; tp1?: string | null; tp2?: string | null; tp3?: string | null; status: string; resultR?: string | null; publishedAt?: Date; sample?: boolean };
 
-export function SignalCard({ s, compact }: { s: SignalView; compact?: boolean }) {
+export function SignalCard({ s, compact, live }: { s: SignalView; compact?: boolean; live?: boolean }) {
   const t = useTranslations("signals");
   const th = useTranslations("hero");
   const win = s.resultR != null && Number(s.resultR) > 0;
@@ -11,8 +11,9 @@ export function SignalCard({ s, compact }: { s: SignalView; compact?: boolean })
   return (
     <div className={cn("glass rounded-xl p-4", !compact && "p-5")}>
       <div className="flex items-center justify-between">
-        <div className="font-semibold">{s.instrument}</div>
+        <div className="font-semibold flex items-center gap-2">{s.instrument}{s.type && <span className="text-[10px] uppercase tracking-wide rounded bg-surface-2 border border-border text-muted px-1.5 py-0.5">{t(`type_${s.type}` as "type_intraday")}</span>}</div>
         <div className="flex items-center gap-2">
+          {live && <span className="text-[10px] uppercase tracking-wide rounded border border-win/40 text-win px-1.5 py-0.5 flex items-center gap-1"><span className="size-1.5 rounded-full bg-win animate-pulse" />LIVE</span>}
           {s.sample && <span className="text-[10px] uppercase tracking-wide rounded border border-gold/40 text-gold px-1.5 py-0.5">{th("sample")}</span>}
           <span className={cn("text-xs font-mono font-semibold px-2 py-0.5 rounded", s.side === "buy" ? "bg-win/15 text-win" : "bg-loss/15 text-loss")}>
             {s.side === "buy" ? t("buy") : t("sell")}
