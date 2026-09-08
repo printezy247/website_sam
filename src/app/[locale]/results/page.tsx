@@ -4,6 +4,7 @@ import { EquityCurve } from "@/components/EquityCurve";
 import { closedSignals, computeStats, monthlyBreakdown } from "@/lib/stats";
 import { BRAND } from "@/config/brand";
 import { fmtPct } from "@/lib/utils";
+import { evaluateRunningSignals } from "@/lib/evaluate";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,7 @@ export default async function Results({ params, searchParams }: { params: Promis
   const { locale } = await params; setRequestLocale(locale);
   const { instrument } = await searchParams;
   const t = await getTranslations("results");
+  await evaluateRunningSignals().catch((e) => console.error("[evaluate]", e));
   const rows = await closedSignals(instrument).catch(() => []);
   const s = computeStats(rows);
   const months = monthlyBreakdown(rows);

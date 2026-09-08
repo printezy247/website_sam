@@ -8,11 +8,13 @@ import { tierByKey } from "@/config/tiers";
 import { broadcasts } from "@/db/schema";
 import { sendBroadcast } from "@/lib/broadcast";
 import { ensureDailyArticle } from "@/lib/articles";
+import { evaluateRunningSignals } from "@/lib/evaluate";
 import { isNull, lte } from "drizzle-orm";
 
 const GRACE_DAYS = 7;
 
 async function main() {
+  console.log("[jobs] evaluate", await evaluateRunningSignals({ force: true }).catch((e) => String(e)));
   const cutoff = new Date(Date.now() - GRACE_DAYS * 864e5);
   const stale = await db.select().from(entitlements).where(and(eq(entitlements.status, "active"), lt(entitlements.expiresAt, cutoff)));
   console.log(`[jobs] expiring ${stale.length} entitlements`);
