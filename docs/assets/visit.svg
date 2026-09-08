@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 64" width="420" height="64" role="img" aria-label="Visit the live site">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#f5d76e"/><stop offset="1" stop-color="#d4af37"/></linearGradient>
+    <linearGradient id="s" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <clipPath id="c"><rect x="4" y="4" width="412" height="56" rx="28"/></clipPath>
+    <style>@keyframes sw{0%{transform:translateX(-200px)}100%{transform:translateX(620px)}}@keyframes gl{0%,100%{opacity:.35}50%{opacity:.8}}.sw{animation:sw 2.6s linear infinite}.gl{animation:gl 2s ease-in-out infinite}</style>
+  </defs>
+  <rect class="gl" x="1" y="1" width="418" height="62" rx="31" fill="none" stroke="#d4af37" stroke-width="2"/>
+  <rect x="4" y="4" width="412" height="56" rx="28" fill="url(#g)"/>
+  <g clip-path="url(#c)"><rect class="sw" x="0" y="0" width="120" height="64" fill="url(#s)" transform="skewX(-20)"/></g>
+  <text x="210" y="40" text-anchor="middle" font-family="-apple-system,Segoe UI,Inter,Roboto,Helvetica,Arial,sans-serif" font-size="20" font-weight="800" fill="#0b0e14">🌐  Open the live site  →</text>
+</svg>

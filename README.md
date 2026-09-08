@@ -2,7 +2,13 @@
 
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&height=200&color=0:050505,50:1a1607,100:d4af37&text=Sam%20Trading%20Platform&fontColor=f5d76e&fontSize=48&fontAlignY=38&desc=XAUUSD%20signals%20%C2%B7%20membership%20engine%20%C2%B7%20Telegram%20bot&descAlignY=58&descSize=18&animation=fadeIn" width="100%" alt="Sam Trading Platform" />
+<a href="https://websitesam-production.up.railway.app"><img src="docs/assets/hero.svg" width="100%" alt="Sam Trading Platform — live XAUUSD signals" /></a>
+
+<br/>
+
+<a href="https://websitesam-production.up.railway.app"><img src="docs/assets/visit.svg" width="420" alt="Open the live site" /></a>
+
+**🔗 https://websitesam-production.up.railway.app** · 🤖 Telegram bot: [@samproducts_bot](https://t.me/samproducts_bot)
 
 <img src="https://readme-typing-svg.demolab.com/?font=JetBrains+Mono&size=20&duration=2800&pause=800&color=D4AF37&center=true&vCenter=true&width=720&lines=Gold+signals+with+full+transparency.;Two+ways+in%3A+HFM+account+or+monthly+plan.;Live+chart+%C2%B7+auto+TP%2FSL+tally+%C2%B7+weekly+recap.;Bahasa+Melayu+first%2C+English+second.;Education+only.+Not+financial+advice." alt="typing banner" />
 
@@ -62,6 +68,7 @@
 | 🧠 LLM | Gemini · Groq · OpenRouter · Claude |
 | 🔐 Auth | Magic link · Google · Telegram |
 | ☁️ Host | Railway `web` + `jobs` cron |
+| 🔗 Live | [websitesam-production.up.railway.app](https://websitesam-production.up.railway.app) |
 
 </td>
 </tr>
@@ -400,6 +407,8 @@ timeline
 <div align="center">
 
 <img src="https://capsule-render.vercel.app/api?type=waving&height=120&section=footer&color=0:d4af37,50:1a1607,100:050505" width="100%" alt="" />
+
+<a href="https://websitesam-production.up.railway.app"><b>🌐 websitesam-production.up.railway.app</b></a> · <a href="https://t.me/samproducts_bot">🤖 @samproducts_bot</a>
 
 <sub>Made with ☕ and gold candles · Bahasa Melayu 🇲🇾 first · <b>Not financial advice.</b></sub>
 
