@@ -24,6 +24,13 @@ export async function submitIbVerification(fd: FormData) {
   revalidatePath("/account");
 }
 
+export async function unlinkTelegram() {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("unauthenticated");
+  await db.update(users).set({ telegramId: null, tgUsername: null }).where(eq(users.id, session.user.id));
+  revalidatePath("/", "layout");
+}
+
 export async function requestTvAccess(fd: FormData) {
   const session = await auth();
   if (!session?.user?.id) throw new Error("unauthenticated");

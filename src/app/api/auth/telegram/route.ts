@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { sessions, telegramAccounts, users } from "@/db/schema";
 import { BRAND } from "@/config/brand";
+import { auth } from "@/auth";
 
 export async function GET(req: Request) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -22,8 +23,16 @@ export async function GET(req: Request) {
   const tgId = data.id;
   let [u] = await db.select().from(users).where(eq(users.telegramId, tgId));
   if (!u) {
-    [u] = await db.insert(users).values({ telegramId: tgId, tgUsername: data.username, name: [data.first_name, data.last_name].filter(Boolean).join(" ") }).returning();
+    // Already signed in (email/Google)? Link this Telegram to that account instead of creating a second user.
+    const current = await auth().catch(() => null);
+    if (current?.user?.id) {
+      [u] = await db.update(users).set({ telegramId: tgId, tgUsername: data.username }).where(eq(users.id, current.user.id)).returning();
+    } else {
+      [u] = await db.insert(users).values({ telegramId: tgId, tgUsername: data.username, name: [data.first_name, data.last_name].filter(Boolean).join(" ") }).returning();
+    }
     await db.update(telegramAccounts).set({ userId: u.id }).where(eq(telegramAccounts.telegramId, tgId));
+  } else {
+    await db.update(users).set({ tgUsername: data.username ?? u.tgUsername }).where(eq(users.id, u.id));
   }
   const sessionToken = crypto.randomUUID();
   const expires = new Date(Date.now() + 30 * 864e5);

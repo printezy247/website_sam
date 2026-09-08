@@ -98,7 +98,7 @@ flowchart LR
 |---|---|
 | App | Next.js 16 (App Router) · TypeScript · Tailwind 4 |
 | Data | Railway Postgres · Drizzle ORM |
-| Auth | Auth.js v5 · magic link via Resend · Telegram link |
+| Auth | Auth.js v5 · magic link via Resend · Google (optional) · Telegram Login Widget |
 | Payments | Stripe (cards) · NOWPayments (USDT, P1) |
 | Messaging | grammY Telegram bot (webhook) |
 | Charts | TradingView lightweight-charts (live Yahoo candles + equity curves) |
@@ -240,7 +240,8 @@ npm run dev
 7. **Signals tally + auto setups**: set `CRON_SECRET`, then on [cron-job.org](https://cron-job.org) call `https://<domain>/api/cron/evaluate?key=<CRON_SECRET>` every 5 minutes.
 8. **Daily article, weekly recap, drip emails, expiry**: second Railway service from the same repo, start command `npm run jobs`, cron `0 3 * * *`, same variables. Set `GEMINI_API_KEY` (free tier) or another `LLM_PROVIDER` key for articles + LLM recaps; without a key the recap uses the factual template and articles are skipped.
 9. **Leads**: `RESEND_API_KEY` + `AUTH_EMAIL_FROM` on a verified domain enable the welcome email and the 2-day / 5-day follow-ups. Leads are stored either way (`/admin/leads`).
-10. **Support chat**: `NEXT_PUBLIC_TG_SUPPORT=https://t.me/<your_handle>`; without it the widget falls back to the bot.
+10. **Google sign-in** (optional): Google Cloud Console → APIs & Services → Credentials → Create OAuth client ID → Web application → Authorized redirect URI `https://<domain>/api/auth/callback/google`. Set `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET`; the button appears on `/signin` automatically. Same email as a magic-link user = same account.
+11. **Support chat**: `NEXT_PUBLIC_TG_SUPPORT=https://t.me/<your_handle>`; without it the widget falls back to the bot.
 
 <br/>
 

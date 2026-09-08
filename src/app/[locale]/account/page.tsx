@@ -11,7 +11,8 @@ import { auth, signOut } from "@/auth";
 import { db } from "@/db";
 import { ibAccounts, tvAccessRequests, users, licenses, products } from "@/db/schema";
 import { activeEntitlements, effectiveTier } from "@/lib/entitlements";
-import { submitIbVerification, requestTvAccess } from "@/lib/actions";
+import { submitIbVerification, requestTvAccess, unlinkTelegram } from "@/lib/actions";
+import { TelegramLogin } from "@/components/TelegramLogin";
 import { CheckoutButton } from "@/components/CheckoutButton";
 import { BRAND, botDeepLink } from "@/config/brand";
 import { TIERS, fmtUsd } from "@/config/tiers";
@@ -80,8 +81,20 @@ export default async function Account({ params, searchParams }: { params: Promis
 
       <section className="glass rounded-2xl p-6">
         <h2 className="font-semibold">Telegram</h2>
-        {u?.telegramId ? <p className="text-sm text-muted mt-1">@{u.tgUsername ?? u.telegramId} ✓</p> : (
-          <p className="text-sm text-muted mt-1">{ms ? "Pautkan Telegram untuk terima link group secara automatik:" : "Link Telegram to receive group links automatically:"} <a className="text-gold underline" href={botDeepLink(`link_${uid}`)} target="_blank" rel="noopener">{ms ? "Buka bot" : "Open bot"}</a></p>
+        {u?.telegramId ? (
+          <div className="mt-1 flex flex-wrap items-center gap-3 text-sm">
+            <span className="text-muted">@{u.tgUsername ?? u.telegramId} ✓</span>
+            <form action={unlinkTelegram}><button className="text-xs underline text-muted hover:text-loss">{ms ? "Nyahpaut / tukar akaun Telegram" : "Unlink / switch Telegram account"}</button></form>
+          </div>
+        ) : (
+          <div className="mt-2 space-y-3 text-sm">
+            <p className="text-muted">{ms ? "Pautkan Telegram untuk terima link group secara automatik." : "Link Telegram to receive group links automatically."}</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <TelegramLogin botUsername={BRAND.telegram.botUsername} authUrl={`${BRAND.siteUrl}/api/auth/telegram?locale=${locale}`} />
+              <span className="text-muted">{ms ? "atau" : "or"}</span>
+              <a className="text-gold underline" href={botDeepLink(`link_${uid}`)} target="_blank" rel="noopener">{ms ? "buka bot dan tekan Start" : "open the bot and press Start"}</a>
+            </div>
+          </div>
         )}
       </section>
 
