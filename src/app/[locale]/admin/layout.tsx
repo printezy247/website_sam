@@ -18,6 +18,7 @@ export default async function AdminLayout({ children, params }: { children: Reac
         <Link href="/admin/articles" className="hover:text-gold">Articles</Link>
         <Link href="/admin/users" className="hover:text-gold">Users</Link>
         <Link href="/admin/leads" className="hover:text-gold">Leads</Link>
+        <Link href="/admin/analytics" className="hover:text-gold">Analytics</Link>
       </nav>
       {children}
     </div>

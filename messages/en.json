@@ -106,7 +106,8 @@
     "pips": "Pips",
     "r": "R",
     "verified": "Third-party verification",
-    "no_widget": "Myfxbook / FXBlue widget will appear here once connected."
+    "no_widget": "Myfxbook / FXBlue widget will appear here once connected.",
+    "recap": "Last week's recap"
   },
   "products": {
     "title": "Store",

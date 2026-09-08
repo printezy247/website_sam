@@ -36,6 +36,13 @@
       "when": 1788851726397,
       "tag": "0004_leads",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1788852225348,
+      "tag": "0005_analytics_recaps",
+      "breakpoints": true
     }
   ]
 }

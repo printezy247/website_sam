@@ -12,6 +12,7 @@ import { llmConfigured } from "@/lib/llm";
 import { evaluateRunningSignals } from "@/lib/evaluate";
 import { ensureAutoSignal } from "@/lib/auto-signal";
 import { runDrip } from "@/lib/leads";
+import { ensureWeeklyRecap } from "@/lib/recap";
 import { isNull, lte } from "drizzle-orm";
 
 const GRACE_DAYS = 7;
@@ -40,6 +41,8 @@ async function main() {
   }
   const due = await db.select({ id: broadcasts.id }).from(broadcasts).where(and(isNull(broadcasts.sentAt), lte(broadcasts.scheduledAt, new Date())));
   for (const b of due) console.log(`[jobs] broadcast ${b.id} sent to ${await sendBroadcast(b.id)}`);
+  const recap = await ensureWeeklyRecap().catch((e) => { console.error("[jobs] recap", e); return null; });
+  console.log(recap ? `[jobs] weekly recap ${recap.weekStart} posted=${Boolean(recap.postedAt)}` : "[jobs] recap: not Monday");
   console.log("[jobs] drip emails sent", await runDrip().catch((e) => String(e)));
   if (llmConfigured()) {
     const a = await ensureDailyArticle().catch((e) => { console.error("[jobs] article", e); return null; });

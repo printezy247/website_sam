@@ -5,6 +5,7 @@ import { pageMetadata } from "@/lib/seo";
 import { count, desc, eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { attachReferrer } from "@/lib/referral";
+import { attachCampaign } from "@/lib/analytics";
 import { accessibleProducts } from "@/lib/access";
 import { auth, signOut } from "@/auth";
 import { db } from "@/db";
@@ -29,7 +30,9 @@ export default async function Account({ params, searchParams }: { params: Promis
   if (!session?.user?.id) redirect(`/${locale}/signin?callbackUrl=/${locale}/account`);
   const uid = session.user.id;
   const ms = locale === "ms";
-  await attachReferrer(uid, (await cookies()).get("ref")?.value).catch(() => {});
+  const jar = await cookies();
+  await attachReferrer(uid, jar.get("ref")?.value).catch(() => {});
+  await attachCampaign(uid, jar.get("camp")?.value).catch(() => {});
   const [[u], tier, ents, ibs, tvs, lics, [refs], dl] = await Promise.all([
     db.select().from(users).where(eq(users.id, uid)),
     effectiveTier(uid), activeEntitlements(uid),

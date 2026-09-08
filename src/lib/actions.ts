@@ -184,3 +184,13 @@ export async function toggleFollowSignal(fd: FormData) {
   await toggleFollow(session.user.id, str(fd, "signalId"));
   revalidatePath("/", "layout");
 }
+
+// ---- weekly recap ----
+export async function adminBuildRecap(fd: FormData) {
+  if (!(await requireAdmin())) throw new Error("forbidden");
+  const { buildRecap, postRecap, weekStartOf } = await import("@/lib/recap");
+  const weeksAgo = Number(str(fd, "weeksAgo") || 1);
+  const r = await buildRecap(weekStartOf(new Date(), weeksAgo), true);
+  if (fd.get("post") === "on") await postRecap(r.id);
+  revalidatePath("/", "layout");
+}
