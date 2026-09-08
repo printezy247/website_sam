@@ -4,6 +4,7 @@ import { ibAccounts, inviteLinks, telegramAccounts, users } from "@/db/schema";
 import { tierForDeposit } from "@/config/tiers";
 import { grantEntitlement } from "@/lib/entitlements";
 import { chatForTier, createSingleUseInvite, sendHtml } from "@/lib/telegram";
+import { attachReferrer, creditReferrer } from "@/lib/referral";
 
 const IB_DAYS = 30;
 
@@ -24,12 +25,14 @@ export async function approveIbAccount(id: string, depositUsd?: number): Promise
       const [created] = await db.insert(users).values({ telegramId: ib.telegramId, tgUsername: tg?.username, name: ib.fullName }).returning();
       userId = created.id;
       await db.update(telegramAccounts).set({ userId }).where(eq(telegramAccounts.telegramId, ib.telegramId));
+      if (tg?.campaign?.startsWith("ref_")) await attachReferrer(userId, tg.campaign.slice(4)).catch(() => {});
     }
   }
   if (!userId) return { ok: false, error: "no user" };
 
   await db.update(ibAccounts).set({ status: "verified", depositUsd: String(deposit), verifiedAt: new Date(), userId }).where(eq(ibAccounts.id, id));
   await grantEntitlement({ userId, tierKey: tier, source: "ib", externalId: `ib:${id}`, expiresAt: new Date(Date.now() + IB_DAYS * 864e5) });
+  await creditReferrer(userId).catch((e) => console.error("[referral]", e));
 
   if (ib.telegramId) {
     const chat = chatForTier(tier);

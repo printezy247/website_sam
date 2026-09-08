@@ -1,6 +1,8 @@
 import { setRequestLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
-import { desc, eq } from "drizzle-orm";
+import { count, desc, eq } from "drizzle-orm";
+import { cookies } from "next/headers";
+import { attachReferrer } from "@/lib/referral";
 import { auth, signOut } from "@/auth";
 import { db } from "@/db";
 import { ibAccounts, tvAccessRequests, users, licenses, products } from "@/db/schema";
@@ -19,12 +21,14 @@ export default async function Account({ params, searchParams }: { params: Promis
   if (!session?.user?.id) redirect(`/${locale}/signin?callbackUrl=/${locale}/account`);
   const uid = session.user.id;
   const ms = locale === "ms";
-  const [[u], tier, ents, ibs, tvs, lics] = await Promise.all([
+  await attachReferrer(uid, (await cookies()).get("ref")?.value).catch(() => {});
+  const [[u], tier, ents, ibs, tvs, lics, [refs]] = await Promise.all([
     db.select().from(users).where(eq(users.id, uid)),
     effectiveTier(uid), activeEntitlements(uid),
     db.select().from(ibAccounts).where(eq(ibAccounts.userId, uid)).orderBy(desc(ibAccounts.createdAt)),
     db.select().from(tvAccessRequests).where(eq(tvAccessRequests.userId, uid)),
     db.select({ l: licenses, p: products }).from(licenses).innerJoin(products, eq(products.id, licenses.productId)).where(eq(licenses.userId, uid)),
+    db.select({ n: count() }).from(users).where(eq(users.referredBy, uid)),
   ]);
   const wantTier = TIERS.find((t) => t.key === sp.checkout);
 
@@ -51,13 +55,13 @@ export default async function Account({ params, searchParams }: { params: Promis
       {wantTier && (
         <section className="glass rounded-2xl p-6 glow-gold">
           <h2 className="font-semibold">{ms ? "Langgan" : "Subscribe"} {wantTier.key.toUpperCase()} · {fmtUsd(sp.interval === "year" ? wantTier.priceYearCents : wantTier.priceMonthCents)}/{sp.interval === "year" ? "yr" : "mo"}</h2>
-          <div className="mt-3 flex gap-3"><CheckoutButton body={{ tier: wantTier.key, interval: sp.interval ?? "month" }} label={ms ? "Bayar dengan kad (Stripe)" : "Pay by card (Stripe)"} /><span className="text-sm text-muted self-center">USDT: {ms ? "akan datang" : "coming soon"}</span></div>
+          <div className="mt-3 flex flex-wrap gap-3"><CheckoutButton body={{ tier: wantTier.key, interval: sp.interval ?? "month" }} label={ms ? "Bayar dengan kad (Stripe)" : "Pay by card (Stripe)"} /><CheckoutButton endpoint="/api/crypto/invoice" body={{ tier: wantTier.key, interval: sp.interval ?? "month" }} label={ms ? "Bayar dengan USDT" : "Pay with USDT"} className="rounded-md border border-gold text-gold font-semibold px-4 py-2 disabled:opacity-50" /></div>
         </section>
       )}
       {sp.product && (
         <section className="glass rounded-2xl p-6 glow-gold">
           <h2 className="font-semibold">{ms ? "Beli produk" : "Buy product"}: {sp.product}</h2>
-          <div className="mt-3"><CheckoutButton body={{ product: sp.product }} label={ms ? "Bayar dengan kad (Stripe)" : "Pay by card (Stripe)"} /></div>
+          <div className="mt-3 flex flex-wrap gap-3"><CheckoutButton body={{ product: sp.product }} label={ms ? "Bayar dengan kad (Stripe)" : "Pay by card (Stripe)"} /><CheckoutButton endpoint="/api/crypto/invoice" body={{ product: sp.product }} label={ms ? "Bayar dengan USDT" : "Pay with USDT"} className="rounded-md border border-gold text-gold font-semibold px-4 py-2 disabled:opacity-50" /></div>
         </section>
       )}
 
@@ -101,6 +105,7 @@ export default async function Account({ params, searchParams }: { params: Promis
       <section className="glass rounded-2xl p-6">
         <h2 className="font-semibold">{ms ? "Rujukan" : "Referral"}</h2>
         <p className="text-sm text-muted mt-1 font-mono">{BRAND.siteUrl}/?ref={u?.referralCode}</p>
+        <p className="text-xs text-muted mt-1">{ms ? `Rujukan: ${refs.n}. Setiap rakan yang aktifkan pelan beri anda +7 hari.` : `Referrals: ${refs.n}. Each friend who activates a plan gives you +7 days.`}</p>
       </section>
     </div>
   );

@@ -5,6 +5,9 @@ import { entitlements, users } from "@/db/schema";
 import { effectiveTier } from "@/lib/entitlements";
 import { CHATS, getBot, sendHtml } from "@/lib/telegram";
 import { tierByKey } from "@/config/tiers";
+import { broadcasts } from "@/db/schema";
+import { sendBroadcast } from "@/lib/broadcast";
+import { isNull, lte } from "drizzle-orm";
 
 const GRACE_DAYS = 7;
 
@@ -28,6 +31,8 @@ async function main() {
     }
     await sendHtml(u.telegramId, "⏳ Pelan anda tamat / Your plan expired. Deposit semula atau langgan untuk sambung akses: /plans").catch(() => {});
   }
+  const due = await db.select({ id: broadcasts.id }).from(broadcasts).where(and(isNull(broadcasts.sentAt), lte(broadcasts.scheduledAt, new Date())));
+  for (const b of due) console.log(`[jobs] broadcast ${b.id} sent to ${await sendBroadcast(b.id)}`);
   process.exit(0);
 }
 main().catch((e) => { console.error(e); process.exit(1); });

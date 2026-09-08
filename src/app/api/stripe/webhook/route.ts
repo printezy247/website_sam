@@ -1,5 +1,6 @@
 import type Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
+import { creditReferrer } from "@/lib/referral";
 import { grantEntitlement, revokeEntitlement } from "@/lib/entitlements";
 import { db } from "@/db";
 import { orders, licenses, products } from "@/db/schema";
@@ -37,8 +38,10 @@ export async function POST(req: Request) {
       if (!userId || !tier) break;
       const active = ["active", "trialing", "past_due"].includes(sub.status);
       const periodEnd = sub.items.data[0]?.current_period_end;
-      if (active) await grantEntitlement({ userId, tierKey: tier, source: "stripe", externalId: sub.id, expiresAt: periodEnd ? new Date(periodEnd * 1000 + 3 * 864e5) : null });
-      else await revokeEntitlement(sub.id, "cancelled");
+      if (active) {
+        await grantEntitlement({ userId, tierKey: tier, source: "stripe", externalId: sub.id, expiresAt: periodEnd ? new Date(periodEnd * 1000 + 3 * 864e5) : null });
+        await creditReferrer(userId).catch((e) => console.error("[referral]", e));
+      } else await revokeEntitlement(sub.id, "cancelled");
       break;
     }
     case "customer.subscription.deleted": {
