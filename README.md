@@ -1,69 +1,208 @@
+<a id="top"></a>
+
 <div align="center">
 
-# 🥇 Sam Trading Platform
+<img src="https://capsule-render.vercel.app/api?type=waving&height=200&color=0:050505,50:1a1607,100:d4af37&text=Sam%20Trading%20Platform&fontColor=f5d76e&fontSize=48&fontAlignY=38&desc=XAUUSD%20signals%20%C2%B7%20membership%20engine%20%C2%B7%20Telegram%20bot&descAlignY=58&descSize=18&animation=fadeIn" width="100%" alt="Sam Trading Platform" />
 
-**The website, membership engine and Telegram bot behind Sam's XAUUSD signal & education channel.**
+<img src="https://readme-typing-svg.demolab.com/?font=JetBrains+Mono&size=20&duration=2800&pause=800&color=D4AF37&center=true&vCenter=true&width=720&lines=Gold+signals+with+full+transparency.;Two+ways+in%3A+HFM+account+or+monthly+plan.;Live+chart+%C2%B7+auto+TP%2FSL+tally+%C2%B7+weekly+recap.;Bahasa+Melayu+first%2C+English+second.;Education+only.+Not+financial+advice." alt="typing banner" />
 
-[![Status](https://img.shields.io/badge/status-live%20on%20Railway-00c46a?style=for-the-badge)](#-deploy-on-railway)
-[![Stack](https://img.shields.io/badge/stack-Next.js%2016%20%C2%B7%20Postgres%20%C2%B7%20Stripe%20%C2%B7%20grammY-0B0E14?style=for-the-badge)](#-tech-stack)
-[![i18n](https://img.shields.io/badge/languages-Bahasa%20Melayu%20%C2%B7%20English-d4af37?style=for-the-badge)](#-tech-stack)
-[![License](https://img.shields.io/badge/license-MIT-2ea44f?style=for-the-badge)](LICENSE)
+<br/>
 
-<sub>⚠️ Everything here is for **education only**. Trading gold and CFDs on margin carries a high risk of loss. See <a href="docs/compliance-copy.md">compliance copy</a>.</sub>
+[![Live on Railway](https://img.shields.io/badge/status-live%20on%20Railway-00c46a?style=for-the-badge&logo=railway&logoColor=white)](#-deploy-on-railway)
+[![Next.js 16](https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](#-tech-stack)
+[![Postgres](https://img.shields.io/badge/Postgres-Drizzle-336791?style=for-the-badge&logo=postgresql&logoColor=white)](#-tech-stack)
+[![Stripe](https://img.shields.io/badge/Stripe-USDT-635bff?style=for-the-badge&logo=stripe&logoColor=white)](#-tech-stack)
+[![Telegram](https://img.shields.io/badge/Telegram-grammY-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](#-telegram-bot)
+
+[![Languages](https://img.shields.io/badge/🇲🇾%20Bahasa%20Melayu-🇬🇧%20English-d4af37?style=flat-square)](#-tech-stack)
+[![License](https://img.shields.io/badge/license-MIT-2ea44f?style=flat-square)](LICENSE)
+[![PRs](https://img.shields.io/badge/PRs-auto%20git%20ops-0B0E14?style=flat-square)](#-roadmap)
+
+<br/>
+
+**[✨ Overview](#-overview) · [🪜 Tiers](#-tier-ladder) · [🔁 Funnel](#-funnel) · [🧬 Architecture](#-architecture) · [📡 Live engine](#-live-signal-engine) · [🤖 Bot](#-telegram-bot) · [🖥️ Pages](#️-pages) · [🧱 Stack](#-tech-stack) · [🚀 Deploy](#-deploy-on-railway) · [🗺️ Roadmap](#️-roadmap)**
+
+<br/>
+
+<sub>⚠️ Everything here is for <b>education only</b>. Trading gold and CFDs on margin carries a high risk of loss. See <a href="docs/compliance-copy.md">compliance copy</a>.</sub>
 
 </div>
 
 <br/>
 
-## ✨ What this is
+## ✨ Overview
 
-A monetization system for a gold-trading channel, built to be brand-swappable (the name "Sam" is a placeholder).
+> A complete monetization system for a gold-trading channel. Brand-swappable: the name **"Sam"** is a placeholder behind `src/config/brand.ts`.
 
-| 🎯 Goal | 💡 How |
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### 🎯 What it does
+
+- 🥇 **XAUUSD signals** with entry / SL / TP, tallied automatically against live candles
+- 🚪 **Two doors, one ladder** — open an HFM account under our IB *or* pay monthly on any broker
+- 🛒 **Store** — TradingView + MT5 indicators, ebooks, copier, mentorship
+- 📈 **Public track record** — win rate, R, expectancy, drawdown, losses included
+- 🎓 **Education** — one bilingual article every day, written by a free LLM
+- 🧲 **Capture & convert** — ebook modal → 3-email drip · support chat · campaign analytics
+
+</td>
+<td width="50%" valign="top">
+
+### ⚡ At a glance
+
+| | |
 |---|---|
-| Turn free followers into members | Public channel teaser → bot → two ways in on every tier |
-| Two doors, one ladder | **Open an HFM account under our IB** *or* **pay monthly** on your own broker |
-| Sell more than signals | TradingView + MT5 indicators, ebooks, copier, mentorship |
-| Prove it | Public results page with win rate, RR, drawdown and third-party verification |
-| Show, don't tell | Live XAUUSD chart (1H/4H/1D), live setups tallied against Yahoo candles, weekly recap posted automatically |
-| Capture & convert | Ebook claim modal → 3-email drip · support chat · campaign analytics by `?ref` / UTM |
+| 🌐 Site | Next.js 16 · Tailwind 4 · next-intl |
+| 🗄️ Data | Railway Postgres · Drizzle |
+| 💳 Pay | Stripe · NOWPayments (USDT) |
+| 🤖 Bot | grammY webhook · 12 commands |
+| 📡 Feeds | Yahoo Finance · Forex Factory |
+| 🧠 LLM | Gemini · Groq · OpenRouter · Claude |
+| 🔐 Auth | Magic link · Google · Telegram |
+| ☁️ Host | Railway `web` + `jobs` cron |
 
-<br/>
+</td>
+</tr>
+</table>
+
+<p align="right"><a href="#top">⬆ back to top</a></p>
 
 ## 🪜 Tier ladder
 
+<div align="center">
+
 | Tier | 🏦 Door A · HFM IB | 💳 Door B · own broker | Includes |
-|:--|:--|:--|:--|
-| 🌐 **Public** | — | — | 1 delayed XAUUSD signal/day, daily bias, weekly recap |
-| 🟢 **Free** | account, **no deposit** | **$9/mo** | Ebook, full daily bias, results, community, 2 full signals/week |
-| 🔵 **Pro** | **≥ $100** deposit | **$49/mo** | All XAUUSD signals live, Pro group, monthly report, basic TV indicator |
-| 🟣 **Elite** | **≥ $500** deposit | **$129/mo** | Pro + all instruments, full TV/MT5 suite, copier, live sessions |
-| 👑 **Mentorship** | — | $499 / $199 mo | Elite + course + 1:1 *(phase 3)* |
+|:--:|:--|:--|:--|
+| 🌐 **Public** | — | — | 1 delayed XAUUSD signal / day · daily bias · weekly recap |
+| 🟢 **Free** | account, **no deposit** | **$9 / mo** | Ebook · full daily bias · results · community · 2 full signals / week |
+| 🔵 **Pro** ⭐ | **≥ $100** deposit | **$49 / mo** | All XAUUSD signals live · Pro group · monthly report · TV indicator |
+| 🟣 **Elite** | **≥ $500** deposit | **$129 / mo** | Pro + all instruments · full TV/MT5 suite · copier · live sessions |
+| 👑 **Mentorship** | — | $499 / $199 mo | Elite + course + 1:1 *(phase 7)* |
 
-> Entitlement is always the **higher** of your IB tier and your paid tier. Annual = 2 months free.
+</div>
 
-<br/>
+> 💡 Entitlement is always the **higher** of your IB tier and your paid tier. Annual = 2 months free. First **50** Pro places are founding seats (`BRAND.foundingMemberCap`).
+
+<p align="right"><a href="#top">⬆ back to top</a></p>
 
 ## 🔁 Funnel
 
 ```mermaid
 flowchart LR
-    A[📱 Social / Ads] --> B[🌐 Landing<br/>live results + risk warning]
-    B --> C[🤖 Bot /start<br/>ebook + public channel]
+    A[📱 Social / Ads<br/>?ref · ?utm_campaign] --> B[🌐 Landing<br/>live chart · results · risk strip]
+    B --> L[📘 Ebook modal<br/>3-email drip]
+    B --> C[🤖 Bot /start<br/>two ways in]
+    L --> C
     C -->|open HFM account| D[🟢 Free]
-    C -->|$9/mo| D
-    D -->|deposit $100 or $49/mo| E[🔵 Pro]
-    E -->|deposit $500 or $129/mo| F[🟣 Elite]
+    C -->|$9 / mo| D
+    D -->|deposit $100 · or $49 / mo| E[🔵 Pro]
+    E -->|deposit $500 · or $129 / mo| F[🟣 Elite]
     F --> G[👑 Mentorship]
     D & E & F --> H[🛒 Store<br/>indicators · ebooks · copier]
+    D & E & F --> R[🏆 Referrals<br/>+7 days per activated friend]
+    style A fill:#0b0e14,stroke:#d4af37,color:#f3f4f6
+    style B fill:#0b0e14,stroke:#d4af37,color:#f3f4f6
+    style C fill:#0b0e14,stroke:#26A5E4,color:#f3f4f6
+    style E fill:#1a1607,stroke:#d4af37,color:#f5d76e
 ```
 
-<br/>
+<p align="right"><a href="#top">⬆ back to top</a></p>
+
+## 🧬 Architecture
+
+```mermaid
+flowchart TB
+    subgraph Railway
+        W[🖥️ web · Next.js 16<br/>pages · API routes · bot webhook]
+        J[⏱️ jobs · daily cron<br/>article · recap · drip · expiry]
+        P[(🗄️ Postgres)]
+    end
+    subgraph External
+        Y[📡 Yahoo Finance]
+        FF[📅 Forex Factory]
+        LLM[🧠 Gemini / Groq / OpenRouter / Claude]
+        TG[✈️ Telegram]
+        ST[💳 Stripe · NOWPayments]
+        RS[✉️ Resend]
+        CJ[🔔 cron-job.org<br/>every 5 min]
+    end
+    CJ -->|/api/cron/evaluate| W
+    W <--> P
+    J <--> P
+    W --> Y & FF
+    J --> LLM & TG & RS
+    TG <-->|webhook| W
+    ST -->|webhooks · IPN| W
+    W --> RS
+    style W fill:#0b0e14,stroke:#d4af37,color:#f3f4f6
+    style J fill:#0b0e14,stroke:#d4af37,color:#f3f4f6
+    style P fill:#11151d,stroke:#336791,color:#f3f4f6
+```
+
+<details>
+<summary><b>🔐 HFM verification flow</b> (click to expand)</summary>
+
+```mermaid
+sequenceDiagram
+    participant U as 👤 Member
+    participant B as 🤖 Bot
+    participant A as 🛡️ Admin
+    participant DB as 🗄️ Postgres
+    U->>B: /verify
+    B->>U: region → account no → name → balance → screenshot
+    B->>DB: ib_accounts (pending)
+    B->>A: Approve / Reject buttons
+    A->>B: ✅ Approve
+    B->>DB: entitlement by deposit band (30 days)
+    B->>U: single-use invite link (24h) to Free / Pro / Elite group
+    Note over DB: monthly CSV import re-verifies deposits
+```
+
+</details>
+
+<p align="right"><a href="#top">⬆ back to top</a></p>
+
+## 📡 Live signal engine
+
+<table>
+<tr>
+<td width="33%" valign="top">
+
+**🕯️ Live data**
+- Ticker + hero card from Yahoo Finance (60s cache)
+- Gold chart with **1H / 4H / 1D** tabs and entry / SL / TP lines
+- Hidden automatically when feeds are down
+
+</td>
+<td width="33%" valign="top">
+
+**⚙️ Auto setups**
+- One running XAUUSD setup at a time: scalping · intraday · swing
+- Paused ±30 min around 🔴 USD news
+- Every 5 min the tally moves status → TP1 / TP2 / TP3 / SL / BE
+
+</td>
+<td width="33%" valign="top">
+
+**📊 Proof**
+- Results page recomputes win rate, avg R, expectancy, max DD
+- Monday recap posted to the public channel
+- Member dashboard: personal stats from signals you mark as taken
+
+</td>
+</tr>
+</table>
+
+<p align="right"><a href="#top">⬆ back to top</a></p>
 
 ## 🤖 Telegram bot
 
-<details>
-<summary><b>Commands</b> (click to expand)</summary>
+<details open>
+<summary><b>💬 Commands</b></summary>
+
+<br/>
 
 | Command | Does |
 |---|---|
@@ -79,185 +218,189 @@ flowchart LR
 </details>
 
 <details>
-<summary><b>Automation</b></summary>
+<summary><b>⚙️ Automation</b></summary>
 
-- Join-request gatekeeping by entitlement, single-use invite links (24h)
-- Signal fan-out: post once → teaser to public, full text to Free/Pro/Elite, TP/SL updates replied in place
-- Auto XAUUSD setups from live data (scalping / intraday / swing), paused ±30 min around red USD news
-- Every 5 min: running signals tallied against Yahoo candles → TP1/2/3, SL, BE, results page updates itself
-- Weekly recap (Mondays) → public channel, LLM-written when a key is set, factual template otherwise
-- Expiry job → soft kick → win-back message · segmented broadcasts (tier, language, campaign) · 3-step lead drip
+<br/>
+
+- 🚪 Join-request gatekeeping by entitlement, single-use invite links (24h)
+- 📣 Signal fan-out: teaser to public, full text to Free / Pro / Elite, TP/SL updates replied in place
+- 🧭 Auto XAUUSD setups from live data, paused ±30 min around red USD news
+- ⏱️ Every 5 min: running signals tallied against Yahoo candles
+- 📈 Weekly recap (Mondays) → public channel, LLM-written when a key is set, factual template otherwise
+- ⏳ Expiry job → soft kick → win-back message · segmented broadcasts · 3-step lead drip
 
 </details>
 
+<p align="right"><a href="#top">⬆ back to top</a></p>
+
+## 🖥️ Pages
+
+| Route | What you get |
+|---|---|
+| 🏠 `/` | Hero field, live signal card, gold chart, news calendar, two doors, tier cards, FAQ (JSON-LD), ebook modal |
+| 📈 `/results` | Win rate, avg R, expectancy, max DD, equity curve, monthly table, chart + news, last week's recap, Myfxbook slot |
+| 💳 `/pricing` | Door toggle (HFM / own broker), monthly / annual, feature matrix, door comparison |
+| 🎓 `/education` | One bilingual article per day (40-topic bank), category filters |
+| 🛒 `/products` | Indicators, ebooks, copier · sticky buy bar on product pages |
+| 🧑‍💻 `/dashboard` | Personal stats, equity curve, referral leaderboard, share links |
+| 👤 `/account` | Plan, Telegram link / unlink, HFM verification, TradingView, downloads, licences, referral |
+| 🛡️ `/admin` | Signals, IB approvals + CSV import, broadcasts, TV queue, products, articles, users, leads, analytics, recap |
+
+<details>
+<summary><b>🔎 SEO & growth built in</b></summary>
+
 <br/>
+
+- Per-page titles / descriptions (ms/en), canonical + `hreflang`, generated Open Graph image, JSON-LD (Organization, WebSite, FAQ, Article, Product), `robots.txt`, `sitemap.xml`
+- `?ref=CODE` referrals (+7 days per activated friend), first-touch `camp` attribution (`?ref` / `utm_campaign` / `utm_source` / `?c`), first-party page-view beacon, `/admin/analytics` funnel per campaign
+- Security headers: CSP, HSTS, `X-Frame-Options`, Referrer-Policy, Permissions-Policy
+
+</details>
+
+<p align="right"><a href="#top">⬆ back to top</a></p>
 
 ## 🧱 Tech stack
 
+<div align="center">
+
+![Next.js](https://img.shields.io/badge/Next.js%2016-000?style=flat-square&logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind%204-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![Drizzle](https://img.shields.io/badge/Drizzle%20ORM-C5F74F?style=flat-square&logo=drizzle&logoColor=black)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=flat-square&logo=postgresql&logoColor=white)
+![Auth.js](https://img.shields.io/badge/Auth.js%20v5-8B5CF6?style=flat-square)
+![Stripe](https://img.shields.io/badge/Stripe-635bff?style=flat-square&logo=stripe&logoColor=white)
+![Telegram](https://img.shields.io/badge/grammY-26A5E4?style=flat-square&logo=telegram&logoColor=white)
+![Railway](https://img.shields.io/badge/Railway-0B0D0E?style=flat-square&logo=railway&logoColor=white)
+
+</div>
+
 | Layer | Choice |
 |---|---|
-| App | Next.js 16 (App Router) · TypeScript · Tailwind 4 |
-| Data | Railway Postgres · Drizzle ORM |
+| App | Next.js 16 (App Router) · TypeScript · Tailwind 4 · next-intl |
+| Data | Railway Postgres · Drizzle ORM · migrations run on boot |
 | Auth | Auth.js v5 · magic link via Resend · Google (optional) · Telegram Login Widget |
-| Payments | Stripe (cards) · NOWPayments (USDT, P1) |
-| Messaging | grammY Telegram bot (webhook) |
-| Charts | TradingView lightweight-charts (live Yahoo candles + equity curves) |
-| Data feeds | Yahoo Finance chart API (quotes, candles) · Forex Factory weekly calendar |
-| Content | Free LLM for daily articles + weekly recap: Gemini (default) · Groq · OpenRouter · Anthropic |
+| Payments | Stripe (cards) · NOWPayments (USDT, HMAC IPN) |
+| Messaging | grammY Telegram bot (webhook, secret token) |
+| Charts | TradingView lightweight-charts (live candles + equity curves) |
+| Data feeds | Yahoo Finance chart API · Forex Factory weekly calendar |
+| Content | Gemini (default, auto model discovery) · Groq · OpenRouter · Anthropic |
 | Email | Resend (magic links, lead drip) |
-| Security | CSP, HSTS, frame/referrer/permissions headers · Telegram hash-verified login · HMAC IPN |
-| Hosting | Railway (`web` service + `jobs` cron) · cron-job.org → `/api/cron/evaluate` |
-| Languages | Bahasa Melayu 🇲🇾 (default) · English 🇬🇧 |
+| Security | CSP, HSTS, frame / referrer / permissions headers · hash-verified Telegram login |
+| Hosting | Railway `web` + `jobs` cron · cron-job.org → `/api/cron/evaluate` |
+| Languages | 🇲🇾 Bahasa Melayu (default) · 🇬🇧 English |
 
-<br/>
+<p align="right"><a href="#top">⬆ back to top</a></p>
 
 ## 🚀 Deploy on Railway
 
 <details open>
-<summary><b>1 · Create the project</b></summary>
+<summary><b>1 · Project & database</b></summary>
 
-1. Railway → **New Project → Deploy from GitHub repo** → pick this repo, branch `main`.
-2. **Add Postgres**: `+ New → Database → PostgreSQL`. Railway injects `DATABASE_URL` into services in the same project (use the *Variable reference* `${{Postgres.DATABASE_URL}}` on the web service).
-3. The `web` service builds with Railpack automatically. `railway.json` sets the pre-deploy command `npm run db:migrate`, start `npm run start`, health check `/api/health`.
+<br/>
 
-</details>
-
-<details>
-<summary><b>2 · Environment variables (web service)</b></summary>
-
-Copy from [`.env.example`](.env.example). Minimum to boot:
-
-```
-DATABASE_URL=${{Postgres.DATABASE_URL}}
-AUTH_SECRET=<openssl rand -base64 32>
-AUTH_URL=https://<your-domain>
-NEXT_PUBLIC_SITE_URL=https://<your-domain>
-RESEND_API_KEY=re_...
-AUTH_EMAIL_FROM=Sam <noreply@yourdomain.com>
-TELEGRAM_BOT_TOKEN=123456:ABC...
-TELEGRAM_BOT_ID=123456
-NEXT_PUBLIC_TG_BOT_USERNAME=YourBot
-TELEGRAM_WEBHOOK_SECRET=<random string>
-TELEGRAM_ADMIN_CHAT_ID=<your Telegram user id or admin group id>
-TELEGRAM_PUBLIC_CHANNEL_ID=-100...
-TELEGRAM_FREE_GROUP_ID=-100...
-TELEGRAM_PRO_GROUP_ID=-100...
-TELEGRAM_ELITE_GROUP_ID=-100...
-STRIPE_SECRET_KEY=sk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-STRIPE_PRICE_FREE_MONTH=price_... (and _YEAR, PRO_, ELITE_)
-```
+1. **New Project → Deploy from GitHub** → this repo, branch `main`.
+2. `+ New → Database → PostgreSQL`.
+3. Web service → **Variables** → `DATABASE_URL = ${{Postgres.DATABASE_URL}}` plus everything in [`.env.example`](.env.example). Generate a domain; set `AUTH_URL` and `NEXT_PUBLIC_SITE_URL` to it.
+4. `npm start` runs migrations and the idempotent seed on every boot. `SEED_ADMIN_EMAIL` makes that user admin → `/admin`.
 
 </details>
 
 <details>
-<summary><b>3 · Seed + first admin</b></summary>
+<summary><b>2 · Telegram</b></summary>
 
-Run once from the Railway service shell (or locally with the Railway `DATABASE_URL`):
-
-```bash
-SEED_ADMIN_EMAIL=you@example.com npm run db:seed
-```
-
-Sign in at `/signin` with that email → you get the `admin` role → `/admin`.
-
-</details>
-
-<details>
-<summary><b>4 · Telegram bot</b></summary>
-
-1. @BotFather → `/newbot` → copy token. `/setprivacy` → **Disable** (so the bot can read group join requests).
-2. Add the bot as **admin** to the public channel and each private group (Free / Pro / Elite) with *Invite users via link* + *Ban users* rights.
-3. Get chat ids: add @RawDataBot to each chat, or forward a message to @userinfobot. Channel/group ids start with `-100`.
-4. Point the webhook at Railway (replace values):
+<br/>
 
 ```bash
 curl "https://api.telegram.org/bot$TOKEN/setWebhook" \
-  -d url="https://<your-domain>/api/telegram/webhook" \
+  -d url="https://<domain>/api/telegram/webhook" \
   -d secret_token="$TELEGRAM_WEBHOOK_SECRET" \
   -d allowed_updates='["message","callback_query","chat_join_request"]'
 ```
 
-5. Send `/start` to the bot. Approve/reject buttons arrive in `TELEGRAM_ADMIN_CHAT_ID`.
+- `@BotFather` → `/setdomain` → your domain (enables the Login Widget)
+- Add the bot as admin to the public channel and each private group; ids start with `-100`
+- Optional: `NEXT_PUBLIC_TG_SUPPORT=https://t.me/<handle>` powers the "Chat with Sam" button
 
 </details>
 
 <details>
-<summary><b>5 · Stripe</b></summary>
+<summary><b>3 · Payments</b></summary>
 
-1. Products → create **Free / Pro / Elite** with monthly + yearly prices (USD 9/90, 49/490, 129/1290). Paste the `price_...` ids into env.
-2. Developers → Webhooks → endpoint `https://<your-domain>/api/stripe/webhook`, events: `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`. Copy the signing secret to `STRIPE_WEBHOOK_SECRET`.
+<br/>
 
-</details>
-
-<details>
-<summary><b>6 · Cron jobs service</b></summary>
-
-`+ New → GitHub repo` (same repo) → name `jobs` → Settings: **Start command** `npm run jobs`, **Cron schedule** `0 3 * * *`. Same env vars as `web` (reference them). It expires stale entitlements after a 7-day grace and soft-kicks from groups.
+- **Stripe** → products Free / Pro / Elite (monthly + yearly) → paste `price_…` ids → webhook `https://<domain>/api/stripe/webhook` with `checkout.session.completed`, `customer.subscription.*`
+- **NOWPayments** → `NOWPAYMENTS_API_KEY`, `NOWPAYMENTS_IPN_SECRET`, IPN URL `https://<domain>/api/crypto/ipn`
 
 </details>
 
 <details>
-<summary><b>Local dev</b></summary>
+<summary><b>4 · Live engine & automation</b></summary>
+
+<br/>
+
+| Piece | Setup |
+|---|---|
+| ⏱️ Signal tally + auto setups | Set `CRON_SECRET`; on [cron-job.org](https://cron-job.org) call `https://<domain>/api/cron/evaluate?key=<CRON_SECRET>` every 5 minutes |
+| 🗓️ Daily article · Monday recap · drip · expiry | Second Railway service from the same repo: start `npm run jobs`, cron `0 3 * * *`, **same variables** (paste the literal `DATABASE_URL` if the reference shows empty; the log prints the env names it sees) |
+| 🧠 LLM | `GEMINI_API_KEY` (free tier; models discovered per key) or `LLM_PROVIDER=groq|openrouter|anthropic` with its key |
+| ✉️ Leads | `RESEND_API_KEY` + `AUTH_EMAIL_FROM` on a verified domain → welcome + day-2 + day-5 emails |
+| 🔐 Google sign-in | OAuth client (Web) → redirect URI `https://<domain>/api/auth/callback/google` → `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` |
+
+</details>
+
+<details>
+<summary><b>💻 Local dev</b></summary>
+
+<br/>
 
 ```bash
-cp .env.example .env.local   # fill DATABASE_URL etc.
+cp .env.example .env.local        # fill DATABASE_URL etc.
 npm i
 npm run db:migrate && SEED_ADMIN_EMAIL=you@example.com npm run db:seed
-npm run dev
+npm run dev                        # http://localhost:3000
+npm run lint && npm run typecheck && npm run build
 ```
 
 </details>
 
-<br/>
+<p align="right"><a href="#top">⬆ back to top</a></p>
 
 ## 📚 Docs
 
 | 📄 | |
 |---|---|
-| **Landing** `/` | Hero field, live signal card, live gold chart with timeframe tabs, news calendar, two doors, tier cards, FAQ (JSON-LD), ebook claim modal |
-| **Results** `/results` | Win rate, avg R, expectancy, max DD, equity curve, monthly table, live chart + news, last week's recap, Myfxbook slot |
-| **Education** `/education` | One bilingual article per day (40-topic bank), category filters, Article JSON-LD |
-| **Member dashboard** `/dashboard` | Personal stats from signals you mark as taken, personal equity curve, referral leaderboard (masked names), one-click share links |
-| **Admin** `/admin` | Signals (post/update → fan-out), IB approvals + CSV import, broadcasts, TradingView queue, products, articles, users, leads, campaign analytics, weekly recap builder |
-| **SEO** | Per-page titles/descriptions (ms/en), canonical + hreflang, Open Graph image (`/opengraph-image`), JSON-LD (Organization, WebSite, FAQ, Article, Product), `robots.txt`, `sitemap.xml` (static + articles + products, both locales) |
-| **Growth** | `?ref=CODE` referrals (+7 days per activated friend), `camp` first-touch attribution (`?ref` / `utm_campaign` / `utm_source` / `?c`), first-party page-view beacon, support chat with page context |
 | [Product & monetization spec](docs/product-spec.md) | Tiers, store, analysis products, funnels, data model, pages |
 | [Bot spec](docs/bot-spec.md) | Commands, gatekeeping, fan-out, security |
 | [HFM verification runbook](docs/hfm-verification-runbook.md) | IB account matching, deposit bands, re-verification |
 | [Compliance copy](docs/compliance-copy.md) | Risk warning, education disclaimer, IB disclosure |
 | [Build log](docs/build-log.md) | Decisions and history |
 
-<br/>
-
-## 🚀 Deploy on Railway
-
-1. **New Project → Deploy from GitHub** → this repo, branch `main`. Add **PostgreSQL**.
-2. On the web service → **Variables**: `DATABASE_URL=${{Postgres.DATABASE_URL}}` plus everything in [`.env.example`](.env.example). Generate a domain, set `AUTH_URL` and `NEXT_PUBLIC_SITE_URL` to it.
-3. `npm start` runs migrations and the idempotent seed on every boot. Set `SEED_ADMIN_EMAIL` to your email and that user becomes admin (`/admin`). Sample signals/products are inserted only when the tables are empty.
-5. Telegram: `curl "https://api.telegram.org/bot<TOKEN>/setWebhook" -d url="https://<domain>/api/telegram/webhook" -d secret_token="<TELEGRAM_WEBHOOK_SECRET>"`.
-6. Stripe: webhook `https://<domain>/api/stripe/webhook` with `checkout.session.completed`, `customer.subscription.*`.
-7. **Signals tally + auto setups**: set `CRON_SECRET`, then on [cron-job.org](https://cron-job.org) call `https://<domain>/api/cron/evaluate?key=<CRON_SECRET>` every 5 minutes.
-8. **Daily article, weekly recap, drip emails, expiry**: second Railway service from the same repo, start command `npm run jobs`, cron `0 3 * * *`, same variables (if `${{Postgres.DATABASE_URL}}` shows as unresolved on that service, paste the literal `DATABASE_URL` value from the Postgres service instead; the jobs log prints the env names it sees). Set `GEMINI_API_KEY` (free tier) or another `LLM_PROVIDER` key for articles + LLM recaps; without a key the recap uses the factual template and articles are skipped.
-9. **Leads**: `RESEND_API_KEY` + `AUTH_EMAIL_FROM` on a verified domain enable the welcome email and the 2-day / 5-day follow-ups. Leads are stored either way (`/admin/leads`).
-10. **Google sign-in** (optional): Google Cloud Console → APIs & Services → Credentials → Create OAuth client ID → Web application → Authorized redirect URI `https://<domain>/api/auth/callback/google`. Set `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET`; the button appears on `/signin` automatically. Same email as a magic-link user = same account.
-11. **Support chat**: `NEXT_PUBLIC_TG_SUPPORT=https://t.me/<your_handle>`; without it the widget falls back to the bot.
-
-<br/>
+<p align="right"><a href="#top">⬆ back to top</a></p>
 
 ## 🗺️ Roadmap
 
-- [x] Market & repo research, product design
-- [x] **P0** Landing, results, pricing, legal · tiers & HFM verification · bot core · admin · Stripe
-- [x] **P1** USDT payments · CSV IB import · referrals · broadcasts · Telegram login
-- [x] **P2** Store (TV/MT5 licences, ebooks) · TV access queue
-- [x] **P3** Education (daily bilingual articles, free LLM) · live Yahoo quotes · auto signals + TP/SL tally
-- [x] **P5** SEO (metadata, OG image, JSON-LD, sitemap) · Malay copy polish · member dashboard + referral leaderboard
-- [x] **P6** Live gold chart (1H/4H/1D) + animated stats · news calendar + news lockout · ebook modal + Resend drip · sticky buy bar + door comparison · support chat · security headers · bot `/language` `/mystats` `/leaderboard` `/news` · campaign analytics · weekly recap
+```mermaid
+timeline
+    title Build phases
+    P0 : Landing · results · pricing · legal : tiers + HFM verification : bot core · admin · Stripe
+    P1 : USDT · CSV IB import : referrals · broadcasts : Telegram login
+    P2 : Store · licences · TV queue
+    P3 : Education (daily LLM articles) : live quotes · auto signals · TP/SL tally
+    P5 : SEO · OG image · sitemap : member dashboard · leaderboard
+    P6 : Live chart · news lockout : ebook drip · support chat : analytics · weekly recap · security headers
+    P7 : Telegram→MT5 copier : mentorship · prop-firm plans : PWA · Myfxbook verification
+```
+
+- [x] **P0 – P6** shipped, live on Railway
 - [ ] **P7** Telegram→MT5 copier · mentorship tier · prop-firm plans · PWA · Myfxbook verification
 
 <br/>
 
 <div align="center">
-<sub>Made with ☕ and gold candles. Not financial advice.</sub>
+
+<img src="https://capsule-render.vercel.app/api?type=waving&height=120&section=footer&color=0:d4af37,50:1a1607,100:050505" width="100%" alt="" />
+
+<sub>Made with ☕ and gold candles · Bahasa Melayu 🇲🇾 first · <b>Not financial advice.</b></sub>
+
 </div>
