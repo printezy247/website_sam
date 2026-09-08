@@ -223,5 +223,19 @@
     "hint": "Spreads widen and price moves fast around red news. Auto setups pause 30 minutes before and after.",
     "forecast": "Forecast",
     "previous": "Previous"
+  },
+  "lead": {
+    "fab": "Free ebook",
+    "badge": "Free · PDF",
+    "title": "Gold Trading Starter",
+    "body": "Market structure, sessions, risk management and journaling. Enter your email and we send it straight over.",
+    "name": "Name (optional)",
+    "email": "Your email",
+    "cta": "Send the ebook",
+    "done": "Check your inbox. The link is also right here:",
+    "download": "Download now",
+    "bot": "Open Telegram bot",
+    "error": "Invalid email. Try again.",
+    "fine": "No spam. 3 short emails, unsubscribe anytime."
   }
 }

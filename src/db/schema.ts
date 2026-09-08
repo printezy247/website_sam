@@ -218,3 +218,15 @@ export const signalFollows = pgTable("signal_follows", {
   signalId: text("signal_id").notNull().references(() => signals.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 }, (t) => [uniqueIndex("signal_follows_user_signal_uq").on(t.userId, t.signalId)]);
+
+// ---- Leads (ebook claim / email capture) ----
+export const leads = pgTable("leads", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  email: text("email").notNull().unique(),
+  name: text("name"),
+  locale: text("locale").notNull().default("ms"),
+  source: text("source"), // campaign / ref code / page
+  step: integer("step").notNull().default(0), // drip emails sent so far
+  lastEmailAt: timestamp("last_email_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});

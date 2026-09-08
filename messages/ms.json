@@ -223,5 +223,19 @@
     "hint": "Spread melebar dan harga bergerak pantas sekitar berita merah. Setup automatik dihentikan 30 minit sebelum dan selepas.",
     "forecast": "Ramalan",
     "previous": "Sebelum"
+  },
+  "lead": {
+    "fab": "Ebook percuma",
+    "badge": "Percuma · PDF",
+    "title": "Gold Trading Starter",
+    "body": "Struktur pasaran, sesi, pengurusan risiko dan jurnal. Masukkan emel dan kami hantar terus.",
+    "name": "Nama (pilihan)",
+    "email": "Emel anda",
+    "cta": "Hantar ebook",
+    "done": "Semak emel anda. Link juga tersedia di sini:",
+    "download": "Muat turun sekarang",
+    "bot": "Buka bot Telegram",
+    "error": "Emel tidak sah. Cuba lagi.",
+    "fine": "Tiada spam. 3 emel pendek, batal bila-bila masa."
   }
 }
