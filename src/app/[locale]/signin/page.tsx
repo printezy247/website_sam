@@ -1,6 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import { signIn } from "@/auth";
 import { BRAND } from "@/config/brand";
+import { TelegramLogin } from "@/components/TelegramLogin";
 export default async function SignIn({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ sent?: string; callbackUrl?: string }> }) {
   const { locale } = await params; setRequestLocale(locale);
   const { sent, callbackUrl } = await searchParams;
@@ -19,7 +20,7 @@ export default async function SignIn({ params, searchParams }: { params: Promise
       )}
       <div className="mt-8 border-t border-border pt-6">
         <p className="text-sm text-muted mb-3">{ms ? "Atau log masuk dengan Telegram:" : "Or sign in with Telegram:"}</p>
-        <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login={BRAND.telegram.botUsername} data-size="large" data-auth-url={`${BRAND.siteUrl}/api/auth/telegram?locale=${locale}`} data-request-access="write" />
+        <TelegramLogin botUsername={BRAND.telegram.botUsername} authUrl={`${BRAND.siteUrl}/api/auth/telegram?locale=${locale}`} />
       </div>
     </div>
   );
