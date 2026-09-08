@@ -11,6 +11,7 @@ import { ensureDailyArticle } from "@/lib/articles";
 import { llmConfigured } from "@/lib/llm";
 import { evaluateRunningSignals } from "@/lib/evaluate";
 import { ensureAutoSignal } from "@/lib/auto-signal";
+import { runDrip } from "@/lib/leads";
 import { isNull, lte } from "drizzle-orm";
 
 const GRACE_DAYS = 7;
@@ -39,6 +40,7 @@ async function main() {
   }
   const due = await db.select({ id: broadcasts.id }).from(broadcasts).where(and(isNull(broadcasts.sentAt), lte(broadcasts.scheduledAt, new Date())));
   for (const b of due) console.log(`[jobs] broadcast ${b.id} sent to ${await sendBroadcast(b.id)}`);
+  console.log("[jobs] drip emails sent", await runDrip().catch((e) => String(e)));
   if (llmConfigured()) {
     const a = await ensureDailyArticle().catch((e) => { console.error("[jobs] article", e); return null; });
     console.log(a ? `[jobs] article published: ${a.slug}` : "[jobs] article: nothing to do");

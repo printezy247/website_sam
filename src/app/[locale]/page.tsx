@@ -13,6 +13,7 @@ import { db } from "@/db";
 import { products, signals } from "@/db/schema";
 import { GoldChart } from "@/components/GoldChart";
 import { NewsCalendar } from "@/components/NewsCalendar";
+import { EbookClaim } from "@/components/EbookClaim";
 import { desc, eq } from "drizzle-orm";
 import { fmtPct } from "@/lib/utils";
 import { JsonLd, pageMetadata } from "@/lib/seo";
@@ -42,6 +43,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   return (
     <div>
       <JsonLd data={faq} />
+      <EbookClaim botLink={botDeepLink("ebook_lead")} />
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 grid-bg" />
