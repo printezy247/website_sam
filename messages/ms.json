@@ -1,5 +1,14 @@
 {
-  "nav": { "signals": "Signal", "pricing": "Pelan", "results": "Rekod", "products": "Kedai", "account": "Akaun", "signin": "Log masuk", "cta": "Dapatkan signal percuma" },
+  "nav": {
+    "signals": "Signal",
+    "pricing": "Pelan",
+    "results": "Rekod",
+    "products": "Kedai",
+    "account": "Akaun",
+    "signin": "Log masuk",
+    "cta": "Dapatkan signal percuma",
+    "education": "Pendidikan"
+  },
   "risk": {
     "strip": "Dagangan emas, forex dan CFD secara margin berisiko tinggi dan anda boleh kehilangan lebih daripada deposit awal. 70–80% akaun pelabur runcit rugi apabila berdagang CFD. Prestasi lepas bukan jaminan prestasi akan datang. Semua kandungan untuk tujuan pendidikan sahaja, bukan nasihat kewangan.",
     "ib": "{brand} ialah rakan Introducing Broker HFM dan menerima komisen daripada akaun yang dirujuk."
@@ -14,7 +23,13 @@
     "sample": "Contoh",
     "sample_note": "Format ilustrasi sahaja. Signal sebenar dihantar kepada ahli."
   },
-  "stats": { "members": "Ahli", "signals_month": "Signal bulan ini", "winrate": "Kadar menang (90 hari)", "avg_r": "Purata R", "since": "Berdagang sejak" },
+  "stats": {
+    "members": "Ahli",
+    "signals_month": "Signal bulan ini",
+    "winrate": "Kadar menang (90 hari)",
+    "avg_r": "Purata R",
+    "since": "Berdagang sejak"
+  },
   "doors": {
     "title": "Dua cara masuk",
     "subtitle": "Setiap pelan boleh dibuka dengan dua cara. Pilih yang sesuai.",
@@ -27,34 +42,111 @@
     "guide": "Panduan langkah demi langkah pendaftaran"
   },
   "tiers": {
-    "public": "Awam", "free": "Free", "pro": "Pro", "elite": "Elite",
-    "popular": "Paling popular", "founding": "{n} tempat pertama", "or": "atau",
-    "ib_none": "Akaun HFM, tanpa deposit", "ib_deposit": "Akaun HFM + deposit ${n}", "mo": "/bulan", "yr": "/tahun",
-    "toggle_ib": "Akaun HFM", "toggle_pay": "Broker sendiri", "monthly": "Bulanan", "annual": "Tahunan (percuma 2 bulan)",
-    "choose": "Pilih {tier}", "join_channel": "Sertai channel awam"
+    "public": "Awam",
+    "free": "Free",
+    "pro": "Pro",
+    "elite": "Elite",
+    "popular": "Paling popular",
+    "founding": "{n} tempat pertama",
+    "or": "atau",
+    "ib_none": "Akaun HFM, tanpa deposit",
+    "ib_deposit": "Akaun HFM + deposit ${n}",
+    "mo": "/bulan",
+    "yr": "/tahun",
+    "toggle_ib": "Akaun HFM",
+    "toggle_pay": "Broker sendiri",
+    "monthly": "Bulanan",
+    "annual": "Tahunan (percuma 2 bulan)",
+    "choose": "Pilih {tier}",
+    "join_channel": "Sertai channel awam"
   },
   "features": {
-    "daily_bias": "Bias emas harian", "weekly_outlook": "Tinjauan mingguan", "ebook_free": "Ebook percuma",
-    "free_signals_weekly": "2 signal penuh / minggu", "full_xauusd_signals": "Semua signal XAUUSD live",
-    "pro_group": "Group private", "monthly_report": "Laporan bulanan", "tv_basic_indicator": "Indicator TradingView",
-    "all_instruments": "Semua instrumen", "mt5_suite": "Suite indicator MT5", "copier": "Copier Telegram→MT5",
-    "live_analysis": "Analisis live mingguan", "priority_qa": "Q&A keutamaan", "public_signal_delayed": "1 signal tertunda / hari"
+    "daily_bias": "Bias emas harian",
+    "weekly_outlook": "Tinjauan mingguan",
+    "ebook_free": "Ebook percuma",
+    "free_signals_weekly": "2 signal penuh / minggu",
+    "full_xauusd_signals": "Semua signal XAUUSD live",
+    "pro_group": "Group private",
+    "monthly_report": "Laporan bulanan",
+    "tv_basic_indicator": "Indicator TradingView",
+    "all_instruments": "Semua instrumen",
+    "mt5_suite": "Suite indicator MT5",
+    "copier": "Copier Telegram→MT5",
+    "live_analysis": "Analisis live mingguan",
+    "priority_qa": "Q&A keutamaan",
+    "public_signal_delayed": "1 signal tertunda / hari"
   },
-  "signals": { "latest": "Signal awam terkini", "entry": "Entry", "sl": "Stop", "tp": "TP", "status": "Status", "view_all": "Rekod penuh", "buy": "BUY", "sell": "SELL" },
+  "signals": {
+    "latest": "Signal awam terkini",
+    "entry": "Entry",
+    "sl": "Stop",
+    "tp": "TP",
+    "status": "Status",
+    "view_all": "Rekod penuh",
+    "buy": "BUY",
+    "sell": "SELL"
+  },
   "results": {
-    "title": "Rekod prestasi", "subtitle": "Setiap signal yang ditutup, dikira automatik. Dipaparkan dalam R dan pip, bukan dolar.",
-    "winrate": "Kadar menang", "avg_r": "Purata R", "expectancy": "Jangkaan (R)", "max_dd": "Drawdown maks (R)", "total": "Signal ditutup",
-    "equity": "Lengkung ekuiti (R kumulatif)", "monthly": "Prestasi bulanan", "month": "Bulan", "trades": "Dagangan", "pips": "Pip", "r": "R",
-    "verified": "Pengesahan pihak ketiga", "no_widget": "Widget Myfxbook / FXBlue akan dipaparkan di sini selepas disambung."
+    "title": "Rekod prestasi",
+    "subtitle": "Setiap signal yang ditutup, dikira automatik. Dipaparkan dalam R dan pip, bukan dolar.",
+    "winrate": "Kadar menang",
+    "avg_r": "Purata R",
+    "expectancy": "Jangkaan (R)",
+    "max_dd": "Drawdown maks (R)",
+    "total": "Signal ditutup",
+    "equity": "Lengkung ekuiti (R kumulatif)",
+    "monthly": "Prestasi bulanan",
+    "month": "Bulan",
+    "trades": "Dagangan",
+    "pips": "Pip",
+    "r": "R",
+    "verified": "Pengesahan pihak ketiga",
+    "no_widget": "Widget Myfxbook / FXBlue akan dipaparkan di sini selepas disambung."
   },
-  "products": { "title": "Kedai", "subtitle": "Indicator, ebook dan alat. Ahli Elite dapat suite penuh.", "buy": "Beli", "included": "Termasuk dalam {tier}", "lifetime": "seumur hidup", "monthly": "/bulan", "one_time": "sekali bayar" },
+  "products": {
+    "title": "Kedai",
+    "subtitle": "Indicator, ebook dan alat. Ahli Elite dapat suite penuh.",
+    "buy": "Beli",
+    "included": "Termasuk dalam {tier}",
+    "lifetime": "seumur hidup",
+    "monthly": "/bulan",
+    "one_time": "sekali bayar"
+  },
   "faq": {
     "title": "Soalan lazim",
-    "q1": "Perlu deposit untuk dapat signal?", "a1": "Tidak. Pelan Free hanya perlu akaun HFM guna link kami. Pro dan Elite perlu $100 / $500 dalam akaun anda sendiri, atau bayar bulanan dengan mana-mana broker.",
-    "q2": "Macam mana akaun HFM saya disahkan?", "a2": "Hantar nombor akaun, nama dan screenshot baki dalam bot atau halaman akaun. Kami padankan dengan laporan partner dan buka akses, biasanya dalam 24 jam.",
-    "q3": "Rekod prestasi ni betul?", "a3": "Halaman rekod dikira daripada setiap signal yang kami hantar, termasuk yang rugi. Pengesahan pihak ketiga ditambah bila ada.",
-    "q4": "Boleh batal?", "a4": "Boleh. Pelan berbayar boleh dibatalkan bila-bila masa dari halaman akaun. Akses IB kekal selagi akaun HFM anda aktif."
+    "q1": "Perlu deposit untuk dapat signal?",
+    "a1": "Tidak. Pelan Free hanya perlu akaun HFM guna link kami. Pro dan Elite perlu $100 / $500 dalam akaun anda sendiri, atau bayar bulanan dengan mana-mana broker.",
+    "q2": "Macam mana akaun HFM saya disahkan?",
+    "a2": "Hantar nombor akaun, nama dan screenshot baki dalam bot atau halaman akaun. Kami padankan dengan laporan partner dan buka akses, biasanya dalam 24 jam.",
+    "q3": "Rekod prestasi ni betul?",
+    "a3": "Halaman rekod dikira daripada setiap signal yang kami hantar, termasuk yang rugi. Pengesahan pihak ketiga ditambah bila ada.",
+    "q4": "Boleh batal?",
+    "a4": "Boleh. Pelan berbayar boleh dibatalkan bila-bila masa dari halaman akaun. Akses IB kekal selagi akaun HFM anda aktif."
   },
-  "footer": { "legal": "Undang-undang", "risk": "Pendedahan risiko", "terms": "Terma", "privacy": "Privasi", "ib": "Pendedahan IB", "rights": "Pendidikan sahaja. Bukan nasihat kewangan." },
-  "cta_bar": { "text": "Signal XAUUSD percuma di Telegram", "button": "Sertai" }
+  "footer": {
+    "legal": "Undang-undang",
+    "risk": "Pendedahan risiko",
+    "terms": "Terma",
+    "privacy": "Privasi",
+    "ib": "Pendedahan IB",
+    "rights": "Pendidikan sahaja. Bukan nasihat kewangan."
+  },
+  "cta_bar": {
+    "text": "Signal XAUUSD percuma di Telegram",
+    "button": "Sertai"
+  },
+  "education": {
+    "title": "Pendidikan",
+    "subtitle": "Satu artikel baharu setiap hari tentang masalah sebenar trader dan cara mengatasinya.",
+    "all": "Semua",
+    "empty": "Artikel pertama sedang dalam perjalanan.",
+    "cat_mindset": "Mindset",
+    "cat_risk": "Risiko",
+    "cat_strategy": "Strategi",
+    "cat_execution": "Pelaksanaan",
+    "cat_tools": "Alat",
+    "cta_title": "Nak bincang setup ini?",
+    "cta_body": "Sertai channel percuma dan tanya dalam komuniti.",
+    "cta_button": "Sertai di Telegram"
+  }
 }

@@ -7,6 +7,7 @@ import { CHATS, getBot, sendHtml } from "@/lib/telegram";
 import { tierByKey } from "@/config/tiers";
 import { broadcasts } from "@/db/schema";
 import { sendBroadcast } from "@/lib/broadcast";
+import { ensureDailyArticle } from "@/lib/articles";
 import { isNull, lte } from "drizzle-orm";
 
 const GRACE_DAYS = 7;
@@ -33,6 +34,10 @@ async function main() {
   }
   const due = await db.select({ id: broadcasts.id }).from(broadcasts).where(and(isNull(broadcasts.sentAt), lte(broadcasts.scheduledAt, new Date())));
   for (const b of due) console.log(`[jobs] broadcast ${b.id} sent to ${await sendBroadcast(b.id)}`);
+  if (process.env.ANTHROPIC_API_KEY) {
+    const a = await ensureDailyArticle().catch((e) => { console.error("[jobs] article", e); return null; });
+    console.log(a ? `[jobs] article published: ${a.slug}` : "[jobs] article: nothing to do");
+  }
   process.exit(0);
 }
 main().catch((e) => { console.error(e); process.exit(1); });

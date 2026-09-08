@@ -189,3 +189,22 @@ export const campaigns = pgTable("campaigns", {
   source: text("source"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+// ---- Education ----
+export const articles = pgTable("articles", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  slug: text("slug").notNull().unique(),
+  topicKey: text("topic_key").notNull(),
+  category: text("category").notNull().default("mindset"), // mindset | risk | strategy | execution | tools
+  titleMs: text("title_ms").notNull(),
+  titleEn: text("title_en").notNull(),
+  excerptMs: text("excerpt_ms").notNull(),
+  excerptEn: text("excerpt_en").notNull(),
+  bodyMs: text("body_ms").notNull(), // markdown
+  bodyEn: text("body_en").notNull(), // markdown
+  readMinutes: integer("read_minutes").notNull().default(5),
+  model: text("model"),
+  published: boolean("published").notNull().default(true),
+  publishedAt: timestamp("published_at").notNull().defaultNow(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (t) => [index("articles_pub_idx").on(t.publishedAt)]);
