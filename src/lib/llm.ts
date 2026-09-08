@@ -57,6 +57,27 @@ export async function discoverGeminiModels(key: string): Promise<string[]> {
   } catch { return []; }
 }
 
+const listCache = new Map<string, { at: number; models: string[] }>();
+/** Ask an OpenAI-compatible provider (groq, openrouter) which chat models exist; ranked by size/recency, cached 1h. */
+export async function discoverOpenAiModels(p: "groq" | "openrouter", key: string): Promise<string[]> {
+  const hit = listCache.get(p);
+  if (hit && Date.now() - hit.at < 36e5) return hit.models;
+  try {
+    const base = PROVIDERS[p].url.replace(/\/chat\/completions$/, "");
+    const r = await fetch(`${base}/models`, { headers: { authorization: `Bearer ${key}` }, signal: AbortSignal.timeout(15_000) });
+    if (!r.ok) return [];
+    const j = (await r.json()) as { data?: { id: string; active?: boolean; pricing?: { prompt?: string } }[] };
+    const bad = /(whisper|tts|guard|embed|vision|image|audio|moderation|rerank|allam|compound|safeguard|prompt-guard)/i;
+    let ids = (j.data ?? []).filter((m) => m.active !== false && !bad.test(m.id)).map((m) => ({ id: m.id, free: m.pricing?.prompt === "0" || /:free$/.test(m.id) }));
+    if (p === "openrouter") ids = ids.filter((m) => m.free); // only free-tier routes
+    const size = (id: string) => { const m = id.match(/(\d{2,3})b/i); return m ? Number(m[1]) : /maverick|scout|gpt-oss|deepseek|qwen3/i.test(id) ? 70 : 10; };
+    const score = (id: string) => (/llama/i.test(id) ? 30 : 0) + (/instruct|versatile|chat/i.test(id) ? 10 : 0) + Math.min(size(id), 200) + (/preview|exp/i.test(id) ? -15 : 0);
+    const models = ids.map((m) => m.id).sort((a, b) => score(b) - score(a));
+    listCache.set(p, { at: Date.now(), models });
+    return models;
+  } catch { return []; }
+}
+
 /** Native Gemini generateContent fallback (used when the OpenAI-compatible route 404s). */
 async function geminiNative<T>(key: string, model: string, args: { system: string; user: string; schema: Record<string, unknown>; maxTokens?: number }): Promise<{ json: T; model: string }> {
   const r = await fetch(`${GEMINI_NATIVE}/models/${model}:generateContent?key=${encodeURIComponent(key)}`, {
@@ -82,10 +103,8 @@ export async function generateJson<T>(args: { system: string; user: string; sche
   const key = process.env[spec.keyEnv];
   if (!key) throw new Error(`${spec.keyEnv} not set`);
   let models = process.env.LLM_MODEL ? [process.env.LLM_MODEL, ...spec.models] : spec.models;
-  if (p === "gemini") {
-    const found = await discoverGeminiModels(key);
-    if (found.length) models = [...new Set([...(process.env.LLM_MODEL ? [process.env.LLM_MODEL] : []), ...found.slice(0, 4), ...spec.models])];
-  }
+  const found = p === "gemini" ? await discoverGeminiModels(key) : await discoverOpenAiModels(p, key);
+  if (found.length) models = [...new Set([...(process.env.LLM_MODEL ? [process.env.LLM_MODEL] : []), ...found.slice(0, 4), ...spec.models])];
   let lastErr = "";
   let sawNotFound = false;
   for (const model of models) {
