@@ -5,6 +5,7 @@ import { StatTile } from "@/components/StatTile";
 import { HeroField } from "@/components/HeroField";
 import { LiveSignalCard } from "@/components/LiveSignalCard";
 import { evaluateRunningSignals } from "@/lib/evaluate";
+import { rebaseSeedSignals } from "@/lib/auto-signal";
 import { SignalCard } from "@/components/SignalCard";
 import { TierCards } from "@/components/TierCards";
 import { closedSignals, computeStats, latestSignals, recent } from "@/lib/stats";
@@ -17,6 +18,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations();
+  await rebaseSeedSignals().catch((e) => console.error("[rebase]", e));
   await evaluateRunningSignals().catch((e) => console.error("[evaluate]", e));
   const [closed, latest, prods] = await Promise.all([
     closedSignals().catch(() => []), latestSignals(["public"], 6).catch(() => []),

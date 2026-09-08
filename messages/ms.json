@@ -21,7 +21,8 @@
     "cta_primary": "Dapatkan signal percuma",
     "cta_secondary": "Lihat pelan",
     "sample": "Contoh",
-    "sample_note": "Format ilustrasi sahaja. Signal sebenar dihantar kepada ahli."
+    "sample_note": "Format ilustrasi sahaja. Signal sebenar dihantar kepada ahli.",
+    "live_note": "Setup live daripada data pasaran, dikemas kini ikut harga. Pendidikan sahaja, bukan nasihat."
   },
   "stats": {
     "members": "Ahli",
@@ -84,7 +85,10 @@
     "status": "Status",
     "view_all": "Rekod penuh",
     "buy": "BUY",
-    "sell": "SELL"
+    "sell": "SELL",
+    "type_scalping": "Scalping",
+    "type_intraday": "Intraday",
+    "type_swing": "Swing"
   },
   "results": {
     "title": "Rekod prestasi",

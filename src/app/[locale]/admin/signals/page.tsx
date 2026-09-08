@@ -11,6 +11,7 @@ export default async function AdminSignals() {
       <form action={adminCreateSignal} className="glass rounded-2xl p-5 grid gap-3 md:grid-cols-4">
         <h2 className="md:col-span-4 font-semibold">Post signal</h2>
         <input name="instrument" defaultValue="XAUUSD" className={inp} />
+        <select name="type" defaultValue="intraday" className={inp}><option value="scalping">Scalping</option><option value="intraday">Intraday</option><option value="swing">Swing</option></select>
         <select name="side" className={inp}><option value="buy">BUY</option><option value="sell">SELL</option></select>
         <select name="visibility" className={inp}><option value="pro">Pro + Elite</option><option value="elite">Elite only</option><option value="free">Free pick (all groups)</option><option value="public">Public (delayed/teaser)</option></select>
         <label className="text-sm flex items-center gap-2"><input type="checkbox" name="newsLockout" /> News lockout</label>
@@ -24,7 +25,7 @@ export default async function AdminSignals() {
         {rows.map((s) => (
           <form key={s.id} action={adminUpdateSignal} className="glass rounded-xl p-4 grid gap-2 md:grid-cols-6 items-center text-sm">
             <input type="hidden" name="id" value={s.id} />
-            <div className="font-mono">{s.instrument} <span className={s.side === "buy" ? "text-win" : "text-loss"}>{s.side.toUpperCase()}</span><div className="text-muted text-xs">{s.entry} / {s.sl}</div></div>
+            <div className="font-mono">{s.instrument} <span className="text-xs text-muted">{s.type}</span> <span className={s.side === "buy" ? "text-win" : "text-loss"}>{s.side.toUpperCase()}</span><div className="text-muted text-xs">{s.entry} / {s.sl}</div></div>
             <div className="text-muted text-xs">{s.publishedAt.toISOString().slice(0, 16).replace("T", " ")}<br />{s.visibility} · {s.status}</div>
             <select name="status" defaultValue={s.status} className={inp}>{["running", "tp1", "tp2", "tp3", "sl", "be", "closed"].map((x) => <option key={x}>{x}</option>)}</select>
             <input name="resultR" defaultValue={s.resultR ?? ""} placeholder="R" className={inp} />

@@ -9,12 +9,14 @@ import { broadcasts } from "@/db/schema";
 import { sendBroadcast } from "@/lib/broadcast";
 import { ensureDailyArticle } from "@/lib/articles";
 import { evaluateRunningSignals } from "@/lib/evaluate";
+import { ensureAutoSignal } from "@/lib/auto-signal";
 import { isNull, lte } from "drizzle-orm";
 
 const GRACE_DAYS = 7;
 
 async function main() {
   console.log("[jobs] evaluate", await evaluateRunningSignals({ force: true }).catch((e) => String(e)));
+  console.log("[jobs] auto-signal", (await ensureAutoSignal(true).catch((e) => String(e)))?.toString().slice(0, 60));
   const cutoff = new Date(Date.now() - GRACE_DAYS * 864e5);
   const stale = await db.select().from(entitlements).where(and(eq(entitlements.status, "active"), lt(entitlements.expiresAt, cutoff)));
   console.log(`[jobs] expiring ${stale.length} entitlements`);

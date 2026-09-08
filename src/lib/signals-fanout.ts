@@ -7,10 +7,10 @@ type Sig = typeof signals.$inferSelect;
 
 export function formatFull(s: Sig) {
   const tps = [s.tp1, s.tp2, s.tp3].filter(Boolean).map((v, i) => `TP${i + 1}: <code>${v}</code>`).join("\n");
-  return `🥇 <b>${s.instrument} ${s.side.toUpperCase()}</b>${s.newsLockout ? " ⚠️ news" : ""}\n\nEntry: <code>${s.entry}</code>\nSL: <code>${s.sl}</code>\n${tps}\n\n${s.note ? s.note + "\n\n" : ""}<i>Risk max 1% per setup. Education only.</i>`;
+  return `🥇 <b>${s.instrument} ${s.side.toUpperCase()}</b> · ${s.type}${s.newsLockout ? " ⚠️ news" : ""}\n\nEntry: <code>${s.entry}</code>\nSL: <code>${s.sl}</code>\n${tps}\n\n${s.note ? s.note + "\n\n" : ""}<i>Risk max 1% per setup. Education only.</i>`;
 }
 export function formatTeaser(s: Sig) {
-  return `🥇 <b>${s.instrument} ${s.side.toUpperCase()}</b> setup posted to members.\nEntry zone: <code>${s.entry}</code>\n\nFull SL/TP in the private group. /start the bot to join.`;
+  return `🥇 <b>${s.instrument} ${s.side.toUpperCase()}</b> · ${s.type} setup posted to members.\nEntry zone: <code>${s.entry}</code>\n\nFull SL/TP in the private group. /start the bot to join.`;
 }
 
 /** Post a new signal to the right chats; store message ids for later edits. */

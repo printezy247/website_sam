@@ -21,7 +21,8 @@
     "cta_primary": "Get free signals",
     "cta_secondary": "See plans",
     "sample": "Sample",
-    "sample_note": "Illustrative format only. Real signals are posted to members."
+    "sample_note": "Illustrative format only. Real signals are posted to members.",
+    "live_note": "Live setup from market data, updated as price moves. Education only, not advice."
   },
   "stats": {
     "members": "Members",
@@ -84,7 +85,10 @@
     "status": "Status",
     "view_all": "Full track record",
     "buy": "BUY",
-    "sell": "SELL"
+    "sell": "SELL",
+    "type_scalping": "Scalping",
+    "type_intraday": "Intraday",
+    "type_swing": "Swing"
   },
   "results": {
     "title": "Track record",
