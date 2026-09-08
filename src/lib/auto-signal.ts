@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { signals } from "@/db/schema";
 import { getCandlesSince, getQuote } from "@/lib/quotes";
 import { fanoutSignal } from "@/lib/signals-fanout";
+import { inNewsWindow, nextRedEvent } from "@/lib/news";
 
 export const AUTO_NOTE = "Auto setup from live market data. Education only.";
 export type SignalType = "scalping" | "intraday" | "swing";
@@ -23,6 +24,9 @@ export async function ensureAutoSignal(force = false) {
 
   const q = await getQuote("XAUUSD");
   if (!q || Date.now() - new Date(q.ts).getTime() > 30 * 60_000) return null; // market closed / stale
+  if (await inNewsWindow(30).catch(() => null)) return null; // red USD news ±30 min: no new setups
+  const upcoming = await nextRedEvent().catch(() => null);
+  const newsLockout = Boolean(upcoming && upcoming.date.getTime() - Date.now() < 2 * 36e5);
   const candles = await getCandlesSince("XAUUSD", Date.now() - 6 * 36e5);
   const recent = candles.slice(-6);
   const momentum = recent.length >= 2 ? recent[recent.length - 1].c - recent[0].o : q.changePct;
@@ -34,7 +38,7 @@ export async function ensureAutoSignal(force = false) {
   const [row] = await db.insert(signals).values({
     instrument: "XAUUSD", type, side, entry: f(entry), sl: f(entry - dir * risk),
     tp1: f(entry + dir * risk), tp2: f(entry + dir * 2 * risk), tp3: f(entry + dir * 3 * risk),
-    note: AUTO_NOTE, visibility: "public",
+    note: AUTO_NOTE, visibility: "public", newsLockout,
   }).returning();
   await fanoutSignal(row.id).catch((e) => console.error("[auto-signal] fanout", e));
   return row;

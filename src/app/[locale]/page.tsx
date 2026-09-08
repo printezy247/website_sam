@@ -12,6 +12,7 @@ import { closedSignals, computeStats, latestSignals, recent } from "@/lib/stats"
 import { db } from "@/db";
 import { products, signals } from "@/db/schema";
 import { GoldChart } from "@/components/GoldChart";
+import { NewsCalendar } from "@/components/NewsCalendar";
 import { desc, eq } from "drizzle-orm";
 import { fmtPct } from "@/lib/utils";
 import { JsonLd, pageMetadata } from "@/lib/seo";
@@ -71,7 +72,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       </section>
 
       {/* Live chart */}
-      <section className="mx-auto max-w-6xl px-4 mt-10"><GoldChart lines={lines} labels={chartLabels} /></section>
+      <section className="mx-auto max-w-6xl px-4 mt-10 grid gap-4 lg:grid-cols-[2fr_1fr]"><GoldChart lines={lines} labels={chartLabels} /><NewsCalendar /></section>
 
       {/* Two doors */}
       <section className="mx-auto max-w-6xl px-4 mt-24">

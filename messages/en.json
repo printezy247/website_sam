@@ -216,5 +216,12 @@
     "tp": "TP",
     "empty": "Chart data unavailable right now.",
     "asOf": "Updated"
+  },
+  "news": {
+    "title": "High-impact news this week",
+    "source": "Forex Factory · USD",
+    "hint": "Spreads widen and price moves fast around red news. Auto setups pause 30 minutes before and after.",
+    "forecast": "Forecast",
+    "previous": "Previous"
   }
 }

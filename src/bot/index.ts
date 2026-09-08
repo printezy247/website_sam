@@ -21,7 +21,7 @@ const T = {
     status: (tier: string, exp: string) => `Pelan semasa: <b>${tier.toUpperCase()}</b>${exp}`,
     no_link: "Akaun Telegram ini belum dipautkan ke akaun web. Log masuk di laman web dan pautkan Telegram, atau guna /verify.",
     plans: "Pelan (bayar bulanan, atau percuma melalui HFM):",
-    support: "Hubungi sokongan:", help: "Arahan: /start /verify /status /upgrade /plans /products /ebook /support",
+    support: "Hubungi sokongan:", help: "Arahan: /start /verify /status /upgrade /plans /products /ebook /news /support",
   },
   en: {
     welcome: (n: string) => `Welcome to <b>${n}</b> 👋\n\nGold (XAUUSD) signals with full transparency. Two ways in:\n\n<b>A.</b> Open an HFM account under our link — Free with no deposit, Pro $100, Elite $500.\n<b>B.</b> Pay a monthly plan on your own broker.\n\n⚠️ CFD trading carries high risk. Education only, not financial advice.`,
@@ -32,7 +32,7 @@ const T = {
     status: (tier: string, exp: string) => `Current plan: <b>${tier.toUpperCase()}</b>${exp}`,
     no_link: "This Telegram account is not linked to a web account yet. Sign in on the website and link Telegram, or use /verify.",
     plans: "Plans (pay monthly, or free via HFM):",
-    support: "Contact support:", help: "Commands: /start /verify /status /upgrade /plans /products /ebook /support",
+    support: "Contact support:", help: "Commands: /start /verify /status /upgrade /plans /products /ebook /news /support",
   },
 };
 const lang = (ctx: Context) => (ctx.from?.language_code?.startsWith("ms") || ctx.from?.language_code?.startsWith("id") ? "ms" : "en");
@@ -150,6 +150,14 @@ export function createBot(token: string) {
     else await ctx.declineChatJoinRequest(ctx.chatJoinRequest.from.id).catch(() => {});
   });
 
+  bot.command("news", async (ctx) => {
+    const ms = lang(ctx) === "ms";
+    const { getHighImpact, fmtMyt } = await import("@/lib/news");
+    const ev = (await getHighImpact().catch(() => [])).slice(0, 8);
+    if (!ev.length) return ctx.reply(ms ? "Tiada berita impak tinggi USD dalam feed buat masa ini." : "No high-impact USD news in the feed right now.");
+    const lines = ev.map((e) => `🔴 <b>${escapeHtml(e.title)}</b>\n${fmtMyt(e.date)} MYT${e.forecast ? ` · ${ms ? "ramalan" : "fcst"} ${escapeHtml(e.forecast)}` : ""}`);
+    return ctx.reply(`${ms ? "📅 <b>Berita impak tinggi minggu ini</b>" : "📅 <b>High-impact news this week</b>"}\n\n${lines.join("\n\n")}\n\n<i>${ms ? "Elak entry baru 30 minit sebelum/selepas berita merah." : "Avoid new entries 30 min before/after red news."}</i>`, { parse_mode: "HTML" });
+  });
   bot.command("support", async (ctx) => ctx.reply(`${T[lang(ctx)].support} ${BRAND.telegram.support}`));
   bot.command("help", async (ctx) => ctx.reply(T[lang(ctx)].help));
 

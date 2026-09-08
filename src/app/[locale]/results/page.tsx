@@ -3,6 +3,7 @@ import { pageMetadata } from "@/lib/seo";
 import { StatTile } from "@/components/StatTile";
 import { EquityCurve } from "@/components/EquityCurve";
 import { GoldChart } from "@/components/GoldChart";
+import { NewsCalendar } from "@/components/NewsCalendar";
 import { closedSignals, computeStats, monthlyBreakdown } from "@/lib/stats";
 import { BRAND } from "@/config/brand";
 import { fmtPct } from "@/lib/utils";
@@ -43,7 +44,7 @@ export default async function Results({ params, searchParams }: { params: Promis
         <StatTile label={t("expectancy")} value={s.n ? s.expectancy.toFixed(2) : "—"} />
         <StatTile label={t("max_dd")} value={s.n ? `-${s.maxDdR.toFixed(2)}` : "—"} />
       </div>
-      <div className="mt-10"><GoldChart labels={{ title: tc("title"), entry: tc("entry"), sl: tc("sl"), tp: tc("tp"), empty: tc("empty"), asOf: tc("asOf") }} /></div>
+      <div className="mt-10 grid gap-4 lg:grid-cols-[2fr_1fr]"><GoldChart labels={{ title: tc("title"), entry: tc("entry"), sl: tc("sl"), tp: tc("tp"), empty: tc("empty"), asOf: tc("asOf") }} /><NewsCalendar /></div>
       <div className="mt-10 glass rounded-2xl p-5">
         <h2 className="font-semibold mb-3">{t("equity")}</h2>
         <EquityCurve data={s.equity} />
