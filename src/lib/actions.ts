@@ -7,6 +7,7 @@ import { ibAccounts, signals, signalEvents, tvAccessRequests, users } from "@/db
 import { approveIbAccount, rejectIbAccount } from "@/lib/ib";
 import { fanoutSignal, fanoutUpdate } from "@/lib/signals-fanout";
 import { grantEntitlement } from "@/lib/entitlements";
+import { BRAND } from "@/config/brand";
 import type { TierKey } from "@/config/tiers";
 
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
@@ -200,4 +201,65 @@ export async function adminBuildRecap(fd: FormData) {
   const r = await buildRecap(weekStartOf(new Date(), weeksAgo), true);
   if (fd.get("post") === "on") await postRecap(r.id);
   revalidatePath("/", "layout");
+}
+
+// ---- manual article CMS ----
+export async function adminSaveArticle(fd: FormData) {
+  if (!(await requireAdmin())) throw new Error("forbidden");
+  const { slugify } = await import("@/lib/articles");
+  const id = str(fd, "id");
+  const titleEn = str(fd, "titleEn"), titleMs = str(fd, "titleMs") || titleEn;
+  if (!titleEn && !titleMs) throw new Error("title required");
+  const bodyEn = str(fd, "bodyEn"), bodyMs = str(fd, "bodyMs") || bodyEn;
+  const plain = (md: string) => md.replace(/^#+\s.*$/gm, " ").replace(/[*_`>#-]+/g, " ").replace(/\s+/g, " ").trim();
+  const row = {
+    titleEn: titleEn || titleMs, titleMs, excerptEn: str(fd, "excerptEn") || plain(bodyEn || bodyMs).slice(0, 157) + "…", excerptMs: str(fd, "excerptMs") || plain(bodyMs || bodyEn).slice(0, 157) + "…",
+    bodyEn: bodyEn || bodyMs, bodyMs, category: str(fd, "category") || "mindset", topicKey: str(fd, "topicKey") || "manual",
+    readMinutes: Math.min(30, Math.max(1, Number(str(fd, "readMinutes")) || Math.ceil((bodyEn || bodyMs).split(/\s+/).length / 200))),
+    published: fd.get("published") === "on", model: null as string | null,
+  };
+  let slug = str(fd, "slug") || slugify(row.titleEn) || `article-${Date.now().toString(36)}`;
+  slug = slugify(slug) || slug;
+  const [clash] = await db.select({ id: articlesTable.id }).from(articlesTable).where(eq(articlesTable.slug, slug));
+  if (clash && clash.id !== id) slug = `${slug}-${Date.now().toString(36)}`;
+  const pub = str(fd, "publishedAt");
+  const publishedAt = pub && !Number.isNaN(Date.parse(pub)) ? new Date(pub) : undefined;
+  let saved: { id: string };
+  if (id) [saved] = await db.update(articlesTable).set({ ...row, slug, ...(publishedAt ? { publishedAt } : {}) }).where(eq(articlesTable.id, id)).returning({ id: articlesTable.id });
+  else [saved] = await db.insert(articlesTable).values({ ...row, slug, ...(publishedAt ? { publishedAt } : {}) }).returning({ id: articlesTable.id });
+  if (fd.get("announce") === "on" && row.published) await announceArticle(saved.id).catch(() => {});
+  revalidatePath("/", "layout");
+  redirect(`/admin/articles/edit?id=${saved.id}&r=${encodeURIComponent("saved")}`);
+}
+
+export async function adminDeleteArticle(fd: FormData) {
+  if (!(await requireAdmin())) throw new Error("forbidden");
+  await db.delete(articlesTable).where(eq(articlesTable.id, str(fd, "id")));
+  revalidatePath("/", "layout");
+  redirect("/admin/articles?r=deleted");
+}
+
+/** Fill the missing language (title/excerpt/body) from the one that is written, using the configured LLM. */
+export async function adminTranslateArticle(fd: FormData) {
+  if (!(await requireAdmin())) throw new Error("forbidden");
+  const id = str(fd, "id");
+  const [a] = await db.select().from(articlesTable).where(eq(articlesTable.id, id));
+  if (!a) throw new Error("not found");
+  const { generateJson, llmConfigured } = await import("@/lib/llm");
+  if (!llmConfigured()) redirect(`/admin/articles/edit?id=${id}&r=${encodeURIComponent("error: no LLM key set")}`);
+  const from = fd.get("from") === "ms" ? "ms" : "en";
+  const src = from === "ms" ? { title: a.titleMs, excerpt: a.excerptMs, body: a.bodyMs } : { title: a.titleEn, excerpt: a.excerptEn, body: a.bodyEn };
+  const target = from === "ms" ? "English" : "Bahasa Melayu (natural Malaysian register, keep trading terms like entry, stop loss, take profit in English)";
+  let msg = "translated";
+  try {
+    const { json } = await generateJson<{ title: string; excerpt: string; body: string }>({
+      system: `You translate trading-education articles for ${BRAND.name}. Translate faithfully into ${target}. Keep markdown structure (H2 headings, lists, bold). Education only, no promises. Return JSON {"title","excerpt","body"}.`,
+      user: `TITLE: ${src.title}\n\nEXCERPT: ${src.excerpt}\n\nBODY:\n${src.body}`,
+      schema: { type: "object", properties: { title: { type: "string" }, excerpt: { type: "string" }, body: { type: "string" } }, required: ["title", "excerpt", "body"] }, maxTokens: 6000,
+    });
+    const set = from === "ms" ? { titleEn: json.title, excerptEn: json.excerpt.slice(0, 160), bodyEn: json.body } : { titleMs: json.title, excerptMs: json.excerpt.slice(0, 160), bodyMs: json.body };
+    await db.update(articlesTable).set(set).where(eq(articlesTable.id, id));
+  } catch (e) { msg = `error: ${(e as Error).message}`; }
+  revalidatePath("/", "layout");
+  redirect(`/admin/articles/edit?id=${id}&r=${encodeURIComponent(msg)}`);
 }

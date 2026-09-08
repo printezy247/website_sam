@@ -44,7 +44,7 @@
 - 🚪 **Two doors, one ladder** — open an HFM account under our IB *or* pay monthly on any broker
 - 🛒 **Store** — TradingView + MT5 indicators, ebooks, copier, mentorship
 - 📈 **Public track record** — win rate, R, expectancy, drawdown, losses included
-- 🎓 **Education** — one bilingual article every day, written by a free LLM
+- 🎓 **Education** — one bilingual article every day from a free LLM, plus a markdown CMS for your own posts
 - 🧲 **Capture & convert** — ebook modal → 3-email drip · support chat · campaign analytics
 
 </td>
@@ -240,11 +240,11 @@ sequenceDiagram
 | 🏠 `/` | Hero field, live signal card, gold chart, news calendar, two doors, tier cards, FAQ (JSON-LD), ebook modal |
 | 📈 `/results` | Win rate, avg R, expectancy, max DD, equity curve, monthly table, chart + news, last week's recap, Myfxbook slot |
 | 💳 `/pricing` | Door toggle (HFM / own broker), monthly / annual, feature matrix, door comparison |
-| 🎓 `/education` | One bilingual article per day (40-topic bank), category filters |
+| 🎓 `/education` | One bilingual article per day (40-topic bank) plus your own posts · search · category filters · sticky table of contents · reading progress · interactive checklists · share · related & prev/next |
 | 🛒 `/products` | Indicators, ebooks, copier · sticky buy bar on product pages |
 | 🧑‍💻 `/dashboard` | Personal stats, equity curve, referral leaderboard, share links |
 | 👤 `/account` | Plan, Telegram link / unlink, HFM verification, TradingView, downloads, licences, referral |
-| 🛡️ `/admin` | Signals, IB approvals + CSV import, broadcasts, TV queue, products, articles, users, leads, analytics, recap |
+| 🛡️ `/admin` | Signals, IB approvals + CSV import, broadcasts, TV queue, products, article CMS (write / edit / delete, AI fills the other language), users, leads, analytics, recap |
 
 <details>
 <summary><b>🔎 SEO & growth built in</b></summary>

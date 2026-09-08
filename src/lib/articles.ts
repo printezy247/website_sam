@@ -129,4 +129,5 @@ export async function listArticles(limit = 30, category?: string) {
     .orderBy(desc(articles.publishedAt)).limit(limit);
 }
 export const CATEGORIES = [...new Set(TOPICS.map((t) => t.category))];
+export const CATEGORY_EMOJI: Record<string, string> = { mindset: "🧠", risk: "🛡️", strategy: "🎯", execution: "⚡", tools: "🧰" };
 
