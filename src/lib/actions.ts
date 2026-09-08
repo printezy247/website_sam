@@ -211,8 +211,9 @@ export async function adminSaveArticle(fd: FormData) {
   const titleEn = str(fd, "titleEn"), titleMs = str(fd, "titleMs") || titleEn;
   if (!titleEn && !titleMs) throw new Error("title required");
   const bodyEn = str(fd, "bodyEn"), bodyMs = str(fd, "bodyMs") || bodyEn;
+  const plain = (md: string) => md.replace(/^#+\s.*$/gm, " ").replace(/[*_`>#-]+/g, " ").replace(/\s+/g, " ").trim();
   const row = {
-    titleEn: titleEn || titleMs, titleMs, excerptEn: str(fd, "excerptEn") || (bodyEn || bodyMs).slice(0, 160), excerptMs: str(fd, "excerptMs") || (bodyMs || bodyEn).slice(0, 160),
+    titleEn: titleEn || titleMs, titleMs, excerptEn: str(fd, "excerptEn") || plain(bodyEn || bodyMs).slice(0, 157) + "…", excerptMs: str(fd, "excerptMs") || plain(bodyMs || bodyEn).slice(0, 157) + "…",
     bodyEn: bodyEn || bodyMs, bodyMs, category: str(fd, "category") || "mindset", topicKey: str(fd, "topicKey") || "manual",
     readMinutes: Math.min(30, Math.max(1, Number(str(fd, "readMinutes")) || Math.ceil((bodyEn || bodyMs).split(/\s+/).length / 200))),
     published: fd.get("published") === "on", model: null as string | null,

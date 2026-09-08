@@ -23,8 +23,8 @@ export default async function Article({ params }: { params: Promise<{ locale: st
   if (!a || !a.published) notFound();
   const ms = locale === "ms";
   const [[prev], [next], related] = await Promise.all([
-    db.select({ slug: articles.slug, titleMs: articles.titleMs, titleEn: articles.titleEn }).from(articles).where(and(eq(articles.published, true), lt(articles.publishedAt, a.publishedAt))).orderBy(desc(articles.publishedAt)).limit(1),
-    db.select({ slug: articles.slug, titleMs: articles.titleMs, titleEn: articles.titleEn }).from(articles).where(and(eq(articles.published, true), gt(articles.publishedAt, a.publishedAt))).orderBy(articles.publishedAt).limit(1),
+    db.select({ slug: articles.slug, titleMs: articles.titleMs, titleEn: articles.titleEn }).from(articles).where(and(eq(articles.published, true), ne(articles.id, a.id), lt(articles.publishedAt, a.publishedAt))).orderBy(desc(articles.publishedAt)).limit(1),
+    db.select({ slug: articles.slug, titleMs: articles.titleMs, titleEn: articles.titleEn }).from(articles).where(and(eq(articles.published, true), ne(articles.id, a.id), gt(articles.publishedAt, a.publishedAt))).orderBy(articles.publishedAt).limit(1),
     db.select({ slug: articles.slug, titleMs: articles.titleMs, titleEn: articles.titleEn, readMinutes: articles.readMinutes, category: articles.category }).from(articles).where(and(eq(articles.published, true), eq(articles.category, a.category), ne(articles.id, a.id))).orderBy(desc(articles.publishedAt)).limit(3),
   ]);
   const body = ms ? a.bodyMs : a.bodyEn;
