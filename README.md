@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<a href="https://websitesam-production.up.railway.app"><img src="docs/assets/hero.svg" width="100%" alt="Sam Trading Platform — live XAUUSD signals" /></a>
+<a href="https://websitesam-production.up.railway.app"><img src="docs/assets/hero.svg" width="100%" alt="SAMBANGGOLD — live XAUUSD signals" /></a>
 
 <br/>
 
@@ -38,7 +38,9 @@
 
 ## ✨ Overview
 
-> A complete monetization system for a gold-trading channel. Brand-swappable: the name **"Sam"** is a placeholder behind `src/config/brand.ts`.
+> **SAMBANGGOLD** — the complete monetization system behind Sam's XAUUSD signal & education channel. Brand kit (Anton wordmark, SBG monogram, the hammering-robot mascot) lives in `public/brand/`; strings in `src/config/brand.ts`.
+
+<div align="center"><img src="public/brand/wordmark.svg" width="380" alt="SAMBANGGOLD wordmark" />&nbsp;&nbsp;<img src="public/brand/monogram.svg" width="96" alt="SBG monogram" /></div>
 
 <table>
 <tr>
@@ -64,6 +66,7 @@
 | 🗄️ Data | Railway Postgres · Drizzle |
 | 💳 Pay | Stripe · NOWPayments (USDT) |
 | 🤖 Bot | grammY webhook · 12 commands |
+| 🎨 Brand | Anton wordmark · SBG monogram · animated mascot |
 | 📡 Feeds | Yahoo Finance · Forex Factory |
 | 🧠 LLM | Gemini · Groq · OpenRouter · Claude |
 | 🔐 Auth | Magic link · Google · Telegram |

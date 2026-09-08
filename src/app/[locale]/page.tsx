@@ -14,6 +14,7 @@ import { products, signals } from "@/db/schema";
 import { GoldChart } from "@/components/GoldChart";
 import { NewsCalendar } from "@/components/NewsCalendar";
 import { EbookClaim } from "@/components/EbookClaim";
+import { Mascot } from "@/components/Mascot";
 import { desc, eq } from "drizzle-orm";
 import { fmtPct } from "@/lib/utils";
 import { JsonLd, pageMetadata } from "@/lib/seo";
@@ -52,8 +53,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         <div className="relative mx-auto max-w-6xl px-4 py-20 md:py-28 grid gap-10 md:grid-cols-2 items-center">
           <div>
             <span className="inline-block text-xs text-gold border border-gold/30 rounded-full px-3 py-1">{t("hero.badge", { since: BRAND.since })}</span>
-            <h1 className="mt-5 text-4xl md:text-6xl font-semibold tracking-tight leading-[1.05]">
-              {t("hero.title")} <span className="text-gold">{t("hero.title2")}</span>
+            <h1 className="mt-5 font-display uppercase text-5xl md:text-7xl leading-[0.95]">
+              <span className="text-chrome">{t("hero.title")}</span> <span className="text-goldgrad">{t("hero.title2")}</span>
             </h1>
             <p className="mt-5 text-muted text-lg max-w-xl">{t("hero.subtitle")}</p>
             <div className="mt-8 flex flex-wrap gap-3">
@@ -61,7 +62,10 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
               <Link href="/pricing" className="rounded-md border border-border px-6 py-3 hover:border-gold/50">{t("hero.cta_secondary")}</Link>
             </div>
           </div>
-          <LiveSignalCard />
+          <div className="relative">
+            <div className="absolute -top-10 -right-6 md:-top-16 md:-right-10 w-[180px] md:w-[260px] pointer-events-none drop-shadow-[0_20px_40px_rgba(212,175,55,.25)]"><Mascot size={260} priority /></div>
+            <div className="relative pt-16 md:pt-24"><LiveSignalCard /></div>
+          </div>
         </div>
       </section>
 

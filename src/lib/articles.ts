@@ -131,3 +131,6 @@ export async function listArticles(limit = 30, category?: string) {
 export const CATEGORIES = [...new Set(TOPICS.map((t) => t.category))];
 export const CATEGORY_EMOJI: Record<string, string> = { mindset: "🧠", risk: "🛡️", strategy: "🎯", execution: "⚡", tools: "🧰" };
 
+
+/** Published within the last 48 hours (kept out of components for the purity lint). */
+export function isFresh(d: Date, hours = 48) { return Date.now() - d.getTime() < hours * 36e5; }
