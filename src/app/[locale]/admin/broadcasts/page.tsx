@@ -13,7 +13,7 @@ export default async function Broadcasts() {
         <textarea name="textMs" required rows={5} placeholder="Teks Bahasa Melayu (HTML ok: <b>, <a>)" className={inp} />
         <textarea name="textEn" required rows={5} placeholder="English text" className={inp} />
         <label className="text-sm">Tiers (empty = everyone linked)
-          <select name="tiers" multiple className={`${inp} h-24`}><option>public</option><option>free</option><option>pro</option><option>elite</option></select></label>
+          <select name="tiers" multiple className={`${inp} h-24`}><option value="public">Public</option><option value="free">General</option><option value="pro">A-Team</option><option value="elite">Rambo</option></select></label>
         <label className="text-sm">Schedule (UTC, optional)<input type="datetime-local" name="scheduledAt" className={inp} /></label>
         <button className="md:col-span-2 rounded-md bg-gold text-black font-semibold py-2">Save</button>
       </form>

@@ -34,6 +34,11 @@ export const FEATURE_ROWS: FeatureKey[] = [
   "monthly_report", "tv_basic_indicator", "all_instruments", "mt5_suite", "copier", "live_analysis", "priority_qa",
 ];
 
+/** Display names. Internal keys never change; only these labels do. */
+export const TIER_LABELS: Record<TierKey, string> = { public: "Public", free: "General", pro: "A-Team", elite: "Rambo" };
+export function tierLabel(key: string) {
+  return TIER_LABELS[key as TierKey] ?? key.toUpperCase();
+}
 export function tierByKey(key: string) {
   return TIERS.find((t) => t.key === key);
 }

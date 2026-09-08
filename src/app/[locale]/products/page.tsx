@@ -27,7 +27,7 @@ export default async function Products({ params }: { params: Promise<{ locale: s
             <div className="mt-1 font-semibold text-lg">{p.name}</div>
             <p className="mt-2 text-sm text-muted flex-1">{p.description}</p>
             <div className="mt-4 flex items-center justify-between">
-              <span className="font-mono">{p.priceCents ? `$${p.priceCents / 100}` : "Free"}<span className="text-xs text-muted"> {p.billing === "monthly" ? t("monthly") : p.billing === "lifetime" ? t("lifetime") : t("one_time")}</span></span>
+              <span className="font-mono">{p.priceCents ? `$${p.priceCents / 100}` : "$0"}<span className="text-xs text-muted"> {p.billing === "monthly" ? t("monthly") : p.billing === "lifetime" ? t("lifetime") : t("one_time")}</span></span>
               {p.tierIncluded && <span className="text-[11px] text-gold border border-gold/30 rounded px-1.5 py-0.5">{t("included", { tier: tt(p.tierIncluded as "free") })}</span>}
             </div>
           </Link>

@@ -1,12 +1,12 @@
 {
   "nav": {
     "signals": "Signals",
-    "pricing": "Plans",
+    "pricing": "Ranks",
     "results": "Results",
     "products": "Store",
     "account": "Account",
     "signin": "Sign in",
-    "cta": "Get free signals",
+    "cta": "Join General",
     "education": "Education",
     "dashboard": "Dashboard"
   },
@@ -15,15 +15,15 @@
     "ib": "{brand} is an Introducing Broker partner of HFM and earns commission on referred accounts."
   },
   "hero": {
-    "badge": "Since {since} · SAMBANGGOLD · Gold (XAUUSD) focus",
-    "title": "Gold signals with full transparency.",
+    "badge": "Since {since} · SAMBANGGOLD · XAUUSD only",
+    "title": "Gold signals with transparency.",
     "title2": "Two ways in.",
-    "subtitle": "Live XAUUSD setups with entry, stop and targets, a public track record, and a community that learns together. Join free through our HFM link, or pay monthly on any broker.",
-    "cta_primary": "Get free signals",
-    "cta_secondary": "See plans",
+    "subtitle": "XAUUSD setups with entry, stop and targets. Public record, losses included. Enlist through our HFM link at no fee, or pay monthly on any broker.",
+    "cta_primary": "Join General",
+    "cta_secondary": "See ranks",
     "sample": "Sample",
-    "sample_note": "Illustrative format only. Real signals are posted to members.",
-    "live_note": "Live setup from market data, updated as price moves. Education only, not advice."
+    "sample_note": "Format only. Live signals go to members.",
+    "live_note": "Live setup from market data, updated as price moves. Education only. Not advice."
   },
   "stats": {
     "members": "Members",
@@ -34,22 +34,22 @@
   },
   "doors": {
     "title": "Two ways in",
-    "subtitle": "Every plan can be unlocked two ways. Pick what suits you.",
+    "subtitle": "Same ranks, two routes. Pick one.",
     "a_title": "Open an HFM account under our link",
-    "a_body": "No monthly fee. Free plan needs an account only. Pro needs $100 deposit, Elite $500. Your money stays in your own trading account.",
+    "a_body": "No monthly fee. General needs an account. A-Team needs $100 in it, Rambo $500. Your money stays in your own account.",
     "a_cta": "Open HFM account",
     "b_title": "Use your own broker",
-    "b_body": "Keep your broker and pay a monthly plan instead. Card or USDT.",
-    "b_cta": "See plans",
-    "guide": "Step-by-step registration guide"
+    "b_body": "Keep your broker. Pay monthly by card or USDT.",
+    "b_cta": "See ranks",
+    "guide": "Registration guide, step by step"
   },
   "tiers": {
     "public": "Public",
-    "free": "Free",
-    "pro": "Pro",
-    "elite": "Elite",
-    "popular": "Most popular",
-    "founding": "{n} founding places",
+    "free": "General",
+    "pro": "A-Team",
+    "elite": "Rambo",
+    "popular": "Most enlisted",
+    "founding": "{n} founding seats",
     "or": "or",
     "ib_none": "HFM account, no deposit",
     "ib_deposit": "HFM account + ${n} deposit",
@@ -59,7 +59,7 @@
     "toggle_pay": "Own broker",
     "monthly": "Monthly",
     "annual": "Annual (2 months free)",
-    "choose": "Choose {tier}",
+    "choose": "Enlist in {tier}",
     "join_channel": "Join public channel"
   },
   "features": {
@@ -92,8 +92,8 @@
     "type_swing": "Swing"
   },
   "results": {
-    "title": "Track record",
-    "subtitle": "Every closed signal, computed automatically. Shown in R and pips, never in dollars.",
+    "title": "Service record",
+    "subtitle": "Every closed signal, computed automatically. In R and pips. Never in dollars.",
     "winrate": "Win rate",
     "avg_r": "Average R",
     "expectancy": "Expectancy (R)",
@@ -111,24 +111,24 @@
   },
   "products": {
     "title": "Store",
-    "subtitle": "Indicators, ebooks and tools. Elite members get the suite included.",
+    "subtitle": "Indicators, ebooks and tools. Rambo gets the suite included.",
     "buy": "Buy",
     "included": "Included in {tier}",
     "lifetime": "lifetime",
     "monthly": "/mo",
     "one_time": "one-time",
-    "sticky_included": "Included in the {tier} plan. Members don't need to buy."
+    "sticky_included": "Included in the {tier} rank. Members do not buy this."
   },
   "faq": {
-    "title": "Questions",
+    "title": "Briefing",
     "q1": "Do I have to deposit to get signals?",
-    "a1": "No. The Free plan only needs an HFM account under our link. Pro and Elite need $100 / $500 in your own account, or you pay monthly on any broker.",
+    "a1": "No. General needs an HFM account under our link. A-Team needs $100 in your own account, Rambo $500. Or pay monthly on any broker.",
     "q2": "How do you verify my HFM account?",
-    "a2": "Send your account number, name and a balance screenshot in the bot or your account page. We match it against our partner report and unlock access, usually within 24 hours.",
+    "a2": "Send your account number, name and a balance screenshot in the bot or on your account page. We match it against the partner report and unlock access, usually within 24 hours.",
     "q3": "Are the results real?",
-    "a3": "The results page is computed from every signal we post, including losses. Third-party verification is added where available.",
+    "a3": "The results page is computed from every signal we post. Losses included. Third-party verification is added where available.",
     "q4": "Can I cancel?",
-    "a4": "Yes. Paid plans cancel anytime from your account page. IB access continues while your HFM account stays active."
+    "a4": "Yes. Paid ranks cancel anytime from your account page. IB access holds while your HFM account stays active."
   },
   "footer": {
     "legal": "Legal",
@@ -139,12 +139,12 @@
     "rights": "Education only. Not financial advice."
   },
   "cta_bar": {
-    "text": "Free XAUUSD signals on Telegram",
+    "text": "XAUUSD signals on Telegram. No fee.",
     "button": "Join"
   },
   "education": {
     "title": "Education",
-    "subtitle": "One new article every day on the problems real traders face, and how to fix them.",
+    "subtitle": "One article a day on the problems traders run into, and the fix.",
     "all": "All",
     "empty": "First article is on its way.",
     "cat_mindset": "Mindset",
@@ -152,8 +152,8 @@
     "cat_strategy": "Strategy",
     "cat_execution": "Execution",
     "cat_tools": "Tools",
-    "cta_title": "Want to discuss this setup?",
-    "cta_body": "Join the free channel and ask in the community.",
+    "cta_title": "Debrief this setup",
+    "cta_body": "Ask in the public channel.",
     "cta_button": "Join on Telegram",
     "toc": "Contents",
     "related": "Related articles",
@@ -169,25 +169,25 @@
     "new": "New"
   },
   "seo": {
-    "default_title": "XAUUSD gold signals with a transparent track record",
-    "default_description": "Live gold (XAUUSD) signals with entry, stop loss and targets. Public track record, two ways in: an HFM account or a monthly plan. Education only.",
-    "home_title": "XAUUSD gold signals · Transparent record · Two ways in",
-    "pricing_title": "Plans & pricing",
-    "pricing_description": "Free, Pro and Elite. Unlock with an HFM account (no deposit, $100 or $500) or pay $9 / $49 / $129 monthly on any broker.",
-    "results_title": "XAUUSD signal track record",
+    "default_title": "XAUUSD gold signals with a public record",
+    "default_description": "Gold (XAUUSD) signals with entry, stop loss and targets. Public record, two ways in: an HFM account or a monthly rank. Education only.",
+    "home_title": "XAUUSD gold signals · Public record · Two ways in",
+    "pricing_title": "Ranks and pricing",
+    "pricing_description": "General, A-Team and Rambo. Unlock with an HFM account (no deposit, $100 or $500) or pay $9 / $49 / $129 monthly on any broker.",
+    "results_title": "XAUUSD signal service record",
     "results_description": "Every closed signal computed automatically: win rate, average R, expectancy and drawdown. In R and pips, losses included.",
     "education_title": "Gold trading education",
     "education_description": "Daily articles on mindset, risk, strategy and execution for XAUUSD traders. Bahasa Melayu and English.",
     "products_title": "Store: indicators, ebooks and tools",
-    "products_description": "TradingView and MT5 indicators, ebooks and tools for gold traders. Included in Pro and Elite plans.",
+    "products_description": "TradingView and MT5 indicators, ebooks and tools for gold traders. Included in A-Team and Rambo.",
     "signin_title": "Sign in",
     "account_title": "Account",
     "dashboard_title": "Member dashboard"
   },
   "dashboard": {
     "title": "Member dashboard",
-    "subtitle": "Your personal stats, the signals you followed, and your referral rank.",
-    "tier": "Current plan",
+    "subtitle": "Your numbers, the calls you took, your referral rank.",
+    "tier": "Current rank",
     "member_since": "Member since",
     "access": "Signal access",
     "upgrade": "Upgrade to see all signals",
@@ -202,12 +202,12 @@
     "closed": "Closed",
     "equity": "Personal equity curve (cumulative R)",
     "empty": "No closed signals yet in your membership period.",
-    "recent": "Latest signals for your plan",
+    "recent": "Latest signals for your rank",
     "follow": "I took it",
     "unfollow": "Unmark",
     "taken": "Taken",
     "leaderboard": "Referral leaderboard",
-    "leaderboard_sub": "Only friends who activated a plan (HFM or paid) count. Names are masked.",
+    "leaderboard_sub": "Only friends who activated a rank (HFM or paid) count. Names are masked.",
     "rank": "#",
     "member": "Member",
     "activated": "Active friends",
@@ -216,12 +216,12 @@
     "no_rank": "No active referrals yet. Share your link to get on the board.",
     "bonus_days": "Bonus days earned",
     "share": "Share your referral link",
-    "share_hint": "Each friend who activates a plan gives you +7 days.",
+    "share_hint": "Each friend who activates a rank gives you +7 days.",
     "copy": "Copy",
     "copied": "Copied ✓",
     "share_tg": "Share on Telegram",
     "share_wa": "WhatsApp",
-    "share_text": "I use {brand} for XAUUSD gold signals. Join free:"
+    "share_text": "I run XAUUSD with {brand}. Join General:"
   },
   "chart": {
     "title": "Live gold chart",
@@ -242,7 +242,7 @@
     "fab": "Free ebook",
     "badge": "Free · PDF",
     "title": "Gold Trading Starter",
-    "body": "Market structure, sessions, risk management and journaling. Enter your email and we send it straight over.",
+    "body": "Market structure, sessions, risk and journaling. Enter your email. We send it.",
     "name": "Name (optional)",
     "email": "Your email",
     "cta": "Send the ebook",
@@ -250,26 +250,26 @@
     "download": "Download now",
     "bot": "Open Telegram bot",
     "error": "Invalid email. Try again.",
-    "fine": "No spam. 3 short emails, unsubscribe anytime."
+    "fine": "No spam. Three short emails. Unsubscribe anytime."
   },
   "support": {
     "open": "Support",
     "title": "Need help?",
-    "subtitle": "Quick answers, or jump straight to Telegram.",
+    "subtitle": "Short answers, or straight to Telegram.",
     "human": "Chat with Sam",
     "bot": "Open bot",
     "hours": "Replies usually within a few hours, MYT."
   },
   "compare": {
-    "title": "Door A or Door B?",
-    "subtitle": "Both unlock the same plans. Only the way you pay differs.",
+    "title": "Route A or Route B?",
+    "subtitle": "Both unlock the same ranks. Only the payment differs.",
     "a": "A · HFM account",
     "b": "B · Own broker",
     "fee_label": "Monthly fee",
     "fee_a": "$0. HFM pays us a commission.",
     "fee_b": "$9 / $49 / $129 per month (2 months free yearly).",
     "requirement_label": "Requirement",
-    "requirement_a": "HFM account under our link. $100 deposit for Pro, $500 for Elite.",
+    "requirement_a": "HFM account under our link. $100 in the account for A-Team, $500 for Rambo.",
     "requirement_b": "None. Any broker.",
     "money_label": "Your money",
     "money_a": "Stays in your own trading account, withdraw anytime.",
@@ -281,7 +281,7 @@
     "payment_a": "Nothing paid to us.",
     "payment_b": "Card (Stripe) or USDT.",
     "suits_label": "Best for",
-    "suits_a": "New traders or anyone without a broker yet.",
+    "suits_a": "New traders, or anyone without a broker yet.",
     "suits_b": "Traders already happy with their broker."
   }
 }

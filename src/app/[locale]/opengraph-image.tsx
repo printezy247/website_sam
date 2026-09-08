@@ -8,8 +8,8 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 const COPY = {
-  ms: { title: "Signal emas, telus sepenuhnya.", sub: "Rekod awam · Dua cara masuk · Pendidikan sahaja" },
-  en: { title: "Gold signals with full transparency.", sub: "Public track record · Two ways in · Education only" },
+  ms: { title: "Signal emas, telus.", sub: "Rekod awam · Dua cara masuk · Pendidikan sahaja" },
+  en: { title: "Gold signals with transparency.", sub: "Public record · Two ways in · Education only" },
 };
 
 export default async function Image({ params }: { params: Promise<{ locale: string }> }) {

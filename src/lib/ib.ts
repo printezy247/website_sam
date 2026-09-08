@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { ibAccounts, inviteLinks, telegramAccounts, users } from "@/db/schema";
-import { tierForDeposit } from "@/config/tiers";
+import { tierForDeposit, tierLabel } from "@/config/tiers";
 import { grantEntitlement } from "@/lib/entitlements";
 import { chatForTier, createSingleUseInvite, sendHtml } from "@/lib/telegram";
 import { attachReferrer, creditReferrer } from "@/lib/referral";
@@ -39,7 +39,7 @@ export async function approveIbAccount(id: string, depositUsd?: number): Promise
     const inv = await createSingleUseInvite(chat).catch(() => null);
     if (inv && chat) await db.insert(inviteLinks).values({ telegramId: ib.telegramId, chatId: chat, link: inv.link, expiresAt: inv.expiresAt });
     await sendHtml(ib.telegramId,
-      `✅ <b>Akaun disahkan / Account verified</b>\nPelan / Plan: <b>${tier.toUpperCase()}</b> (deposit $${deposit})` +
+      `✅ <b>Akaun disahkan / Account verified</b>\nPelan / Plan: <b>${tierLabel(tier)}</b> (deposit $${deposit})` +
       (inv ? `\n\nLink group (sekali guna, 24 jam / single-use, 24h):\n${inv.link}` : "\n\nAdmin akan hantar link group / Admin will send the group link."),
     ).catch(() => {});
   }

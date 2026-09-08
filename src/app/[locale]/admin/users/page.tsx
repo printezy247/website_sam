@@ -16,7 +16,7 @@ export default async function AdminUsers() {
           <div>{u.email ?? u.name ?? u.id}<div className="text-muted text-xs">{u.role} · tg {u.tgUsername ?? u.telegramId ?? "-"}</div></div>
           <div className="text-xs text-muted">{ents.filter((e) => e.status === "active").map((e) => `${e.tierKey}/${e.source}${e.expiresAt ? "→" + e.expiresAt.toISOString().slice(0, 10) : ""}`).join(", ") || "none"}</div>
           <form action={adminGrant} className="flex gap-2 md:col-span-2"><input type="hidden" name="userId" value={u.id} />
-            <select name="tier" className={inp}><option>free</option><option>pro</option><option>elite</option></select>
+            <select name="tier" className={inp}><option value="free">General</option><option value="pro">A-Team</option><option value="elite">Rambo</option></select>
             <input name="days" defaultValue="30" className={`${inp} w-20`} /><button className="rounded-md border border-border px-3">Grant</button></form>
         </div>
       ))}

@@ -10,9 +10,9 @@ XAUUSD-first signal and education business. Two doors into every tier: open an H
 | Tier | Door A — HFM IB | Door B — own broker | What you get |
 |---|---|---|---|
 | **Public** (no signup) | — | — | Public Telegram channel: 1 delayed XAUUSD signal/day, daily gold bias summary, weekly recap |
-| **Free** | HFM account under IB, **no deposit** | **$9/mo** ($90/yr) | Free ebook, full daily bias + weekly outlook, results page, community chat, 2 full signals/week |
-| **Pro** | HFM IB + **≥ $100** deposit | **$49/mo** ($490/yr) | All XAUUSD signals live (entry, SL, TP1–3, management), Pro Telegram group, monthly report, basic TradingView indicator "Sam Gold Levels" |
-| **Elite** | HFM IB + **≥ $500** deposit | **$129/mo** ($1,290/yr) | Pro + all instruments as added (US30, NAS100, BTC, EURUSD), full TV + MT5 indicator suite, Telegram→MT5 copier license, weekly live analysis, priority Q&A |
+| **General** (key `free`) | HFM account under IB, **no deposit** | **$9/mo** ($90/yr) | Free ebook, full daily bias + weekly outlook, results page, community chat, 2 full signals/week |
+| **A-Team** (key `pro`) | HFM IB + **≥ $100** deposit | **$49/mo** ($490/yr) | All XAUUSD signals live (entry, SL, TP1–3, management), Pro Telegram group, monthly report, basic TradingView indicator "Sam Gold Levels" |
+| **Rambo** (key `elite`) | HFM IB + **≥ $500** deposit | **$129/mo** ($1,290/yr) | Pro + all instruments as added (US30, NAS100, BTC, EURUSD), full TV + MT5 indicator suite, Telegram→MT5 copier license, weekly live analysis, priority Q&A |
 | **Mentorship** (phase 3) | — | $499 one-off / $199/mo | Elite + course + 1:1 trade reviews |
 
 Rules
@@ -29,7 +29,7 @@ Rules
 
 ## 4. Analysis products (TA + fundamental + sentiment)
 
-| Feature | Free | Pro | Elite |
+| Feature | General | A-Team | Rambo |
 |---|---|---|---|
 | Daily gold bias (SMC: BOS/CHoCH, order blocks, FVG, key levels) | summary | full levels + chart | + intraday updates |
 | Economic calendar + "news lockout" flag on signals | view | signals carry flag | + pre-news plan |

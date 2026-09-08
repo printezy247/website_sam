@@ -59,7 +59,7 @@ export async function adminUpdateSignal(fd: FormData) {
   await db.update(signals).set({
     status, resultR: resultR || null, resultPips: resultPips || null, closedAt: closing ? new Date() : null,
   }).where(eq(signals.id, id));
-  const text = str(fd, "text") || `📌 ${status.toUpperCase()}${resultR ? ` · ${Number(resultR) >= 0 ? "+" : ""}${resultR}R` : ""}`;
+  const text = str(fd, "text") || `${status.toUpperCase()}${resultR ? ` · ${Number(resultR) >= 0 ? "+" : ""}${resultR}R` : ""}`;
   await db.insert(signalEvents).values({ signalId: id, type: status, text });
   await fanoutUpdate(id, text).catch((e) => console.error(e));
   revalidatePath("/admin/signals"); revalidatePath("/results");

@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { ibAccounts, products, telegramAccounts, users } from "@/db/schema";
 import { BRAND } from "@/config/brand";
-import { TIERS, fmtUsd } from "@/config/tiers";
+import { TIERS, fmtUsd, tierLabel } from "@/config/tiers";
 import { effectiveTier } from "@/lib/entitlements";
 import { tierByKey } from "@/config/tiers";
 import { CHATS, escapeHtml } from "@/lib/telegram";
@@ -13,25 +13,25 @@ type VerifyState = { step: "region" | "account" | "name" | "balance" | "photo"; 
 
 const T = {
   ms: {
-    welcome: (n: string) => `Selamat datang ke <b>${n}</b> 🥇 bersama Sam 👋\n\nSignal emas (XAUUSD) dengan ketelusan penuh. Dua cara masuk:\n\n<b>A.</b> Buka akaun HFM guna link kami — Free tanpa deposit, Pro $100, Elite $500.\n<b>B.</b> Bayar pelan bulanan dengan broker sendiri.\n\n⚠️ Dagangan CFD berisiko tinggi. Pendidikan sahaja, bukan nasihat kewangan.`,
-    btn_channel: "📢 Channel signal percuma", btn_hfm: "🏦 Daftar HFM", btn_verify: "✅ Sahkan akaun HFM", btn_plans: "💳 Lihat pelan", btn_guide: "📖 Panduan daftar",
+    welcome: (n: string) => `<b>${n}</b>. Signal emas (XAUUSD) dengan rekod awam.\n\nDua cara masuk:\n<b>A.</b> Akaun HFM melalui link kami. General: tanpa deposit. A-Team: $100. Rambo: $500.\n<b>B.</b> Pelan bulanan dengan broker sendiri.\n\n⚠️ Dagangan CFD berisiko tinggi. Pendidikan sahaja, bukan nasihat kewangan.`,
+    btn_channel: "Channel awam", btn_hfm: "Buka akaun HFM", btn_verify: "Sahkan akaun HFM", btn_plans: "Lihat pangkat", btn_guide: "Panduan daftar",
     region: "Pilih rantau akaun HFM anda:", ask_account: "Hantar nombor akaun MT4/MT5 anda:", ask_name: "Nama penuh (seperti dalam HFM):", ask_balance: "Baki akaun sekarang dalam USD (contoh: 120):", ask_photo: "Hantar screenshot akaun (nama + nombor akaun + baki kelihatan):",
-    submitted: "Terima kasih! Permohonan dihantar. Admin akan sahkan dalam 24 jam dan bot akan hantar link group anda.",
+    submitted: "Dihantar. Pengesahan dalam 24 jam. Bot akan hantar link group anda.",
     bad_account: "Nombor akaun tak sah. Hantar nombor sahaja (5–12 digit).",
-    status: (tier: string, exp: string) => `Pelan semasa: <b>${tier.toUpperCase()}</b>${exp}`,
+    status: (tier: string, exp: string) => `Pangkat semasa: <b>${tierLabel(tier)}</b>${exp}`,
     no_link: "Akaun Telegram ini belum dipautkan ke akaun web. Log masuk di laman web dan pautkan Telegram, atau guna /verify.",
-    plans: "Pelan (bayar bulanan, atau percuma melalui HFM):",
+    plans: "Pangkat (bulanan, atau tanpa yuran melalui HFM):",
     support: "Hubungi sokongan:", help: "Arahan: /start /verify /status /upgrade /plans /products /ebook /news /mystats /leaderboard /language /support",
   },
   en: {
-    welcome: (n: string) => `Welcome to <b>${n}</b> 🥇 with Sam 👋\n\nGold (XAUUSD) signals with full transparency. Two ways in:\n\n<b>A.</b> Open an HFM account under our link — Free with no deposit, Pro $100, Elite $500.\n<b>B.</b> Pay a monthly plan on your own broker.\n\n⚠️ CFD trading carries high risk. Education only, not financial advice.`,
-    btn_channel: "📢 Free signal channel", btn_hfm: "🏦 Open HFM account", btn_verify: "✅ Verify HFM account", btn_plans: "💳 See plans", btn_guide: "📖 Registration guide",
+    welcome: (n: string) => `<b>${n}</b>. Gold (XAUUSD) signals with a public record.\n\nTwo ways in:\n<b>A.</b> HFM account under our link. General: no deposit. A-Team: $100. Rambo: $500.\n<b>B.</b> Monthly plan on your own broker.\n\n⚠️ CFD trading carries high risk. Education only, not financial advice.`,
+    btn_channel: "Public channel", btn_hfm: "Open HFM account", btn_verify: "Verify HFM account", btn_plans: "See ranks", btn_guide: "Registration guide",
     region: "Pick your HFM account region:", ask_account: "Send your MT4/MT5 account number:", ask_name: "Full name (as in HFM):", ask_balance: "Current account balance in USD (e.g. 120):", ask_photo: "Send an account screenshot (name + account number + balance visible):",
-    submitted: "Thanks! Submitted. An admin verifies within 24h and the bot will DM your group link.",
+    submitted: "Submitted. Verification within 24h. The bot sends your group link.",
     bad_account: "Invalid account number. Send digits only (5–12).",
-    status: (tier: string, exp: string) => `Current plan: <b>${tier.toUpperCase()}</b>${exp}`,
+    status: (tier: string, exp: string) => `Current rank: <b>${tierLabel(tier)}</b>${exp}`,
     no_link: "This Telegram account is not linked to a web account yet. Sign in on the website and link Telegram, or use /verify.",
-    plans: "Plans (pay monthly, or free via HFM):",
+    plans: "Ranks (monthly, or no fee via HFM):",
     support: "Contact support:", help: "Commands: /start /verify /status /upgrade /plans /products /ebook /news /mystats /leaderboard /language /support",
   },
 };
@@ -126,7 +126,7 @@ export function createBot(token: string) {
 
   bot.command("plans", async (ctx) => {
     const t = T[await langOf(ctx)];
-    const lines = TIERS.filter((x) => x.key !== "public").map((x) => `• <b>${x.key.toUpperCase()}</b> — ${fmtUsd(x.priceMonthCents)}/mo · HFM ${x.ibMinDepositUsd ? "+$" + x.ibMinDepositUsd : "no deposit"}`);
+    const lines = TIERS.filter((x) => x.key !== "public").map((x) => `• <b>${tierLabel(x.key)}</b>: ${fmtUsd(x.priceMonthCents)}/mo, or HFM ${x.ibMinDepositUsd ? "+$" + x.ibMinDepositUsd : "no deposit"}`);
     await ctx.reply(`${t.plans}\n\n${lines.join("\n")}`, { parse_mode: "HTML", reply_markup: new InlineKeyboard().url(t.btn_plans, `${BRAND.siteUrl}/pricing`) });
   });
   bot.command("upgrade", async (ctx) => {
@@ -134,18 +134,18 @@ export function createBot(token: string) {
     const [u] = await db.select().from(users).where(eq(users.telegramId, String(ctx.from!.id)));
     const tier = u ? await effectiveTier(u.id) : "public";
     const next = TIERS.find((x) => x.rank === (tierByKey(tier)?.rank ?? 0) + 1);
-    if (!next) return ctx.reply((await langOf(ctx)) === "ms" ? "Anda sudah di pelan tertinggi 🎉" : "You are already on the top plan 🎉");
+    if (!next) return ctx.reply((await langOf(ctx)) === "ms" ? "Anda sudah di pangkat tertinggi." : "You are already on the top rank.");
     const ms = (await langOf(ctx)) === "ms";
     const text = ms
-      ? `Pelan semasa: <b>${tier.toUpperCase()}</b>\nNaik ke <b>${next.key.toUpperCase()}</b>:\n• Deposit HFM sehingga $${next.ibMinDepositUsd} lalu /verify semula\n• atau bayar ${fmtUsd(next.priceMonthCents)}/bulan`
-      : `Current plan: <b>${tier.toUpperCase()}</b>\nUpgrade to <b>${next.key.toUpperCase()}</b>:\n• Deposit HFM up to $${next.ibMinDepositUsd} then /verify again\n• or pay ${fmtUsd(next.priceMonthCents)}/month`;
+      ? `Pangkat semasa: <b>${tierLabel(tier)}</b>\nNaik ke <b>${tierLabel(next.key)}</b>:\n• Deposit HFM sehingga $${next.ibMinDepositUsd} lalu /verify semula\n• atau bayar ${fmtUsd(next.priceMonthCents)}/bulan`
+      : `Current rank: <b>${tierLabel(tier)}</b>\nUpgrade to <b>${tierLabel(next.key)}</b>:\n• Deposit HFM up to $${next.ibMinDepositUsd} then /verify again\n• or pay ${fmtUsd(next.priceMonthCents)}/month`;
     await ctx.reply(text, { parse_mode: "HTML", reply_markup: new InlineKeyboard().url(ms ? "Deposit HFM" : "Deposit at HFM", BRAND.broker.links.my).url(ms ? "Bayar" : "Pay", `${BRAND.siteUrl}/account?checkout=${next.key}`) });
   });
 
   bot.command("products", async (ctx) => {
     const rows = await db.select().from(products).where(eq(products.active, true));
     const ms = (await langOf(ctx)) === "ms";
-    const lines = rows.map((p) => `• <b>${p.name}</b> — ${p.priceCents ? "$" + p.priceCents / 100 : (ms ? "Percuma" : "Free")}${p.tierIncluded ? ` (${ms ? "termasuk" : "included"} ${p.tierIncluded.toUpperCase()})` : ""}`);
+    const lines = rows.map((p) => `• <b>${p.name}</b> — ${p.priceCents ? "$" + p.priceCents / 100 : (ms ? "Percuma" : "Free")}${p.tierIncluded ? ` (${ms ? "termasuk" : "included"} ${tierLabel(p.tierIncluded)})` : ""}`);
     await ctx.reply(`${ms ? "Kedai" : "Store"}:\n\n${lines.join("\n")}`, { parse_mode: "HTML", reply_markup: new InlineKeyboard().url(ms ? "Buka kedai" : "Open store", `${BRAND.siteUrl}/products`) });
   });
 
@@ -153,7 +153,7 @@ export function createBot(token: string) {
     const [p] = await db.select().from(products).where(eq(products.slug, "ebook-gold-starter"));
     const ms = (await langOf(ctx)) === "ms";
     if (p?.filePath?.startsWith("tg:")) return ctx.replyWithDocument(p.filePath.slice(3), { caption: p.name });
-    await ctx.reply(ms ? "Ebook akan dihantar tidak lama lagi. Sementara itu sertai channel awam 👇" : "Ebook coming shortly. Meanwhile join the public channel 👇", { reply_markup: new InlineKeyboard().url("📢 Channel", BRAND.telegram.publicChannel) });
+    await ctx.reply(ms ? "Ebook akan dihantar tidak lama lagi. Sementara itu, sertai channel awam." : "Ebook coming shortly. Meanwhile, join the public channel.", { reply_markup: new InlineKeyboard().url("Channel", BRAND.telegram.publicChannel) });
   });
 
   // Auto-approve join requests when the user holds the right tier.
@@ -173,13 +173,13 @@ export function createBot(token: string) {
     const ev = (await getHighImpact().catch(() => [])).slice(0, 8);
     if (!ev.length) return ctx.reply(ms ? "Tiada berita impak tinggi USD dalam feed buat masa ini." : "No high-impact USD news in the feed right now.");
     const lines = ev.map((e) => `🔴 <b>${escapeHtml(e.title)}</b>\n${fmtMyt(e.date)} MYT${e.forecast ? ` · ${ms ? "ramalan" : "fcst"} ${escapeHtml(e.forecast)}` : ""}`);
-    return ctx.reply(`${ms ? "📅 <b>Berita impak tinggi minggu ini</b>" : "📅 <b>High-impact news this week</b>"}\n\n${lines.join("\n\n")}\n\n<i>${ms ? "Elak entry baru 30 minit sebelum/selepas berita merah." : "Avoid new entries 30 min before/after red news."}</i>`, { parse_mode: "HTML" });
+    return ctx.reply(`${ms ? "<b>Berita impak tinggi minggu ini</b>" : "<b>High-impact news this week</b>"}\n\n${lines.join("\n\n")}\n\n<i>${ms ? "Elak entry baru 30 minit sebelum/selepas berita merah." : "Avoid new entries 30 min before/after red news."}</i>`, { parse_mode: "HTML" });
   });
   bot.command("language", async (ctx) => {
     await upsertTg(ctx);
     const arg = (ctx.match ?? "").toString().trim().toLowerCase();
     if (arg !== "ms" && arg !== "en") {
-      return ctx.reply("🌐 /language ms — Bahasa Melayu\n🌐 /language en — English", { reply_markup: new InlineKeyboard().text("Bahasa Melayu", "lang:ms").text("English", "lang:en") });
+      return ctx.reply("/language ms: Bahasa Melayu\n/language en: English", { reply_markup: new InlineKeyboard().text("Bahasa Melayu", "lang:ms").text("English", "lang:en") });
     }
     await setLanguage(ctx.from!.id, arg);
     return ctx.reply(arg === "ms" ? "Bahasa ditukar ke Bahasa Melayu ✅" : "Language set to English ✅");
@@ -203,8 +203,8 @@ export function createBot(token: string) {
     const r = (v: number) => `${v >= 0 ? "+" : ""}${v.toFixed(2)}R`;
     const basis = d.basis === "followed" ? (ms ? `${d.followedCount} signal yang anda tanda` : `${d.followedCount} signals you marked`) : (ms ? "semua signal pelan anda" : "all signals on your plan");
     const text = ms
-      ? `📊 <b>Statistik saya</b> · ${d.tier.toUpperCase()}\nAsas: ${basis}\n\nDitutup: <b>${s.n}</b>\nKadar menang: <b>${s.n ? pct(s.winRate) : "—"}</b>\nPurata R: <b>${s.n ? s.avgR.toFixed(2) : "—"}</b>\nJumlah R: <b>${s.n ? r(s.totalR) : "—"}</b>\nR bulan ini: <b>${s.n ? r(d.monthR) : "—"}</b>\nSedang berjalan: <b>${d.running}</b>`
-      : `📊 <b>My stats</b> · ${d.tier.toUpperCase()}\nBasis: ${basis}\n\nClosed: <b>${s.n}</b>\nWin rate: <b>${s.n ? pct(s.winRate) : "—"}</b>\nAverage R: <b>${s.n ? s.avgR.toFixed(2) : "—"}</b>\nTotal R: <b>${s.n ? r(s.totalR) : "—"}</b>\nR this month: <b>${s.n ? r(d.monthR) : "—"}</b>\nRunning: <b>${d.running}</b>`;
+      ? `<b>Statistik saya</b> · ${tierLabel(d.tier)}\nAsas: ${basis}\n\nDitutup: <b>${s.n}</b>\nKadar menang: <b>${s.n ? pct(s.winRate) : "—"}</b>\nPurata R: <b>${s.n ? s.avgR.toFixed(2) : "—"}</b>\nJumlah R: <b>${s.n ? r(s.totalR) : "—"}</b>\nR bulan ini: <b>${s.n ? r(d.monthR) : "—"}</b>\nSedang berjalan: <b>${d.running}</b>`
+      : `<b>My stats</b> · ${tierLabel(d.tier)}\nBasis: ${basis}\n\nClosed: <b>${s.n}</b>\nWin rate: <b>${s.n ? pct(s.winRate) : "—"}</b>\nAverage R: <b>${s.n ? s.avgR.toFixed(2) : "—"}</b>\nTotal R: <b>${s.n ? r(s.totalR) : "—"}</b>\nR this month: <b>${s.n ? r(d.monthR) : "—"}</b>\nRunning: <b>${d.running}</b>`;
     await ctx.reply(text, { parse_mode: "HTML", reply_markup: new InlineKeyboard().url(ms ? "Buka dashboard" : "Open dashboard", `${BRAND.siteUrl}/dashboard`) });
   });
 
@@ -218,7 +218,7 @@ export function createBot(token: string) {
     const lines = lb.top.map((r) => `${medal(r.rank)} ${escapeHtml(r.label)} — <b>${r.activated}</b>${u && r.userId === u.id ? (ms ? " (anda)" : " (you)") : ""}`);
     const mine = lb.mine ? (ms ? `\n\nKedudukan anda: <b>#${lb.mine.rank}</b> daripada ${lb.total}` : `\n\nYour rank: <b>#${lb.mine.rank}</b> of ${lb.total}`) : (ms ? "\n\nBelum ada rujukan aktif." : "\n\nNo active referrals yet.");
     const link = u?.referralCode ? `\n${ms ? "Link rujukan anda" : "Your referral link"}: ${BRAND.siteUrl}/?ref=${u.referralCode}` : `\n${ms ? "Pautkan akaun web untuk dapat link rujukan." : "Link your web account to get a referral link."}`;
-    await ctx.reply(`🏆 <b>${ms ? "Papan pendahulu rujukan" : "Referral leaderboard"}</b>\n${ms ? "Rakan yang aktifkan pelan dikira." : "Friends who activated a plan count."}\n\n${lines.join("\n") || "—"}${mine}${link}`, { parse_mode: "HTML", link_preview_options: { is_disabled: true } });
+    await ctx.reply(`<b>${ms ? "Papan pendahulu rujukan" : "Referral leaderboard"}</b>\n${ms ? "Rakan yang aktifkan pangkat dikira." : "Friends who activated a rank count."}\n\n${lines.join("\n") || "—"}${mine}${link}`, { parse_mode: "HTML", link_preview_options: { is_disabled: true } });
   });
 
   bot.command("support", async (ctx) => ctx.reply(`${T[await langOf(ctx)].support} ${BRAND.telegram.support}`));

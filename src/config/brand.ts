@@ -5,7 +5,6 @@ export const BRAND = {
   shortName: "SBG",
   /** The human behind the brand (support, bylines). */
   person: "Sam",
-  tagline: "Gold signals with full transparency. Two ways in.",
   privateGroupName: "Sam Flip Seribu",
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   telegram: {
