@@ -2,16 +2,17 @@ import { desc } from "drizzle-orm";
 import { db } from "@/db";
 import { articles } from "@/db/schema";
 import { TOPICS } from "@/lib/articles";
+import { llmConfigured, llmLabel } from "@/lib/llm";
 import { adminGenerateArticle, adminToggleArticle } from "@/lib/actions";
 export const dynamic = "force-dynamic";
 export default async function AdminArticles({ searchParams }: { searchParams: Promise<{ r?: string }> }) {
   const { r } = await searchParams;
   const rows = await db.select().from(articles).orderBy(desc(articles.publishedAt)).limit(100);
-  const configured = Boolean(process.env.ANTHROPIC_API_KEY);
+  const configured = llmConfigured();
   return (
     <div className="space-y-6">
       <form action={adminGenerateArticle} className="glass rounded-2xl p-5 flex flex-wrap items-end gap-3">
-        <div className="w-full"><h2 className="font-semibold">Generate article</h2><p className="text-xs text-muted">Daily job publishes one automatically at 03:00 UTC when ANTHROPIC_API_KEY is set. {configured ? "Key configured." : "ANTHROPIC_API_KEY missing: generation disabled."}</p></div>
+        <div className="w-full"><h2 className="font-semibold">Generate article</h2><p className="text-xs text-muted">Daily job publishes one automatically at 03:00 UTC. Provider: {llmLabel()}. {configured ? "Key configured." : "No LLM key set (GEMINI_API_KEY recommended, free): generation disabled."}</p></div>
         <label className="text-sm">Topic<select name="topic" className="block rounded-md bg-surface border border-border px-3 py-2 text-sm"><option value="">(auto: least recent)</option>{TOPICS.map((t) => <option key={t.key} value={t.key}>{t.key} · {t.category}</option>)}</select></label>
         <label className="text-sm flex items-center gap-2"><input type="checkbox" name="announce" defaultChecked /> post to public channel</label>
         <button disabled={!configured} className="rounded-md bg-gold text-black font-semibold px-4 py-2 disabled:opacity-40">Generate now (~1 min)</button>

@@ -1,11 +1,10 @@
-import Anthropic from "@anthropic-ai/sdk";
 import { desc, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { articles } from "@/db/schema";
 import { BRAND } from "@/config/brand";
 import { CHATS, getBot } from "@/lib/telegram";
+import { generateJson, llmConfigured } from "@/lib/llm";
 
-export const MODEL = "claude-opus-5";
 
 /** Rotating topic bank: common problems retail gold/forex traders face today, each with a fix angle. */
 export const TOPICS: { key: string; category: string; en: string }[] = [
@@ -87,32 +86,22 @@ export function slugify(s: string) {
 }
 
 export async function generateArticle(topicKey?: string) {
-  if (!process.env.ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY not set");
+  if (!llmConfigured()) throw new Error("No LLM API key set (GEMINI_API_KEY, GROQ_API_KEY, OPENROUTER_API_KEY or ANTHROPIC_API_KEY)");
   const recent = await db.select({ k: articles.topicKey }).from(articles).orderBy(desc(articles.publishedAt)).limit(TOPICS.length - 5);
   const topic = topicKey ? TOPICS.find((t) => t.key === topicKey) ?? pickTopic([]) : pickTopic(recent.map((r) => r.k));
-
-  const client = new Anthropic();
-  const stream = client.beta.messages.stream({
-    model: MODEL,
-    max_tokens: 32000,
-    betas: ["server-side-fallback-2026-07-01"],
-    fallbacks: "default",
-    system: [{ type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } }],
-    output_config: { effort: "high", format: { type: "json_schema", schema: SCHEMA } },
-    messages: [{ role: "user", content: `Topic (category: ${topic.category}): ${topic.en}\n\nWrite today's article as JSON matching the schema.` }],
+  const { json: draft, model } = await generateJson<ArticleDraft>({
+    system: SYSTEM, schema: SCHEMA, maxTokens: 6000,
+    user: `Topic (category: ${topic.category}): ${topic.en}\n\nWrite today's article as JSON matching the schema.`,
   });
-  const msg = await stream.finalMessage();
-  if (msg.stop_reason === "refusal") throw new Error(`refused: ${msg.stop_details?.explanation ?? ""}`);
-  const text = msg.content.filter((b) => b.type === "text").map((b) => b.text).join("");
-  const draft = JSON.parse(text) as ArticleDraft;
-
+  for (const k of ["title_ms", "title_en", "excerpt_ms", "excerpt_en", "body_ms", "body_en"] as const) if (!draft[k]) throw new Error(`model output missing ${k}`);
+  draft.read_minutes = Math.min(15, Math.max(2, Number(draft.read_minutes) || 5));
   let slug = slugify(draft.title_en) || topic.key;
   const [clash] = await db.select({ id: articles.id }).from(articles).where(eq(articles.slug, slug));
   if (clash) slug = `${slug}-${Date.now().toString(36)}`;
   const [row] = await db.insert(articles).values({
     slug, topicKey: topic.key, category: topic.category,
     titleMs: draft.title_ms, titleEn: draft.title_en, excerptMs: draft.excerpt_ms, excerptEn: draft.excerpt_en,
-    bodyMs: draft.body_ms, bodyEn: draft.body_en, readMinutes: draft.read_minutes, model: msg.model,
+    bodyMs: draft.body_ms, bodyEn: draft.body_en, readMinutes: draft.read_minutes, model,
   }).returning();
   return row;
 }
