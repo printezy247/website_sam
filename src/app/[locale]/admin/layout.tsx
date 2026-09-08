@@ -10,6 +10,8 @@ export default async function AdminLayout({ children, params }: { children: Reac
         <Link href="/admin" className="hover:text-gold">Dashboard</Link>
         <Link href="/admin/signals" className="hover:text-gold">Signals</Link>
         <Link href="/admin/ib" className="hover:text-gold">IB approvals</Link>
+        <Link href="/admin/ib/import" className="hover:text-gold">CSV import</Link>
+        <Link href="/admin/broadcasts" className="hover:text-gold">Broadcasts</Link>
         <Link href="/admin/users" className="hover:text-gold">Users</Link>
       </nav>
       {children}

@@ -1,5 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import { signIn } from "@/auth";
+import { BRAND } from "@/config/brand";
 export default async function SignIn({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ sent?: string; callbackUrl?: string }> }) {
   const { locale } = await params; setRequestLocale(locale);
   const { sent, callbackUrl } = await searchParams;
@@ -16,6 +17,10 @@ export default async function SignIn({ params, searchParams }: { params: Promise
           <button className="w-full rounded-md bg-gold text-black font-semibold py-2.5">{ms ? "Hantar link" : "Send link"}</button>
         </form>
       )}
+      <div className="mt-8 border-t border-border pt-6">
+        <p className="text-sm text-muted mb-3">{ms ? "Atau log masuk dengan Telegram:" : "Or sign in with Telegram:"}</p>
+        <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login={BRAND.telegram.botUsername} data-size="large" data-auth-url={`${BRAND.siteUrl}/api/auth/telegram?locale=${locale}`} data-request-access="write" />
+      </div>
     </div>
   );
 }

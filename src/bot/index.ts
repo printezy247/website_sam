@@ -1,10 +1,11 @@
 import { Bot, InlineKeyboard, webhookCallback, type Context } from "grammy";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { ibAccounts, telegramAccounts, users } from "@/db/schema";
+import { ibAccounts, products, telegramAccounts, users } from "@/db/schema";
 import { BRAND } from "@/config/brand";
 import { TIERS, fmtUsd } from "@/config/tiers";
 import { effectiveTier } from "@/lib/entitlements";
+import { tierByKey } from "@/config/tiers";
 import { CHATS, escapeHtml } from "@/lib/telegram";
 import { approveIbAccount, rejectIbAccount } from "@/lib/ib";
 
@@ -20,7 +21,7 @@ const T = {
     status: (tier: string, exp: string) => `Pelan semasa: <b>${tier.toUpperCase()}</b>${exp}`,
     no_link: "Akaun Telegram ini belum dipautkan ke akaun web. Log masuk di laman web dan pautkan Telegram, atau guna /verify.",
     plans: "Pelan (bayar bulanan, atau percuma melalui HFM):",
-    support: "Hubungi sokongan:", help: "Arahan: /start /verify /status /plans /support",
+    support: "Hubungi sokongan:", help: "Arahan: /start /verify /status /upgrade /plans /products /ebook /support",
   },
   en: {
     welcome: (n: string) => `Welcome to <b>${n}</b> 👋\n\nGold (XAUUSD) signals with full transparency. Two ways in:\n\n<b>A.</b> Open an HFM account under our link — Free with no deposit, Pro $100, Elite $500.\n<b>B.</b> Pay a monthly plan on your own broker.\n\n⚠️ CFD trading carries high risk. Education only, not financial advice.`,
@@ -31,7 +32,7 @@ const T = {
     status: (tier: string, exp: string) => `Current plan: <b>${tier.toUpperCase()}</b>${exp}`,
     no_link: "This Telegram account is not linked to a web account yet. Sign in on the website and link Telegram, or use /verify.",
     plans: "Plans (pay monthly, or free via HFM):",
-    support: "Contact support:", help: "Commands: /start /verify /status /plans /support",
+    support: "Contact support:", help: "Commands: /start /verify /status /upgrade /plans /products /ebook /support",
   },
 };
 const lang = (ctx: Context) => (ctx.from?.language_code?.startsWith("ms") || ctx.from?.language_code?.startsWith("id") ? "ms" : "en");
@@ -111,6 +112,44 @@ export function createBot(token: string) {
     const lines = TIERS.filter((x) => x.key !== "public").map((x) => `• <b>${x.key.toUpperCase()}</b> — ${fmtUsd(x.priceMonthCents)}/mo · HFM ${x.ibMinDepositUsd ? "+$" + x.ibMinDepositUsd : "no deposit"}`);
     await ctx.reply(`${t.plans}\n\n${lines.join("\n")}`, { parse_mode: "HTML", reply_markup: new InlineKeyboard().url(t.btn_plans, `${BRAND.siteUrl}/pricing`) });
   });
+  bot.command("upgrade", async (ctx) => {
+    await upsertTg(ctx);
+    const [u] = await db.select().from(users).where(eq(users.telegramId, String(ctx.from!.id)));
+    const tier = u ? await effectiveTier(u.id) : "public";
+    const next = TIERS.find((x) => x.rank === (tierByKey(tier)?.rank ?? 0) + 1);
+    if (!next) return ctx.reply(lang(ctx) === "ms" ? "Anda sudah di pelan tertinggi 🎉" : "You are already on the top plan 🎉");
+    const ms = lang(ctx) === "ms";
+    const text = ms
+      ? `Pelan semasa: <b>${tier.toUpperCase()}</b>\nNaik ke <b>${next.key.toUpperCase()}</b>:\n• Deposit HFM sehingga $${next.ibMinDepositUsd} lalu /verify semula\n• atau bayar ${fmtUsd(next.priceMonthCents)}/bulan`
+      : `Current plan: <b>${tier.toUpperCase()}</b>\nUpgrade to <b>${next.key.toUpperCase()}</b>:\n• Deposit HFM up to $${next.ibMinDepositUsd} then /verify again\n• or pay ${fmtUsd(next.priceMonthCents)}/month`;
+    await ctx.reply(text, { parse_mode: "HTML", reply_markup: new InlineKeyboard().url(ms ? "Deposit HFM" : "Deposit at HFM", BRAND.broker.links.my).url(ms ? "Bayar" : "Pay", `${BRAND.siteUrl}/account?checkout=${next.key}`) });
+  });
+
+  bot.command("products", async (ctx) => {
+    const rows = await db.select().from(products).where(eq(products.active, true));
+    const ms = lang(ctx) === "ms";
+    const lines = rows.map((p) => `• <b>${p.name}</b> — ${p.priceCents ? "$" + p.priceCents / 100 : (ms ? "Percuma" : "Free")}${p.tierIncluded ? ` (${ms ? "termasuk" : "included"} ${p.tierIncluded.toUpperCase()})` : ""}`);
+    await ctx.reply(`${ms ? "Kedai" : "Store"}:\n\n${lines.join("\n")}`, { parse_mode: "HTML", reply_markup: new InlineKeyboard().url(ms ? "Buka kedai" : "Open store", `${BRAND.siteUrl}/products`) });
+  });
+
+  bot.command("ebook", async (ctx) => {
+    const [p] = await db.select().from(products).where(eq(products.slug, "ebook-gold-starter"));
+    const ms = lang(ctx) === "ms";
+    if (p?.filePath?.startsWith("tg:")) return ctx.replyWithDocument(p.filePath.slice(3), { caption: p.name });
+    await ctx.reply(ms ? "Ebook akan dihantar tidak lama lagi. Sementara itu sertai channel awam 👇" : "Ebook coming shortly. Meanwhile join the public channel 👇", { reply_markup: new InlineKeyboard().url("📢 Channel", BRAND.telegram.publicChannel) });
+  });
+
+  // Auto-approve join requests when the user holds the right tier.
+  bot.on("chat_join_request", async (ctx) => {
+    const chatId = String(ctx.chatJoinRequest.chat.id);
+    const needed = chatId === CHATS.elite ? "elite" : chatId === CHATS.pro ? "pro" : chatId === CHATS.free ? "free" : null;
+    if (!needed) return;
+    const [u] = await db.select().from(users).where(eq(users.telegramId, String(ctx.chatJoinRequest.from.id)));
+    const tier = u ? await effectiveTier(u.id) : "public";
+    if ((tierByKey(tier)?.rank ?? 0) >= (tierByKey(needed)?.rank ?? 99)) await ctx.approveChatJoinRequest(ctx.chatJoinRequest.from.id).catch(() => {});
+    else await ctx.declineChatJoinRequest(ctx.chatJoinRequest.from.id).catch(() => {});
+  });
+
   bot.command("support", async (ctx) => ctx.reply(`${T[lang(ctx)].support} ${BRAND.telegram.support}`));
   bot.command("help", async (ctx) => ctx.reply(T[lang(ctx)].help));
 

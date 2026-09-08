@@ -77,3 +77,47 @@ export async function adminGrant(fd: FormData) {
 export async function listPendingIb() {
   return db.select().from(ibAccounts).where(eq(ibAccounts.status, "pending")).orderBy(desc(ibAccounts.createdAt));
 }
+
+// ---- P1 ----
+import { redirect } from "next/navigation";
+import { broadcasts } from "@/db/schema";
+import { parseCsv, pickHfmColumns } from "@/lib/csv";
+import { sendBroadcast } from "@/lib/broadcast";
+
+export async function adminImportHfmCsv(fd: FormData) {
+  if (!(await requireAdmin())) throw new Error("forbidden");
+  const file = fd.get("file");
+  if (!(file instanceof File)) throw new Error("no file");
+  const rows = parseCsv(await file.text());
+  let matched = 0, approved = 0, refreshed = 0;
+  const unmatched: string[] = [];
+  if (rows.length) {
+    const cols = pickHfmColumns(rows[0]);
+    if (!cols.account) redirect(`/admin/ib/import?r=${encodeURIComponent("No account/login column found. Headers: " + Object.keys(rows[0]).join(", "))}`);
+    for (const r of rows) {
+      const acc = (r[cols.account] ?? "").replace(/\D/g, "");
+      if (!acc) continue;
+      const dep = Number((r[cols.deposit ?? ""] ?? r[cols.balance ?? ""] ?? "0").replace(/[^0-9.]/g, "")) || 0;
+      const [ib] = await db.select().from(ibAccounts).where(eq(ibAccounts.accountNo, acc));
+      if (!ib) { unmatched.push(acc); continue; }
+      matched++;
+      if (ib.status === "pending") { const res = await approveIbAccount(ib.id, dep); if (res.ok) approved++; }
+      else { await db.update(ibAccounts).set({ depositUsd: String(dep) }).where(eq(ibAccounts.id, ib.id)); refreshed++; }
+    }
+  }
+  revalidatePath("/admin/ib");
+  redirect(`/admin/ib/import?r=${encodeURIComponent(`rows=${rows.length} matched=${matched} approved=${approved} refreshed=${refreshed}\nunmatched (first 20): ${unmatched.slice(0, 20).join(", ")}`)}`);
+}
+
+export async function adminCreateBroadcast(fd: FormData) {
+  if (!(await requireAdmin())) throw new Error("forbidden");
+  const tiers = fd.getAll("tiers").map(String).filter(Boolean);
+  const sched = str(fd, "scheduledAt");
+  await db.insert(broadcasts).values({ textMs: str(fd, "textMs"), textEn: str(fd, "textEn"), segment: { tiers }, scheduledAt: sched ? new Date(sched + "Z") : null });
+  revalidatePath("/admin/broadcasts");
+}
+export async function adminSendBroadcast(fd: FormData) {
+  if (!(await requireAdmin())) throw new Error("forbidden");
+  await sendBroadcast(str(fd, "id"));
+  revalidatePath("/admin/broadcasts");
+}
