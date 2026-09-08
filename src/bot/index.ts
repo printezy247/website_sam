@@ -13,7 +13,7 @@ type VerifyState = { step: "region" | "account" | "name" | "balance" | "photo"; 
 
 const T = {
   ms: {
-    welcome: (n: string) => `Selamat datang ke <b>${n}</b> 👋\n\nSignal emas (XAUUSD) dengan ketelusan penuh. Dua cara masuk:\n\n<b>A.</b> Buka akaun HFM guna link kami — Free tanpa deposit, Pro $100, Elite $500.\n<b>B.</b> Bayar pelan bulanan dengan broker sendiri.\n\n⚠️ Dagangan CFD berisiko tinggi. Pendidikan sahaja, bukan nasihat kewangan.`,
+    welcome: (n: string) => `Selamat datang ke <b>${n}</b> 🥇 bersama Sam 👋\n\nSignal emas (XAUUSD) dengan ketelusan penuh. Dua cara masuk:\n\n<b>A.</b> Buka akaun HFM guna link kami — Free tanpa deposit, Pro $100, Elite $500.\n<b>B.</b> Bayar pelan bulanan dengan broker sendiri.\n\n⚠️ Dagangan CFD berisiko tinggi. Pendidikan sahaja, bukan nasihat kewangan.`,
     btn_channel: "📢 Channel signal percuma", btn_hfm: "🏦 Daftar HFM", btn_verify: "✅ Sahkan akaun HFM", btn_plans: "💳 Lihat pelan", btn_guide: "📖 Panduan daftar",
     region: "Pilih rantau akaun HFM anda:", ask_account: "Hantar nombor akaun MT4/MT5 anda:", ask_name: "Nama penuh (seperti dalam HFM):", ask_balance: "Baki akaun sekarang dalam USD (contoh: 120):", ask_photo: "Hantar screenshot akaun (nama + nombor akaun + baki kelihatan):",
     submitted: "Terima kasih! Permohonan dihantar. Admin akan sahkan dalam 24 jam dan bot akan hantar link group anda.",
@@ -24,7 +24,7 @@ const T = {
     support: "Hubungi sokongan:", help: "Arahan: /start /verify /status /upgrade /plans /products /ebook /news /mystats /leaderboard /language /support",
   },
   en: {
-    welcome: (n: string) => `Welcome to <b>${n}</b> 👋\n\nGold (XAUUSD) signals with full transparency. Two ways in:\n\n<b>A.</b> Open an HFM account under our link — Free with no deposit, Pro $100, Elite $500.\n<b>B.</b> Pay a monthly plan on your own broker.\n\n⚠️ CFD trading carries high risk. Education only, not financial advice.`,
+    welcome: (n: string) => `Welcome to <b>${n}</b> 🥇 with Sam 👋\n\nGold (XAUUSD) signals with full transparency. Two ways in:\n\n<b>A.</b> Open an HFM account under our link — Free with no deposit, Pro $100, Elite $500.\n<b>B.</b> Pay a monthly plan on your own broker.\n\n⚠️ CFD trading carries high risk. Education only, not financial advice.`,
     btn_channel: "📢 Free signal channel", btn_hfm: "🏦 Open HFM account", btn_verify: "✅ Verify HFM account", btn_plans: "💳 See plans", btn_guide: "📖 Registration guide",
     region: "Pick your HFM account region:", ask_account: "Send your MT4/MT5 account number:", ask_name: "Full name (as in HFM):", ask_balance: "Current account balance in USD (e.g. 120):", ask_photo: "Send an account screenshot (name + account number + balance visible):",
     submitted: "Thanks! Submitted. An admin verifies within 24h and the bot will DM your group link.",

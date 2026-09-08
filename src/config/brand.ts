@@ -1,6 +1,10 @@
-// Single source of truth for brand strings. "Sam" is a placeholder name.
+// Single source of truth for brand strings.
 export const BRAND = {
-  name: process.env.NEXT_PUBLIC_BRAND_NAME ?? "Sam",
+  name: process.env.NEXT_PUBLIC_BRAND_NAME ?? "SAMBANGGOLD",
+  /** Monogram / favicon text. */
+  shortName: "SBG",
+  /** The human behind the brand (support, bylines). */
+  person: "Sam",
   tagline: "Gold signals with full transparency. Two ways in.",
   privateGroupName: "Sam Flip Seribu",
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",

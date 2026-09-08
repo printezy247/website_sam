@@ -1,4 +1,6 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { BRAND } from "@/config/brand";
 
 export const alt = `${BRAND.name} · XAUUSD`;
@@ -13,18 +15,19 @@ const COPY = {
 export default async function Image({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const c = COPY[locale as keyof typeof COPY] ?? COPY.ms;
+  const anton = await readFile(join(process.cwd(), "src", "app", "fonts", "anton.ttf")).catch(() => null);
   return new ImageResponse(
     (
       <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: 64, background: "linear-gradient(135deg, #050505 0%, #0b0e14 60%, #1a1607 100%)", color: "#f3f4f6", fontFamily: "sans-serif" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          <div style={{ width: 56, height: 56, borderRadius: 999, border: "4px solid #d4af37", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ width: 8, height: 30, background: "#d4af37", borderRadius: 2 }} />
+          <div style={{ width: 64, height: 64, borderRadius: 999, border: "4px solid #d4af37", background: "#050609", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 800, fontStyle: "italic", letterSpacing: -1 }}>
+            <span style={{ color: "#e5e7eb" }}>SB</span><span style={{ color: "#d4af37" }}>G</span>
           </div>
-          <div style={{ fontSize: 40, fontWeight: 700, display: "flex" }}>{BRAND.name}<span style={{ color: "#d4af37" }}>.</span></div>
+          <div style={{ fontSize: 48, fontFamily: anton ? "Anton" : "sans-serif", fontStyle: "italic", display: "flex", letterSpacing: 2 }}><span style={{ color: "#e5e7eb" }}>SAMBANG</span><span style={{ color: "#d4af37" }}>GOLD</span></div>
           <div style={{ marginLeft: "auto", fontSize: 24, color: "#9aa3b2", letterSpacing: 4 }}>XAUUSD</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          <div style={{ fontSize: 72, fontWeight: 700, lineHeight: 1.05, maxWidth: 1000 }}>{c.title}</div>
+          <div style={{ fontSize: 84, fontFamily: anton ? "Anton" : "sans-serif", lineHeight: 1, maxWidth: 1000, textTransform: "uppercase" }}>{c.title}</div>
           <div style={{ fontSize: 30, color: "#d4af37" }}>{c.sub}</div>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 22, color: "#9aa3b2" }}>
@@ -33,6 +36,6 @@ export default async function Image({ params }: { params: Promise<{ locale: stri
         </div>
       </div>
     ),
-    { ...size },
+    { ...size, fonts: anton ? [{ name: "Anton", data: anton, style: "normal", weight: 400 }] : [] },
   );
 }

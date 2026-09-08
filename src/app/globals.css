@@ -11,11 +11,19 @@
   --color-gold-2: #f5d76e;
   --color-win: #00c46a;
   --color-loss: #ff4d4f;
+  --color-chrome: #b7c0ce;
+  --color-gold-deep: #7a4003;
+  --color-graphite: #050609;
+  --font-display: var(--font-anton), Impact, "Arial Narrow", sans-serif;
   --font-sans: var(--font-geist-sans), Inter, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
 html { color-scheme: dark; }
+.font-display { font-family: var(--font-display); font-weight: 400; letter-spacing: .01em; }
+.text-chrome { background: linear-gradient(180deg, #ffffff 0%, #d9dee6 45%, #8f99a8 50%, #b7c0ce 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.text-goldgrad { background: linear-gradient(180deg, #f5d76e 0%, #d4af37 50%, #a87d0f 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.wordmark { font-family: var(--font-display); font-style: italic; letter-spacing: .02em; line-height: 1; }
 body { background: var(--color-bg); color: var(--color-fg); }
 
 .glass {
@@ -64,3 +72,10 @@ body { background: var(--color-bg); color: var(--color-fg); }
 .btn-gold { color: #050505; background: linear-gradient(180deg, #f5d76e 0%, #d4af37 55%, #a87d0f 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,.35), inset 0 -3px 6px rgba(0,0,0,.18), 0 2px 6px rgba(0,0,0,.4), 0 10px 24px rgba(212,175,55,.18); }
 .btn-gold:hover { background: linear-gradient(180deg, #f8dc7a 0%, #dcab22 55%, #b0851a 100%); }
 @media (prefers-reduced-motion: reduce) { .ticker-track, .glyph-ring, .glyph-core, .animate-ticker { animation: none; } }
+
+/* two-frame mascot when PNG renders are present */
+@keyframes mascot-raise { 0%, 44%, 100% { opacity: 1 } 48%, 60% { opacity: 0 } }
+@keyframes mascot-strike { 0%, 44%, 100% { opacity: 0 } 48%, 60% { opacity: 1 } }
+.mascot-raise { animation: mascot-raise 2.6s steps(1, end) infinite; }
+.mascot-strike { animation: mascot-strike 2.6s steps(1, end) infinite; }
+@media (prefers-reduced-motion: reduce) { .mascot-raise, .mascot-strike { animation: none } .mascot-strike { opacity: 0 } }

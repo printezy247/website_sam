@@ -16,7 +16,7 @@ export default async function EditArticle({ searchParams }: { searchParams: Prom
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div><h2 className="font-semibold">{a ? "Edit article" : "New article"}</h2><p className="text-xs text-muted">Markdown body. Use `## Heading` sections; a section titled "Checklist" / "Senarai semak" becomes interactive checkboxes on the site. Write one language and press "Fill EN/MS with AI" for the other.</p></div>
+        <div><h2 className="font-semibold">{a ? "Edit article" : "New article"}</h2><p className="text-xs text-muted">{"Markdown body. Use `## Heading` sections; a section titled \"Checklist\" / \"Senarai semak\" becomes interactive checkboxes on the site. Write one language and press \"Fill EN/MS with AI\" for the other."}</p></div>
         <div className="flex gap-2 text-sm">
           <Link href="/admin/articles" className="rounded-md border border-border px-3 py-1.5">← All articles</Link>
           {a && <a href={`/education/${a.slug}`} target="_blank" className="rounded-md border border-border px-3 py-1.5 hover:border-gold/50">Preview ↗</a>}

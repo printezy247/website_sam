@@ -1,8 +1,9 @@
 import { getTranslations, getLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { BRAND, botDeepLink } from "@/config/brand";
+import { botDeepLink } from "@/config/brand";
 import { auth } from "@/auth";
 import { Glyph } from "@/components/Glyph";
+import { Wordmark } from "@/components/Wordmark";
 
 export async function Header() {
   const t = await getTranslations("nav");
@@ -14,7 +15,7 @@ export async function Header() {
       <div className="mx-auto max-w-6xl px-4 h-14 flex items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
           <Glyph size={30} />
-          <span>{BRAND.name}<span className="text-gold">.</span></span>
+          <Wordmark size="text-[22px]" />
         </Link>
         <nav className="hidden md:flex items-center gap-6 text-sm text-muted">
           <Link href="/results" className="hover:text-fg">{t("results")}</Link>
