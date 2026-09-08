@@ -49,3 +49,9 @@ Rules
 
 ## 7. Pages
 `/` landing · `/results` · `/pricing` · `/products`, `/products/:slug` · `/account` · `/admin` (signals, IB approvals + CSV import, users/entitlements, products/licenses, broadcasts, funnel analytics) · `/legal/risk`, `/legal/terms`, `/legal/privacy`, `/legal/ib-disclosure` · `/ms/*` Malay mirrors.
+
+## 8. Store fulfilment (P2, live)
+- Downloads: `GET /api/downloads/:productId` (signed-in; allowed when tier includes the product, it is free, or a paid order exists). `products.file_path` = filename inside `UPLOAD_DIR` (Railway volume), an `https://` URL (redirect), or `tg:<file_id>` (delivered by bot `/ebook`).
+- MT5 licences: buyer gets a licence key (`licenses.id`) on `/account`. Indicator/EA calls `POST /api/license/check {license, account}`; first `max_activations` (2) accounts bind, others get `activation limit reached`; `expires_at` returned for subscriptions.
+- TradingView: member requests access on `/account`; admin grants in TradingView, marks it at `/admin/tv`; member is DM'd.
+- Products CRUD at `/admin/products`.
