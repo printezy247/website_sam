@@ -18,6 +18,10 @@ import { isNull, lte } from "drizzle-orm";
 const GRACE_DAYS = 7;
 
 async function main() {
+  if (!process.env.DATABASE_URL) {
+    console.error("[jobs] DATABASE_URL is not set on this service. In Railway open the jobs service → Variables → add DATABASE_URL = ${{Postgres.DATABASE_URL}} (plus the same keys as the web service), then redeploy.");
+    process.exit(1);
+  }
   console.log("[jobs] evaluate", await evaluateRunningSignals({ force: true }).catch((e) => String(e)));
   console.log("[jobs] auto-signal", (await ensureAutoSignal(true).catch((e) => String(e)))?.toString().slice(0, 60));
   const cutoff = new Date(Date.now() - GRACE_DAYS * 864e5);
