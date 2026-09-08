@@ -1,6 +1,6 @@
 // Cron entrypoint (Railway cron service: `npm run jobs`). Expires stale entitlements and soft-kicks from groups.
 import { and, eq, lt } from "drizzle-orm";
-import { db } from "@/db";
+import { db, dbUrl } from "@/db";
 import { entitlements, users } from "@/db/schema";
 import { effectiveTier } from "@/lib/entitlements";
 import { CHATS, getBot, sendHtml } from "@/lib/telegram";
@@ -18,10 +18,15 @@ import { isNull, lte } from "drizzle-orm";
 const GRACE_DAYS = 7;
 
 async function main() {
-  if (!process.env.DATABASE_URL) {
-    console.error("[jobs] DATABASE_URL is not set on this service. In Railway open the jobs service → Variables → add DATABASE_URL = ${{Postgres.DATABASE_URL}} (plus the same keys as the web service), then redeploy.");
+  const dbKeys = Object.keys(process.env).filter((k) => /DATABASE|POSTGRES|^PG/i.test(k));
+  const raw = process.env.DATABASE_URL;
+  const anyUrl = [raw, process.env.DATABASE_PRIVATE_URL, process.env.DATABASE_PUBLIC_URL].find((v) => v && v.trim());
+  if (!anyUrl) {
+    console.error(`[jobs] DATABASE_URL is ${raw === undefined ? "undefined" : "an empty string"} on this service. DB-related env names present: ${dbKeys.join(", ") || "(none)"}.`);
+    console.error("[jobs] Fix: Railway → jobs service → Variables → DATABASE_URL. Paste the literal value from the Postgres service (Variables → DATABASE_URL), or a reference like ${{Postgres.DATABASE_URL}} with the exact Postgres service name. Then Deploy.");
     process.exit(1);
   }
+  try { console.log(`[jobs] db host: ${new URL(dbUrl).hostname}`); } catch { console.log("[jobs] db url unparsable"); }
   console.log("[jobs] evaluate", await evaluateRunningSignals({ force: true }).catch((e) => String(e)));
   console.log("[jobs] auto-signal", (await ensureAutoSignal(true).catch((e) => String(e)))?.toString().slice(0, 60));
   const cutoff = new Date(Date.now() - GRACE_DAYS * 864e5);
