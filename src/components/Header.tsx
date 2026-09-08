@@ -2,6 +2,7 @@ import { getTranslations, getLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { BRAND, botDeepLink } from "@/config/brand";
 import { auth } from "@/auth";
+import { Glyph } from "@/components/Glyph";
 
 export async function Header() {
   const t = await getTranslations("nav");
@@ -12,7 +13,7 @@ export async function Header() {
     <header className="sticky top-0 z-40 glass border-x-0 border-t-0">
       <div className="mx-auto max-w-6xl px-4 h-14 flex items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-          <span className="inline-block size-6 rounded-md bg-gold shadow-[0_0_20px_-4px_var(--color-gold)]" />
+          <Glyph size={30} />
           <span>{BRAND.name}<span className="text-gold">.</span></span>
         </Link>
         <nav className="hidden md:flex items-center gap-6 text-sm text-muted">

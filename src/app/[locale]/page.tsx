@@ -2,6 +2,9 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { BRAND, botDeepLink } from "@/config/brand";
 import { StatTile } from "@/components/StatTile";
+import { HeroField } from "@/components/HeroField";
+import { LiveSignalCard } from "@/components/LiveSignalCard";
+import { evaluateRunningSignals } from "@/lib/evaluate";
 import { SignalCard } from "@/components/SignalCard";
 import { TierCards } from "@/components/TierCards";
 import { closedSignals, computeStats, latestSignals, recent } from "@/lib/stats";
@@ -14,6 +17,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations();
+  await evaluateRunningSignals().catch((e) => console.error("[evaluate]", e));
   const [closed, latest, prods] = await Promise.all([
     closedSignals().catch(() => []), latestSignals(["public"], 6).catch(() => []),
     db.select().from(products).where(eq(products.active, true)).limit(6).catch(() => []),
@@ -25,6 +29,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 grid-bg" />
+        <HeroField />
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 size-[600px] rounded-full bg-gold/10 blur-3xl" />
         <div className="relative mx-auto max-w-6xl px-4 py-20 md:py-28 grid gap-10 md:grid-cols-2 items-center">
           <div>
@@ -34,14 +39,11 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             </h1>
             <p className="mt-5 text-muted text-lg max-w-xl">{t("hero.subtitle")}</p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <a href={botDeepLink("site_hero")} className="rounded-md bg-gold text-black font-semibold px-6 py-3 hover:bg-gold-2 shadow-[0_0_30px_-8px_var(--color-gold)]">{t("hero.cta_primary")}</a>
+              <a href={botDeepLink("site_hero")} className="btn-gold rounded-md font-semibold px-6 py-3">{t("hero.cta_primary")}</a>
               <Link href="/pricing" className="rounded-md border border-border px-6 py-3 hover:border-gold/50">{t("hero.cta_secondary")}</Link>
             </div>
           </div>
-          <div>
-            <SignalCard s={{ instrument: "XAUUSD", side: "buy", entry: "2,412.50", sl: "2,404.50", tp1: "2,420.50", tp2: "2,428.50", tp3: "2,436.50", status: "running", sample: true }} />
-            <p className="mt-2 text-xs text-muted">{t("hero.sample_note")}</p>
-          </div>
+          <LiveSignalCard />
         </div>
       </section>
 
