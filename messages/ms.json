@@ -216,5 +216,12 @@
     "tp": "TP",
     "empty": "Data carta tidak tersedia buat masa ini.",
     "asOf": "Dikemas kini"
+  },
+  "news": {
+    "title": "Berita impak tinggi minggu ini",
+    "source": "Forex Factory · USD",
+    "hint": "Spread melebar dan harga bergerak pantas sekitar berita merah. Setup automatik dihentikan 30 minit sebelum dan selepas.",
+    "forecast": "Ramalan",
+    "previous": "Sebelum"
   }
 }
