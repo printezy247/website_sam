@@ -9,6 +9,10 @@ Reference for every design, copy and product request. Load this before writing a
 - Voice: cool, blunt, professional, light military register. Short declaratives. No exclamation marks, no hype, no em dashes, no forced triads. Compliance lines stay verbatim. Web copy has no decorative emoji; bot and email keep only functional marks (✅ ❌ ⚠️ 🔴).
 - Locales: Bahasa Melayu first, English second. Rank names are brand terms and are not translated.
 
+## Source assets
+
+Design files live in `printezy247/designresources`, folder `Sam/` (channel code `SAM`, naming `SAM_{Project}_{Description}_v{N}.{ext}`). Current: `BrandAssets/3DModels/SamBangGoldMascot_v1.obj` + `.mtl` (mesh with named parts: anvil, gold_bar, legs, torso, belt, hammer), `BrandAssets/Fonts/Anton_v1.woff2`. This repo keeps its own copies under `public/brand/` and `src/app/fonts/`.
+
 ## Ranks (membership tiers)
 
 | Display name | Internal key | Route A (HFM account) | Route B (own broker) |
