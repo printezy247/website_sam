@@ -3,7 +3,7 @@ import { db } from "@/db";
 import { articles } from "@/db/schema";
 import { BRAND } from "@/config/brand";
 import { CHATS, getBot } from "@/lib/telegram";
-import { generateJson, llmConfigured } from "@/lib/llm";
+import { generateJson, llmConfigured, llmLabel } from "@/lib/llm";
 
 
 /** Rotating topic bank: common problems retail gold/forex traders face today, each with a fix angle. */
@@ -107,12 +107,22 @@ export async function generateArticle(topicKey?: string) {
 }
 
 /** Daily job: generate one article if none was published in the last 20 hours. */
+let generating: Promise<typeof articles.$inferSelect | null> | null = null;
 export async function ensureDailyArticle() {
+  if (generating) { console.log("[articles] generation already running"); return generating; }
   const [last] = await db.select({ at: articles.publishedAt }).from(articles).orderBy(desc(articles.publishedAt)).limit(1);
-  if (last && Date.now() - last.at.getTime() < 20 * 36e5) return null;
-  const row = await generateArticle();
-  await announceArticle(row.id).catch((e) => console.error("[articles] announce", e));
-  return row;
+  const ageH = last ? (Date.now() - last.at.getTime()) / 36e5 : Infinity;
+  if (ageH < 20) { console.log(`[articles] skip: last article ${ageH.toFixed(1)}h ago (min 20h)`); return null; }
+  generating = (async () => {
+    try {
+      console.log(`[articles] generating (last ${last ? ageH.toFixed(1) + "h ago" : "never"}, provider ${llmLabel()})`);
+      const row = await generateArticle();
+      console.log(`[articles] published ${row.slug} via ${row.model}`);
+      await announceArticle(row.id).catch((e) => console.error("[articles] announce", e));
+      return row;
+    } finally { generating = null; }
+  })();
+  return generating;
 }
 
 export async function announceArticle(id: string) {
