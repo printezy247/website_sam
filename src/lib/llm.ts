@@ -1,8 +1,8 @@
 // Provider-agnostic JSON generation over OpenAI-compatible chat endpoints, plus the Anthropic SDK.
-// Providers: gemini, groq, openrouter, nvidia, moonshot, ollama, custom (LLM_BASE_URL), anthropic.
+// Providers: ollama, gemini, openrouter, nvidia, groq, custom (LLM_BASE_URL), anthropic.
 // Order: LLM_PROVIDER first, then every other provider with a key, as failover. LLM_MODEL pins a model on the first provider.
 
-export type Provider = "gemini" | "groq" | "openrouter" | "nvidia" | "moonshot" | "ollama" | "custom" | "anthropic";
+export type Provider = "gemini" | "groq" | "openrouter" | "nvidia" | "ollama" | "custom" | "anthropic";
 export type OpenAiProvider = Exclude<Provider, "anthropic">;
 
 type Spec = { url: string; keyEnv: string; models: string[]; headers?: Record<string, string>; jsonMode?: boolean; free?: boolean };
@@ -14,8 +14,6 @@ const PROVIDERS: Record<OpenAiProvider, Spec> = {
   openrouter: { url: "https://openrouter.ai/api/v1/chat/completions", keyEnv: "OPENROUTER_API_KEY", models: ["cohere/north-mini-code:free", "nvidia/nemotron-3.5-lightning:free", "moonshotai/kimi-k3", "meta-llama/llama-3.3-70b-instruct:free"], headers: { "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL ?? "", "X-Title": "SAMBANGGOLD" }, jsonMode: true, free: true },
   // NVIDIA NIM: free developer tier, OpenAI-compatible. Model ids are namespaced (vendor/model).
   nvidia: { url: "https://integrate.api.nvidia.com/v1/chat/completions", keyEnv: "NVIDIA_API_KEY", models: ["nvidia/nemotron-3.5-lightning-30b-a3b", "moonshotai/kimi-k3", "nvidia/nemotron-3-super-120b-a12b", "nvidia/llama-3.1-nemotron-70b-instruct"], jsonMode: false },
-  // Moonshot Kimi (api.moonshot.ai). Set MOONSHOT_BASE_URL=https://api.moonshot.cn/v1 for the China endpoint.
-  moonshot: { url: `${(process.env.MOONSHOT_BASE_URL ?? "https://api.moonshot.ai/v1").replace(/\/+$/, "")}/chat/completions`, keyEnv: "MOONSHOT_API_KEY", models: ["kimi-k3", "kimi-k2.6"], jsonMode: true },
   // Ollama cloud (ollama.com, key from ollama.com/settings/keys) or a self-hosted server via OLLAMA_BASE_URL.
   ollama: { url: `${ollamaBase}/v1/chat/completions`, keyEnv: "OLLAMA_API_KEY", models: ["gpt-oss:120b", "kimi-k3", "nemotron-3-super", "glm-5.3"], jsonMode: true },
   // Any other OpenAI-compatible server: LLM_BASE_URL=https://host/v1, LLM_API_KEY, LLM_MODEL.
@@ -31,7 +29,7 @@ export function resolveModel(pin: string, found: string[]) {
   const hits = found.filter((id) => { const n = norm(id); return words.every((w) => n.includes(w)); });
   return hits[0] ?? pin;
 }
-export const PROVIDER_ORDER: Provider[] = ["ollama", "gemini", "openrouter", "nvidia", "moonshot", "groq", "custom", "anthropic"];
+export const PROVIDER_ORDER: Provider[] = ["ollama", "gemini", "openrouter", "nvidia", "groq", "custom", "anthropic"];
 
 function hasKey(p: Provider) {
   if (p === "anthropic") return Boolean(process.env.ANTHROPIC_API_KEY);
@@ -158,7 +156,7 @@ async function geminiNative<T>(key: string, model: string, args: { system: strin
 /** Generate JSON. Walks every configured provider in order; within one, tries discovered models on model errors. */
 export async function generateJson<T>(args: { system: string; user: string; schema: Record<string, unknown>; maxTokens?: number; provider?: Provider; model?: string }): Promise<{ json: T; model: string }> {
   const providers = args.provider ? [args.provider] : llmProviders();
-  if (!providers.length) throw new Error("No LLM API key set (GEMINI_API_KEY, GROQ_API_KEY, NVIDIA_API_KEY, OPENROUTER_API_KEY, MOONSHOT_API_KEY, OLLAMA_API_KEY, LLM_BASE_URL+LLM_API_KEY or ANTHROPIC_API_KEY)");
+  if (!providers.length) throw new Error("No LLM API key set (GEMINI_API_KEY, GROQ_API_KEY, NVIDIA_API_KEY, OPENROUTER_API_KEY, OLLAMA_API_KEY, LLM_BASE_URL+LLM_API_KEY or ANTHROPIC_API_KEY)");
   const errors: string[] = [];
   for (const [i, p] of providers.entries()) {
     try {
@@ -187,11 +185,11 @@ async function generateWithProvider<T>(p: OpenAiProvider, args: { system: string
   let lastErr = "";
   let sawNotFound = false;
   for (const model of models) {
-    const r = await fetch(spec.url, {
+    const call = (temperature: number | undefined) => fetch(spec.url, {
       method: "POST",
       headers: { "content-type": "application/json", authorization: `Bearer ${key}`, ...(spec.headers ?? {}) },
       body: JSON.stringify({
-        model, temperature: 0.7, max_tokens: args.maxTokens ?? 6000,
+        model, ...(temperature === undefined ? {} : { temperature }), max_tokens: args.maxTokens ?? 6000,
         ...(spec.jsonMode ? { response_format: { type: "json_object" } } : {}),
         messages: [
           { role: "system", content: `${args.system}\n\nRespond with ONLY a JSON object matching this JSON Schema:\n${JSON.stringify(args.schema)}` },
@@ -200,7 +198,9 @@ async function generateWithProvider<T>(p: OpenAiProvider, args: { system: string
       }),
       signal: AbortSignal.timeout(150_000),
     });
-    const raw = await r.text();
+    let r = await call(0.7);
+    let raw = await r.text();
+    if (r.status === 400 && /temperature/i.test(raw)) { r = await call(undefined); raw = await r.text(); } // model fixes its own temperature
     let j: { choices?: { message?: { content?: string } }[]; error?: { message?: string } } = {};
     try { j = JSON.parse(raw); } catch { /* non-JSON body (HTML 404 etc.) */ }
     if (!r.ok) {
