@@ -9,19 +9,29 @@ type Spec = { url: string; keyEnv: string; models: string[]; headers?: Record<st
 const ollamaBase = (process.env.OLLAMA_BASE_URL ?? "https://ollama.com").replace(/\/+$/, "");
 const customBase = (process.env.LLM_BASE_URL ?? "").replace(/\/+$/, "");
 const PROVIDERS: Record<OpenAiProvider, Spec> = {
-  gemini: { url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", keyEnv: "GEMINI_API_KEY", models: ["gemini-3-flash", "gemini-2.5-flash"], jsonMode: true },
+  gemini: { url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", keyEnv: "GEMINI_API_KEY", models: ["gemini-3.7-flash", "gemini-3-flash", "gemini-2.5-flash"], jsonMode: true },
   groq: { url: "https://api.groq.com/openai/v1/chat/completions", keyEnv: "GROQ_API_KEY", models: ["llama-3.3-70b-versatile", "openai/gpt-oss-120b", "llama-3.1-8b-instant"], jsonMode: true },
-  openrouter: { url: "https://openrouter.ai/api/v1/chat/completions", keyEnv: "OPENROUTER_API_KEY", models: ["meta-llama/llama-3.3-70b-instruct:free", "deepseek/deepseek-chat-v3.1:free", "moonshotai/kimi-k2:free"], headers: { "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL ?? "", "X-Title": "SAMBANGGOLD" }, jsonMode: true, free: true },
+  openrouter: { url: "https://openrouter.ai/api/v1/chat/completions", keyEnv: "OPENROUTER_API_KEY", models: ["north/north-mini-code", "meta-llama/llama-3.3-70b-instruct:free", "deepseek/deepseek-chat-v3.1:free"], headers: { "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL ?? "", "X-Title": "SAMBANGGOLD" }, jsonMode: true, free: true },
   // NVIDIA NIM: free developer tier, OpenAI-compatible. Model ids are namespaced (vendor/model).
-  nvidia: { url: "https://integrate.api.nvidia.com/v1/chat/completions", keyEnv: "NVIDIA_API_KEY", models: ["meta/llama-3.3-70b-instruct", "moonshotai/kimi-k2-instruct", "deepseek-ai/deepseek-v3.1", "qwen/qwen3-235b-a22b", "nvidia/llama-3.3-nemotron-super-49b-v1.5"], jsonMode: false },
+  nvidia: { url: "https://integrate.api.nvidia.com/v1/chat/completions", keyEnv: "NVIDIA_API_KEY", models: ["nvidia/nemotron-3.5-lightning-30b-a3b", "meta/llama-3.3-70b-instruct", "moonshotai/kimi-k2-instruct", "deepseek-ai/deepseek-v3.1"], jsonMode: false },
   // Moonshot Kimi (api.moonshot.ai). Set MOONSHOT_BASE_URL=https://api.moonshot.cn/v1 for the China endpoint.
-  moonshot: { url: `${(process.env.MOONSHOT_BASE_URL ?? "https://api.moonshot.ai/v1").replace(/\/+$/, "")}/chat/completions`, keyEnv: "MOONSHOT_API_KEY", models: ["kimi-k2-0905-preview", "kimi-k2-turbo-preview", "moonshot-v1-32k"], jsonMode: true },
+  moonshot: { url: `${(process.env.MOONSHOT_BASE_URL ?? "https://api.moonshot.ai/v1").replace(/\/+$/, "")}/chat/completions`, keyEnv: "MOONSHOT_API_KEY", models: ["kimi-k3", "kimi-k2-0905-preview", "kimi-k2-turbo-preview"], jsonMode: true },
   // Ollama cloud (ollama.com, key from ollama.com/settings/keys) or a self-hosted server via OLLAMA_BASE_URL.
   ollama: { url: `${ollamaBase}/v1/chat/completions`, keyEnv: "OLLAMA_API_KEY", models: ["gpt-oss:120b", "deepseek-v3.1:671b", "kimi-k2:1t", "qwen3:235b", "gemma3:27b"], jsonMode: true },
   // Any other OpenAI-compatible server: LLM_BASE_URL=https://host/v1, LLM_API_KEY, LLM_MODEL.
   custom: { url: `${customBase}/chat/completions`, keyEnv: "LLM_API_KEY", models: [], jsonMode: true },
 };
-export const PROVIDER_ORDER: Provider[] = ["gemini", "groq", "nvidia", "openrouter", "moonshot", "ollama", "custom", "anthropic"];
+/** Per-provider pin: LLM_MODEL_NVIDIA="nemotron 3.5 lightning" (words, fuzzy) or an exact id. */
+export function pinnedModel(p: Provider) { return process.env[`LLM_MODEL_${p.toUpperCase()}`]?.trim() || undefined; }
+const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+/** Resolve a pin against the live list: exact id, else every word of the pin appears in the id (newest/largest first), else the pin as typed. */
+export function resolveModel(pin: string, found: string[]) {
+  if (found.includes(pin)) return pin;
+  const words = norm(pin).split(" ").filter(Boolean);
+  const hits = found.filter((id) => { const n = norm(id); return words.every((w) => n.includes(w)); });
+  return hits[0] ?? pin;
+}
+export const PROVIDER_ORDER: Provider[] = ["gemini", "ollama", "openrouter", "nvidia", "moonshot", "groq", "custom", "anthropic"];
 
 function hasKey(p: Provider) {
   if (p === "anthropic") return Boolean(process.env.ANTHROPIC_API_KEY);
@@ -87,7 +97,7 @@ export async function discoverOpenAiModels(p: OpenAiProvider, key: string): Prom
     const j = (await r.json()) as { data?: { id: string; active?: boolean; pricing?: { prompt?: string } }[] };
     const bad = /(whisper|tts|guard|embed|vision|image|audio|moderation|rerank|allam|compound|safeguard|prompt-guard|reward|retriever|ocr|parse|speech|translate|nv-|clip|sd|flux|video|3d|classif|safety|-vl|vl-|omni|coder|math|code)/i;
     let ids = (j.data ?? []).filter((m) => m.active !== false && !bad.test(m.id)).map((m) => ({ id: m.id, free: m.pricing?.prompt === "0" || /:free$/.test(m.id) }));
-    if (PROVIDERS[p].free) ids = ids.filter((m) => m.free); // only free-tier routes
+    if (PROVIDERS[p].free) { const keep = new Set([...PROVIDERS[p].models, pinnedModel(p) ?? ""]); ids = ids.filter((m) => m.free || keep.has(m.id)); } // free routes, plus explicit picks
     const size = (id: string) => { const m = id.match(/(\d{2,3})b/i) ?? id.match(/(\d)t\b/i); return m ? (/t\b/i.test(m[0]) ? Number(m[1]) * 1000 : Number(m[1])) : /maverick|scout|gpt-oss|deepseek|qwen3|kimi|nemotron|mistral-large|glm/i.test(id) ? 70 : 10; };
     const score = (id: string) => (/llama|kimi|deepseek|gpt-oss|qwen3|nemotron/i.test(id) ? 30 : 0) + (/instruct|versatile|chat/i.test(id) ? 10 : 0) + Math.min(size(id), 200) + (/preview|exp|thinking|reasoning|r1|-mini|nano|lite|small|tiny|1b|3b|7b|8b/i.test(id) ? -15 : 0);
     const models = ids.map((m) => m.id).sort((a, b) => score(b) - score(a));
@@ -98,12 +108,14 @@ export async function discoverOpenAiModels(p: OpenAiProvider, key: string): Prom
 
 /** Providers with keys and the models each one exposes right now (for the admin panel). */
 export async function llmInventory() {
-  const out: { provider: Provider; label: string; models: string[] }[] = [];
+  const out: { provider: Provider; label: string; models: string[]; pin?: string; uses: string; live: boolean }[] = [];
   for (const p of llmProviders()) {
-    if (p === "anthropic") { out.push({ provider: p, label: "Anthropic SDK", models: ["claude-opus-5"] }); continue; }
+    if (p === "anthropic") { out.push({ provider: p, label: "Anthropic SDK", models: ["claude-opus-5"], uses: "claude-opus-5", live: true }); continue; }
     const key = process.env[PROVIDERS[p].keyEnv] ?? "";
     const found = p === "gemini" ? await discoverGeminiModels(key) : await discoverOpenAiModels(p, key);
-    out.push({ provider: p, label: PROVIDERS[p].url.replace(/\/(v1beta\/openai|openai\/v1|api\/v1|v1)?\/chat\/completions$/, ""), models: found.length ? found.slice(0, 12) : PROVIDERS[p].models });
+    const pin = pinnedModel(p);
+    const uses = pin ? resolveModel(pin, found) : PROVIDERS[p].models.find((m) => found.includes(m)) ?? found[0] ?? PROVIDERS[p].models[0] ?? "(set LLM_MODEL_" + p.toUpperCase() + ")";
+    out.push({ provider: p, label: PROVIDERS[p].url.replace(/\/(v1beta\/openai|openai\/v1|api\/v1|v1)?\/chat\/completions$/, ""), models: found.length ? found.slice(0, 12) : PROVIDERS[p].models, pin, uses, live: found.length > 0 });
   }
   return out;
 }
@@ -147,9 +159,11 @@ async function generateWithProvider<T>(p: OpenAiProvider, args: { system: string
   const spec = PROVIDERS[p];
   const key = process.env[spec.keyEnv] ?? (p === "ollama" ? "ollama" : "");
   if (!key) throw new Error(`${spec.keyEnv} not set`);
-  let models = pinned ? [pinned, ...spec.models] : spec.models;
   const found = p === "gemini" ? await discoverGeminiModels(key) : await discoverOpenAiModels(p, key);
-  if (found.length) models = [...new Set([...(pinned ? [pinned] : []), ...found.slice(0, 4), ...spec.models])];
+  const pin = pinned ?? pinnedModel(p);
+  const first = pin ? resolveModel(pin, found) : undefined;
+  let models = first ? [first, ...spec.models] : spec.models;
+  if (found.length) models = [...new Set([...(first ? [first] : []), ...spec.models.filter((m) => found.includes(m)), ...found.slice(0, 4), ...spec.models])];
   if (!models.length) throw new Error(`${p}: no model (set LLM_MODEL)`);
   let lastErr = "";
   let sawNotFound = false;
