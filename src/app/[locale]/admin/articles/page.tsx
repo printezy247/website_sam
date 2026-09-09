@@ -21,12 +21,13 @@ export default async function AdminArticles({ searchParams }: { searchParams: Pr
       </form>
       <div className="glass rounded-2xl p-5">
         <h2 className="font-semibold">LLM providers</h2>
-        <p className="text-xs text-muted">Every key found is used in this order; the next one takes over when a provider fails. Models come from each provider&apos;s live list, best first. Pin with LLM_PROVIDER / LLM_MODEL.</p>
+        <p className="text-xs text-muted">Every key found is used in this order; the next one takes over when a provider fails. Models come from each provider&apos;s live list, best first. Pin with LLM_PROVIDER and LLM_MODEL_&lt;PROVIDER&gt; (exact id, or words like &quot;nemotron 3.5 lightning&quot;).</p>
         {inventory.length === 0 ? <p className="mt-2 text-sm text-loss">No key set.</p> : (
           <ul className="mt-3 grid gap-2 md:grid-cols-2 text-xs">
             {inventory.map((x, i) => (
               <li key={x.provider} className="rounded-lg border border-border/70 p-3">
-                <div className="font-semibold text-sm">{i + 1}. {x.provider} <span className="text-muted font-normal">{x.label}</span></div>
+                <div className="font-semibold text-sm">{i + 1}. {x.provider} <span className="text-muted font-normal">{x.label}</span>{!x.live && <span className="ml-2 text-loss font-normal">list unavailable</span>}</div>
+                <div className="mt-1">uses <span className="text-gold">{x.uses}</span>{x.pin && <span className="text-muted"> (pin: {x.pin})</span>}</div>
                 <div className="mt-1 text-muted break-all">{x.models.join(" · ")}</div>
               </li>
             ))}
