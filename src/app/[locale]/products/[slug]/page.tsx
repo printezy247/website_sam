@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 import { JsonLd, absUrl, localePath, pageMetadata } from "@/lib/seo";
 import { BRAND } from "@/config/brand";
 import { StickyBuyBar } from "@/components/StickyBuyBar";
+import { EbookTierBadge } from "@/components/EbookTierBadge";
 export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }) {
   const { locale, slug } = await params;
@@ -25,7 +26,7 @@ export default async function Product({ params }: { params: Promise<{ locale: st
   return (
     <div className="mx-auto max-w-3xl px-4 py-16">
       <JsonLd data={ld} />
-      <div className="text-xs uppercase text-muted">{p.type.replace("_", " ")}</div>
+      <div className="flex items-center gap-3"><span className="text-xs uppercase text-muted">{p.type.replace("_", " ")}</span><EbookTierBadge tier={p.ebookTier} withNote /></div>
       <h1 className="mt-1 text-4xl font-semibold tracking-tight">{p.name}</h1>
       <p className="mt-4 text-muted text-lg">{p.description}</p>
       <div id="buy-box" className="mt-8 glass rounded-2xl p-6 flex items-center justify-between">

@@ -42,6 +42,7 @@ async function main() {
       priceCents: 0,
       billing: "one_time",
       tierIncluded: "free",
+      ebookTier: "free",
     },
     {
       slug: "telegram-mt5-copier",

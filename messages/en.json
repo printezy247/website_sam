@@ -117,7 +117,16 @@
     "lifetime": "lifetime",
     "monthly": "/mo",
     "one_time": "one-time",
-    "sticky_included": "Included in the {tier} rank. Members do not buy this."
+    "sticky_included": "Included in the {tier} rank. Members do not buy this.",
+    "ebook_free": "Free",
+    "ebook_standard": "Standard",
+    "ebook_premium": "Premium",
+    "ebook_free_note": "Snippet. No requirement.",
+    "ebook_standard_note": "Included in General, or buy.",
+    "ebook_premium_note": "Full guidance or SOP. Included in A-Team, or buy.",
+    "filter_all": "All",
+    "filter_ebook": "Ebooks",
+    "filter_tools": "Tools"
   },
   "faq": {
     "title": "Briefing",

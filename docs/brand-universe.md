@@ -11,7 +11,7 @@ Reference for every design, copy and product request. Load this before writing a
 
 ## Source assets
 
-Design files live in `printezy247/designresources`, folder `Sam/` (channel code `SAM`, naming `SAM_{Project}_{Description}_v{N}.{ext}`). Current: `BrandAssets/3DModels/SamBangGoldMascot_v1.obj` + `.mtl` (mesh with named parts: anvil, gold_bar, legs, torso, belt, hammer), `BrandAssets/Fonts/Anton_v1.woff2`. This repo keeps its own copies under `public/brand/` and `src/app/fonts/`.
+Design files live in `printezy247/designresources`, folder `Sam/` (channel code `SAM`, naming `SAM_{Project}_{Description}_v{N}.{ext}`). Current: `BrandAssets/3DModels/SamBangGoldMascot_v1.obj` + `.mtl` (mesh with named parts: anvil, gold_bar, legs, torso, belt, hammer), `BrandAssets/Fonts/Anton_v1.woff2`. This repo keeps its own copies under `public/brand/` (including `mascot-raise.png` and `mascot-strike.png`, rendered from the mesh with three.js) and `src/app/fonts/`.
 
 ## Ranks (membership tiers)
 
@@ -32,4 +32,4 @@ Internal keys never change. Labels live in `TIER_LABELS` (`src/config/tiers.ts`)
 | Standard | Full-length ebooks (the three created earlier) | Included in General and above, or paid | $19 |
 | Premium | Full guidance or SOP | Included in A-Team and above, or paid | $49 |
 
-Prices are defaults and can be set per ebook in the admin store. The store code does not yet model ebook tiers; when it does, map Standard to `tierIncluded: free` and Premium to `tierIncluded: pro`.
+Prices are defaults and can be set per ebook in the admin store. The store models this with `products.ebook_tier` (`free | standard | premium`, config in `EBOOK_TIERS`, `src/config/tiers.ts`). Picking a tier in admin sets `tier_included` automatically (Standard to `free`, Premium to `pro`) unless a rank is chosen explicitly. The store page has an Ebooks / Tools filter and shows the tier badge on each ebook.

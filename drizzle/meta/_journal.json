@@ -43,6 +43,13 @@
       "when": 1788852225348,
       "tag": "0005_analytics_recaps",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1788943059659,
+      "tag": "0006_ebook_tier",
+      "breakpoints": true
     }
   ]
 }

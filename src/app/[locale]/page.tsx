@@ -63,8 +63,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             </div>
           </div>
           <div className="relative">
-            <div className="absolute -top-10 -right-6 md:-top-16 md:-right-10 w-[180px] md:w-[260px] pointer-events-none drop-shadow-[0_20px_40px_rgba(212,175,55,.25)]"><Mascot size={260} priority /></div>
-            <div className="relative pt-16 md:pt-24"><LiveSignalCard /></div>
+            <div className="absolute -top-6 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:-top-14 md:-right-4 w-[220px] md:w-[320px] pointer-events-none drop-shadow-[0_24px_48px_rgba(212,175,55,.28)]"><Mascot size={320} priority className="w-full h-auto" /></div>
+            <div className="relative pt-44 md:pt-64"><LiveSignalCard /></div>
           </div>
         </div>
       </section>
