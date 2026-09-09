@@ -352,6 +352,7 @@ curl "https://api.telegram.org/bot$TOKEN/setWebhook" \
 | Piece | Setup |
 |---|---|
 | ⏱️ Signal tally + auto setups + daily article safety net | Set `CRON_SECRET`; on [cron-job.org](https://cron-job.org) call `https://<domain>/api/cron/evaluate?key=<CRON_SECRET>` every 5 minutes. The same call generates the daily article when the jobs service missed it (needs the LLM key on the web service too) |
+| ✍️ Article on demand | `https://<domain>/api/cron/article?key=<CRON_SECRET>` generates one now (add `&wait=1` to wait for the result). On the jobs service, set `ARTICLE_FORCE=1` to bypass the 20h guard for one run, then remove it |
 | 🗓️ Daily article · Monday recap · drip · expiry | Second Railway service from the same repo: start `npm run jobs`, cron `0 3 * * *`, **same variables** (paste the literal `DATABASE_URL` if the reference shows empty; the log prints the env names it sees) |
 | 🧠 LLM | `GEMINI_API_KEY` (free tier; models discovered per key) or `LLM_PROVIDER=groq|openrouter|anthropic` with its key |
 | ✉️ Leads | `RESEND_API_KEY` + `AUTH_EMAIL_FROM` on a verified domain → welcome + day-2 + day-5 emails |

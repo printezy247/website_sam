@@ -1,5 +1,5 @@
 import { setRequestLocale } from "next-intl/server";
-import { auth, googleConfigured, signIn, signOut } from "@/auth";
+import { auth, emailSenderVerified, googleConfigured, signIn, signOut } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import { BRAND } from "@/config/brand";
 import { TelegramLogin } from "@/components/TelegramLogin";
@@ -8,10 +8,16 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   return pageMetadata({ locale, path: "/signin", title: locale === "ms" ? "Log masuk" : "Sign in", description: "", noindex: true });
 }
-export default async function SignIn({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ sent?: string; callbackUrl?: string }> }) {
+export default async function SignIn({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ sent?: string; callbackUrl?: string; error?: string }> }) {
   const { locale } = await params; setRequestLocale(locale);
-  const { sent, callbackUrl } = await searchParams;
+  const { sent, callbackUrl, error } = await searchParams;
   const ms = locale === "ms";
+  const emailOk = emailSenderVerified();
+  const errorText = !error ? null
+    : error === "Configuration" ? (ms ? "Log masuk emel belum tersedia buat masa ini. Guna Google atau Telegram di bawah." : "Email sign-in is not available yet. Use Google or Telegram below.")
+    : error === "Verification" ? (ms ? "Link sudah tamat atau sudah digunakan. Minta link baharu." : "That link expired or was already used. Request a new one.")
+    : error === "AccessDenied" ? (ms ? "Akses ditolak. Cuba akaun lain." : "Access denied. Try another account.")
+    : (ms ? "Log masuk gagal. Cuba lagi." : "Sign-in failed. Try again.");
   const session = await auth().catch(() => null);
   const target = callbackUrl ?? `/${locale}/account`;
   if (session?.user) {
@@ -31,6 +37,8 @@ export default async function SignIn({ params, searchParams }: { params: Promise
     <div className="mx-auto max-w-md px-4 py-24">
       <h1 className="text-3xl font-semibold tracking-tight">{ms ? "Log masuk" : "Sign in"}</h1>
       <p className="text-muted mt-2">{ms ? "Kami hantar link log masuk ke emel anda." : "We email you a magic link. No password."}</p>
+      {errorText && <p className="mt-6 glass rounded-xl p-4 text-sm border-loss/40 text-loss">{errorText}</p>}
+      {!emailOk && !errorText && <p className="mt-6 text-xs text-muted">{ms ? "Log masuk emel terhad sehingga domain penghantar kami disahkan. Google atau Telegram berfungsi sekarang." : "Email sign-in is limited until our sender domain is verified. Google or Telegram works now."}</p>}
       {sent ? (
         <p className="mt-6 glass rounded-xl p-4 text-win">{ms ? "Semak emel anda untuk link log masuk." : "Check your email for the sign-in link."}</p>
       ) : (

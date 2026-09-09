@@ -1,6 +1,12 @@
 import NextAuth from "next-auth";
 import Resend from "next-auth/providers/resend";
 import Google from "next-auth/providers/google";
+
+/** True once AUTH_EMAIL_FROM points at a verified sender domain (Resend sandbox only delivers to the account owner). */
+export function emailSenderVerified() {
+  const from = process.env.AUTH_EMAIL_FROM ?? "";
+  return Boolean(from) && !/example\.com|resend\.dev/i.test(from);
+}
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "@/db";
 import { users, accounts, sessions, verificationTokens } from "@/db/schema";
@@ -26,7 +32,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     ...(googleConfigured() ? [Google({ clientId: process.env.GOOGLE_CLIENT_ID, clientSecret: process.env.GOOGLE_CLIENT_SECRET, allowDangerousEmailAccountLinking: true })] : []),
   ],
   session: { strategy: "database" },
-  pages: { signIn: "/signin", verifyRequest: "/signin?sent=1" },
+  pages: { signIn: "/signin", verifyRequest: "/signin?sent=1", error: "/signin" },
   callbacks: {
     session({ session, user }) {
       session.user.id = user.id;
