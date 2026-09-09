@@ -354,7 +354,7 @@ curl "https://api.telegram.org/bot$TOKEN/setWebhook" \
 | ⏱️ Signal tally + auto setups + daily article safety net | Set `CRON_SECRET`; on [cron-job.org](https://cron-job.org) call `https://<domain>/api/cron/evaluate?key=<CRON_SECRET>` every 5 minutes. The same call generates the daily article when the jobs service missed it (needs the LLM key on the web service too) |
 | ✍️ Article on demand | `https://<domain>/api/cron/article?key=<CRON_SECRET>` generates one now (add `&wait=1` to wait for the result). On the jobs service, set `ARTICLE_FORCE=1` to bypass the 20h guard for one run, then remove it |
 | 🗓️ Daily article · Monday recap · drip · expiry | Second Railway service from the same repo: start `npm run jobs`, cron `0 3 * * *`, **same variables** (paste the literal `DATABASE_URL` if the reference shows empty; the log prints the env names it sees) |
-| 🧠 LLM | `GEMINI_API_KEY` (free tier; models discovered per key) or `LLM_PROVIDER=groq|openrouter|anthropic` with its key |
+| 🧠 LLM | Add any of `GEMINI_API_KEY`, `GROQ_API_KEY`, `NVIDIA_API_KEY`, `OPENROUTER_API_KEY`, `MOONSHOT_API_KEY`, `OLLAMA_API_KEY`, `LLM_BASE_URL`+`LLM_API_KEY`, `ANTHROPIC_API_KEY`. All keys are used: `LLM_PROVIDER` picks the first, the others are failover. Models are discovered per key; `/admin/articles` lists them. Test one with `/api/cron/article?key=…&wait=1&provider=nvidia&model=meta/llama-3.3-70b-instruct` |
 | ✉️ Leads | `RESEND_API_KEY` + `AUTH_EMAIL_FROM` on a verified domain → welcome + day-2 + day-5 emails |
 | 🔐 Google sign-in | OAuth client (Web) → redirect URI `https://<domain>/api/auth/callback/google` → `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` |
 

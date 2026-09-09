@@ -3,7 +3,7 @@ import { db } from "@/db";
 import { articles } from "@/db/schema";
 import { BRAND } from "@/config/brand";
 import { CHATS, getBot } from "@/lib/telegram";
-import { generateJson, llmConfigured, llmLabel } from "@/lib/llm";
+import { generateJson, llmConfigured, llmLabel, type Provider } from "@/lib/llm";
 
 
 /** Rotating topic bank: common problems retail gold/forex traders face today, each with a fix angle. */
@@ -85,12 +85,12 @@ export function slugify(s: string) {
   return s.toLowerCase().normalize("NFKD").replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-").slice(0, 80);
 }
 
-export async function generateArticle(topicKey?: string) {
+export async function generateArticle(topicKey?: string, llm?: { provider?: Provider; model?: string }) {
   if (!llmConfigured()) throw new Error("No LLM API key set (GEMINI_API_KEY, GROQ_API_KEY, OPENROUTER_API_KEY or ANTHROPIC_API_KEY)");
   const recent = await db.select({ k: articles.topicKey }).from(articles).orderBy(desc(articles.publishedAt)).limit(TOPICS.length - 5);
   const topic = topicKey ? TOPICS.find((t) => t.key === topicKey) ?? pickTopic([]) : pickTopic(recent.map((r) => r.k));
   const { json: draft, model } = await generateJson<ArticleDraft>({
-    system: SYSTEM, schema: SCHEMA, maxTokens: 6000,
+    system: SYSTEM, schema: SCHEMA, maxTokens: 6000, ...llm,
     user: `Topic (category: ${topic.category}): ${topic.en}\n\nWrite today's article as JSON matching the schema.`,
   });
   for (const k of ["title_ms", "title_en", "excerpt_ms", "excerpt_en", "body_ms", "body_en"] as const) if (!draft[k]) throw new Error(`model output missing ${k}`);
