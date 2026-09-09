@@ -13,7 +13,8 @@ function Form({ p }: { p?: typeof products.$inferSelect }) {
       <select name="type" defaultValue={p?.type ?? "ebook"} className={inp}><option value="ebook">ebook</option><option value="tv_indicator">tv_indicator</option><option value="mt5_indicator">mt5_indicator</option><option value="copier">copier</option></select>
       <select name="billing" defaultValue={p?.billing ?? "one_time"} className={inp}><option value="one_time">one_time</option><option value="monthly">monthly</option><option value="lifetime">lifetime</option></select>
       <input name="priceCents" type="number" defaultValue={p?.priceCents ?? 0} placeholder="price cents" className={inp} />
-      <select name="tierIncluded" defaultValue={p?.tierIncluded ?? ""} className={inp}><option value="">not included in any tier</option><option value="free">General (free)</option><option value="pro">A-Team (pro)</option><option value="elite">Rambo (elite)</option></select>
+      <select name="ebookTier" defaultValue={p?.ebookTier ?? ""} className={inp}><option value="">ebook tier: none</option><option value="free">Free (snippet, $0)</option><option value="standard">Standard ($19, in General)</option><option value="premium">Premium ($49, in A-Team)</option></select>
+      <select name="tierIncluded" defaultValue={p?.tierIncluded ?? ""} className={inp}><option value="">included rank: auto from ebook tier / none</option><option value="free">General (free)</option><option value="pro">A-Team (pro)</option><option value="elite">Rambo (elite)</option></select>
       <input name="stripePriceId" defaultValue={p?.stripePriceId ?? ""} placeholder="Stripe price id (optional)" className={inp} />
       <input name="filePath" defaultValue={p?.filePath ?? ""} placeholder="file: name.pdf in UPLOAD_DIR, https://url, or tg:<file_id>" className={inp} />
       <input name="description" defaultValue={p?.description ?? ""} placeholder="Description" className={`${inp} md:col-span-3`} />

@@ -132,6 +132,7 @@ export async function adminSendBroadcast(fd: FormData) {
 
 // ---- P2 ----
 import { products as productsTable, tvAccessRequests as tvTable } from "@/db/schema";
+import { EBOOK_TIERS, ebookTierOf } from "@/config/tiers";
 import { sendHtml } from "@/lib/telegram";
 
 export async function adminTvDecision(fd: FormData) {
@@ -149,9 +150,13 @@ export async function adminTvDecision(fd: FormData) {
 
 export async function adminUpsertProduct(fd: FormData) {
   if (!(await requireAdmin())) throw new Error("forbidden");
+  const type = str(fd, "type");
+  const ebookTier = type === "ebook" ? ebookTierOf(str(fd, "ebookTier")) : null;
+  // An ebook tier decides which rank includes it unless the admin picked a rank explicitly.
+  const tierIncluded = str(fd, "tierIncluded") || (ebookTier ? EBOOK_TIERS[ebookTier].includedIn : null);
   const row = {
-    slug: str(fd, "slug"), name: str(fd, "name"), type: str(fd, "type"), billing: str(fd, "billing"),
-    priceCents: Number(str(fd, "priceCents") || 0), tierIncluded: str(fd, "tierIncluded") || null,
+    slug: str(fd, "slug"), name: str(fd, "name"), type, billing: str(fd, "billing"),
+    priceCents: Number(str(fd, "priceCents") || 0), tierIncluded, ebookTier,
     stripePriceId: str(fd, "stripePriceId") || null, filePath: str(fd, "filePath") || null,
     description: str(fd, "description") || null, active: fd.get("active") === "on",
   };

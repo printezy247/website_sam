@@ -54,3 +54,12 @@ export function higherTier(a: TierKey, b: TierKey): TierKey {
   return (tierByKey(a)?.rank ?? 0) >= (tierByKey(b)?.rank ?? 0) ? a : b;
 }
 export const fmtUsd = (cents: number) => `$${(cents / 100).toLocaleString("en-US")}`;
+
+/** Ebook tiers. Standard is included from General up, Premium from A-Team up. Prices are defaults for new ebooks. */
+export type EbookTier = "free" | "standard" | "premium";
+export const EBOOK_TIERS: Record<EbookTier, { label: string; includedIn: TierKey | null; defaultPriceCents: number }> = {
+  free: { label: "Free", includedIn: null, defaultPriceCents: 0 },
+  standard: { label: "Standard", includedIn: "free", defaultPriceCents: 1900 },
+  premium: { label: "Premium", includedIn: "pro", defaultPriceCents: 4900 },
+};
+export const ebookTierOf = (v: string | null | undefined): EbookTier | null => (v === "free" || v === "standard" || v === "premium" ? v : null);

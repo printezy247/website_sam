@@ -12,11 +12,11 @@ export function Mascot({ className, size = 320, priority = false }: { className?
   const hasPng = existsSync(join(dir, "mascot-raise.png")) && existsSync(join(dir, "mascot-strike.png"));
   if (hasPng) {
     return (
-      <div className={cn("mascot-frames relative", className)} style={{ width: size, height: size }} aria-hidden>
+      <div className={cn("mascot-frames relative", className)} style={{ width: size, maxWidth: "100%", aspectRatio: "1 / 1" }} aria-hidden>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/mascot-raise.png" alt="" width={size} height={size} className="mascot-raise absolute inset-0" loading={priority ? "eager" : "lazy"} />
+        <img src="/brand/mascot-raise.png" alt="" width={size} height={size} className="mascot-raise absolute inset-0 w-full h-full" loading={priority ? "eager" : "lazy"} />
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/mascot-strike.png" alt="" width={size} height={size} className="mascot-strike absolute inset-0" loading={priority ? "eager" : "lazy"} />
+        <img src="/brand/mascot-strike.png" alt="" width={size} height={size} className="mascot-strike absolute inset-0 w-full h-full" loading={priority ? "eager" : "lazy"} />
       </div>
     );
   }

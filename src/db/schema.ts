@@ -82,6 +82,7 @@ export const products = pgTable("products", {
   priceCents: integer("price_cents").notNull(),
   billing: text("billing").notNull().default("one_time"), // one_time | monthly | lifetime
   tierIncluded: text("tier_included"), // tier key that includes it, or null
+  ebookTier: text("ebook_tier"), // ebooks only: free | standard | premium
   stripePriceId: text("stripe_price_id"),
   filePath: text("file_path"),
   active: boolean("active").notNull().default(true),

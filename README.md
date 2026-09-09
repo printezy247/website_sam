@@ -93,7 +93,7 @@
 
 </div>
 
-> 💡 Entitlement is always the **higher** of your IB tier and your paid tier. Annual = 2 months free. First **50** A-Team places are founding seats (`BRAND.foundingMemberCap`). Display names live in `TIER_LABELS` (`src/config/tiers.ts`) and `messages/*.json`; the internal keys `free / pro / elite` never change.
+> 💡 Entitlement is always the **higher** of your IB tier and your paid tier. Annual = 2 months free. First **50** A-Team places are founding seats (`BRAND.foundingMemberCap`). Ebooks carry a tier (`free` snippet / `standard` $19, in General / `premium` $49, in A-Team) set in `/admin/products`. Display names live in `TIER_LABELS` (`src/config/tiers.ts`) and `messages/*.json`; the internal keys `free / pro / elite` never change.
 
 <p align="right"><a href="#top">⬆ back to top</a></p>
 

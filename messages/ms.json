@@ -117,7 +117,16 @@
     "lifetime": "seumur hidup",
     "monthly": "/bulan",
     "one_time": "sekali bayar",
-    "sticky_included": "Termasuk dalam pangkat {tier}. Ahli tak perlu beli."
+    "sticky_included": "Termasuk dalam pangkat {tier}. Ahli tak perlu beli.",
+    "ebook_free": "Free",
+    "ebook_standard": "Standard",
+    "ebook_premium": "Premium",
+    "ebook_free_note": "Snippet. Tiada syarat.",
+    "ebook_standard_note": "Termasuk dalam General, atau beli.",
+    "ebook_premium_note": "Panduan penuh atau SOP. Termasuk dalam A-Team, atau beli.",
+    "filter_all": "Semua",
+    "filter_ebook": "Ebook",
+    "filter_tools": "Alat"
   },
   "faq": {
     "title": "Taklimat",
