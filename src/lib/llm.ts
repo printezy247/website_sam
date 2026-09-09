@@ -11,13 +11,13 @@ const customBase = (process.env.LLM_BASE_URL ?? "").replace(/\/+$/, "");
 const PROVIDERS: Record<OpenAiProvider, Spec> = {
   gemini: { url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", keyEnv: "GEMINI_API_KEY", models: ["gemini-3.7-flash", "gemini-3-flash", "gemini-2.5-flash"], jsonMode: true },
   groq: { url: "https://api.groq.com/openai/v1/chat/completions", keyEnv: "GROQ_API_KEY", models: ["llama-3.3-70b-versatile", "openai/gpt-oss-120b", "llama-3.1-8b-instant"], jsonMode: true },
-  openrouter: { url: "https://openrouter.ai/api/v1/chat/completions", keyEnv: "OPENROUTER_API_KEY", models: ["north/north-mini-code", "meta-llama/llama-3.3-70b-instruct:free", "deepseek/deepseek-chat-v3.1:free"], headers: { "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL ?? "", "X-Title": "SAMBANGGOLD" }, jsonMode: true, free: true },
+  openrouter: { url: "https://openrouter.ai/api/v1/chat/completions", keyEnv: "OPENROUTER_API_KEY", models: ["cohere/north-mini-code:free", "nvidia/nemotron-3.5-lightning:free", "moonshotai/kimi-k3", "meta-llama/llama-3.3-70b-instruct:free"], headers: { "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL ?? "", "X-Title": "SAMBANGGOLD" }, jsonMode: true, free: true },
   // NVIDIA NIM: free developer tier, OpenAI-compatible. Model ids are namespaced (vendor/model).
-  nvidia: { url: "https://integrate.api.nvidia.com/v1/chat/completions", keyEnv: "NVIDIA_API_KEY", models: ["nvidia/nemotron-3.5-lightning-30b-a3b", "meta/llama-3.3-70b-instruct", "moonshotai/kimi-k2-instruct", "deepseek-ai/deepseek-v3.1"], jsonMode: false },
+  nvidia: { url: "https://integrate.api.nvidia.com/v1/chat/completions", keyEnv: "NVIDIA_API_KEY", models: ["nvidia/nemotron-3.5-lightning-30b-a3b", "moonshotai/kimi-k3", "nvidia/nemotron-3-super-120b-a12b", "nvidia/llama-3.1-nemotron-70b-instruct"], jsonMode: false },
   // Moonshot Kimi (api.moonshot.ai). Set MOONSHOT_BASE_URL=https://api.moonshot.cn/v1 for the China endpoint.
-  moonshot: { url: `${(process.env.MOONSHOT_BASE_URL ?? "https://api.moonshot.ai/v1").replace(/\/+$/, "")}/chat/completions`, keyEnv: "MOONSHOT_API_KEY", models: ["kimi-k3", "kimi-k2-0905-preview", "kimi-k2-turbo-preview"], jsonMode: true },
+  moonshot: { url: `${(process.env.MOONSHOT_BASE_URL ?? "https://api.moonshot.ai/v1").replace(/\/+$/, "")}/chat/completions`, keyEnv: "MOONSHOT_API_KEY", models: ["kimi-k3", "kimi-k2.6"], jsonMode: true },
   // Ollama cloud (ollama.com, key from ollama.com/settings/keys) or a self-hosted server via OLLAMA_BASE_URL.
-  ollama: { url: `${ollamaBase}/v1/chat/completions`, keyEnv: "OLLAMA_API_KEY", models: ["gpt-oss:120b", "deepseek-v3.1:671b", "kimi-k2:1t", "qwen3:235b", "gemma3:27b"], jsonMode: true },
+  ollama: { url: `${ollamaBase}/v1/chat/completions`, keyEnv: "OLLAMA_API_KEY", models: ["gpt-oss:120b", "kimi-k3", "nemotron-3-super", "glm-5.3"], jsonMode: true },
   // Any other OpenAI-compatible server: LLM_BASE_URL=https://host/v1, LLM_API_KEY, LLM_MODEL.
   custom: { url: `${customBase}/chat/completions`, keyEnv: "LLM_API_KEY", models: [], jsonMode: true },
 };
@@ -96,8 +96,13 @@ export async function discoverOpenAiModels(p: OpenAiProvider, key: string): Prom
     if (!r.ok) return [];
     const j = (await r.json()) as { data?: { id: string; active?: boolean; pricing?: { prompt?: string } }[] };
     const bad = /(whisper|tts|guard|embed|vision|image|audio|moderation|rerank|allam|compound|safeguard|prompt-guard|reward|retriever|ocr|parse|speech|translate|nv-|clip|sd|flux|video|3d|classif|safety|-vl|vl-|omni|coder|math|code)/i;
-    let ids = (j.data ?? []).filter((m) => m.active !== false && !bad.test(m.id)).map((m) => ({ id: m.id, free: m.pricing?.prompt === "0" || /:free$/.test(m.id) }));
-    if (PROVIDERS[p].free) { const keep = new Set([...PROVIDERS[p].models, pinnedModel(p) ?? ""]); ids = ids.filter((m) => m.free || keep.has(m.id)); } // free routes, plus explicit picks
+    // Explicit picks (defaults and the pin) bypass the type filter and the free-only filter.
+    const keepIds = new Set(PROVIDERS[p].models);
+    const pin = pinnedModel(p);
+    const pinWords = pin ? norm(pin).split(" ").filter(Boolean) : [];
+    const keep = (id: string) => keepIds.has(id) || (pinWords.length > 0 && pinWords.every((w) => norm(id).includes(w)));
+    let ids = (j.data ?? []).filter((m) => m.active !== false && (keep(m.id) || !bad.test(m.id))).map((m) => ({ id: m.id, free: m.pricing?.prompt === "0" || /:free$/.test(m.id) }));
+    if (PROVIDERS[p].free) ids = ids.filter((m) => m.free || keep(m.id));
     const size = (id: string) => { const m = id.match(/(\d{2,3})b/i) ?? id.match(/(\d)t\b/i); return m ? (/t\b/i.test(m[0]) ? Number(m[1]) * 1000 : Number(m[1])) : /maverick|scout|gpt-oss|deepseek|qwen3|kimi|nemotron|mistral-large|glm/i.test(id) ? 70 : 10; };
     const score = (id: string) => (/llama|kimi|deepseek|gpt-oss|qwen3|nemotron/i.test(id) ? 30 : 0) + (/instruct|versatile|chat/i.test(id) ? 10 : 0) + Math.min(size(id), 200) + (/preview|exp|thinking|reasoning|r1|-mini|nano|lite|small|tiny|1b|3b|7b|8b/i.test(id) ? -15 : 0);
     const models = ids.map((m) => m.id).sort((a, b) => score(b) - score(a));
