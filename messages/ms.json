@@ -319,6 +319,8 @@
     "gate_body": "Buka akaun untuk baca selebihnya dan muat turun setiap ebook percuma.",
     "gate_cta": "Buka akaun",
     "end_title": "Tamat buku",
-    "end_body": "Simpan satu salinan untuk meja anda."
+    "end_body": "Simpan satu salinan untuk meja anda.",
+    "gate_list_title": "Apa yang anda terlepas",
+    "gate_pages": "{n} muka surat lagi di sebalik akaun."
   }
 }
