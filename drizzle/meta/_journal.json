@@ -50,6 +50,13 @@
       "when": 1788943059659,
       "tag": "0006_ebook_tier",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1788943542024,
+      "tag": "0007_product_language",
+      "breakpoints": true
     }
   ]
 }

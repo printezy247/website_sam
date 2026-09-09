@@ -3,7 +3,8 @@ import { basename, join, normalize } from "node:path";
 import { Readable } from "node:stream";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { leads, products } from "@/db/schema";
+import { leads } from "@/db/schema";
+import { leadEbook } from "@/lib/ebooks";
 import { botDeepLink } from "@/config/brand";
 
 export const dynamic = "force-dynamic";
@@ -11,9 +12,9 @@ export const dynamic = "force-dynamic";
 /** Free ebook for a captured lead (lead id acts as the token). Falls back to the bot when no file is uploaded. */
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [l] = await db.select({ id: leads.id }).from(leads).where(eq(leads.id, id));
+  const [l] = await db.select({ id: leads.id, locale: leads.locale }).from(leads).where(eq(leads.id, id));
   if (!l) return new Response("not found", { status: 404 });
-  const [p] = await db.select().from(products).where(eq(products.slug, "ebook-gold-starter"));
+  const p = await leadEbook(l.locale);
   const fp = p?.filePath;
   if (!fp || fp.startsWith("tg:")) return Response.redirect(botDeepLink("ebook_lead"), 302);
   if (/^https?:\/\//.test(fp)) return Response.redirect(fp, 302);

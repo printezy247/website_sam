@@ -157,6 +157,7 @@ export async function adminUpsertProduct(fd: FormData) {
   const row = {
     slug: str(fd, "slug"), name: str(fd, "name"), type, billing: str(fd, "billing"),
     priceCents: Number(str(fd, "priceCents") || 0), tierIncluded, ebookTier,
+    language: (["ms", "en"].includes(str(fd, "language")) ? str(fd, "language") : null) as "ms" | "en" | null,
     stripePriceId: str(fd, "stripePriceId") || null, filePath: str(fd, "filePath") || null,
     description: str(fd, "description") || null, active: fd.get("active") === "on",
   };
