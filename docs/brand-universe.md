@@ -13,10 +13,10 @@ Reference for every design, copy and product request. Load this before writing a
 
 | Language | Free | Standard ($19) | Premium ($49) |
 |---|---|---|---|
-| English | Sniper Checklist | 7 Step Protocol · Gold Trading Field Manual | |
-| Bahasa Melayu | Checklist Sniper | 13 Teknik Minda Trader · Protokol 7 Langkah · Bang Bang News Gold | Manual Rekrut Emas |
+| English | Sniper Checklist | 7 Step Protocol · Gold Trading Field Manual · 13 Trader Mindset Techniques · Gold On News Time | Gold Recruit Manual |
+| Bahasa Melayu | Checklist Sniper | Protokol 7 Langkah · Manual Padang Dagangan Emas · 13 Teknik Minda Trader · Bang Bang News Gold | Manual Rekrut Emas |
 
-Seeded in `src/db/seed.ts` with `products.language` (`ms | en | null`). The store, the claim modal, the lead ebook and the bot `/ebook` pick the reader's language first. Attach files per ebook in `/admin/products`.
+Every topic exists in both languages. PDFs live in `printezy247/designresources` under `Sam/Ebooks/{English|Malay}/{Free|Standard|Premium}/` and are bundled into this repo at `assets/ebooks/` (seed sets `products.file_path` to the relative path; `UPLOAD_DIR` on the Railway volume overrides when the same path exists there). Seeded in `src/db/seed.ts` with `products.language`; the store, the claim modal, the lead ebook and the bot `/ebook` pick the reader's language first. When a new PDF lands in designresources, copy it to `assets/ebooks/` and add a seed row.
 
 ## Source assets
 

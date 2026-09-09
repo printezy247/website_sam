@@ -5,7 +5,7 @@
 export type Provider = "gemini" | "groq" | "openrouter" | "nvidia" | "ollama" | "custom" | "anthropic";
 export type OpenAiProvider = Exclude<Provider, "anthropic">;
 
-type Spec = { url: string; keyEnv: string; models: string[]; headers?: Record<string, string>; jsonMode?: boolean; free?: boolean };
+type Spec = { url: string; keyEnv: string; models: string[]; headers?: Record<string, string>; jsonMode?: boolean; free?: boolean; timeoutMs?: number; noThink?: boolean };
 const ollamaBase = (process.env.OLLAMA_BASE_URL ?? "https://ollama.com").replace(/\/+$/, "");
 const customBase = (process.env.LLM_BASE_URL ?? "").replace(/\/+$/, "");
 const PROVIDERS: Record<OpenAiProvider, Spec> = {
@@ -13,7 +13,7 @@ const PROVIDERS: Record<OpenAiProvider, Spec> = {
   groq: { url: "https://api.groq.com/openai/v1/chat/completions", keyEnv: "GROQ_API_KEY", models: ["llama-3.3-70b-versatile", "openai/gpt-oss-120b", "llama-3.1-8b-instant"], jsonMode: true },
   openrouter: { url: "https://openrouter.ai/api/v1/chat/completions", keyEnv: "OPENROUTER_API_KEY", models: ["cohere/north-mini-code:free", "nvidia/nemotron-3.5-lightning:free", "moonshotai/kimi-k3", "meta-llama/llama-3.3-70b-instruct:free"], headers: { "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL ?? "", "X-Title": "SAMBANGGOLD" }, jsonMode: true, free: true },
   // NVIDIA NIM: free developer tier, OpenAI-compatible. Model ids are namespaced (vendor/model).
-  nvidia: { url: "https://integrate.api.nvidia.com/v1/chat/completions", keyEnv: "NVIDIA_API_KEY", models: ["nvidia/nemotron-3.5-lightning-30b-a3b", "moonshotai/kimi-k3", "nvidia/nemotron-3-super-120b-a12b", "nvidia/llama-3.1-nemotron-70b-instruct"], jsonMode: false },
+  nvidia: { url: "https://integrate.api.nvidia.com/v1/chat/completions", keyEnv: "NVIDIA_API_KEY", models: ["nvidia/nemotron-3.5-lightning-30b-a3b", "moonshotai/kimi-k3", "nvidia/nemotron-3-super-120b-a12b", "nvidia/llama-3.1-nemotron-70b-instruct"], jsonMode: false, timeoutMs: 280_000, noThink: true },
   // Ollama cloud (ollama.com, key from ollama.com/settings/keys) or a self-hosted server via OLLAMA_BASE_URL.
   ollama: { url: `${ollamaBase}/v1/chat/completions`, keyEnv: "OLLAMA_API_KEY", models: ["gpt-oss:120b", "kimi-k3", "nemotron-3-super", "glm-5.3"], jsonMode: true },
   // Any other OpenAI-compatible server: LLM_BASE_URL=https://host/v1, LLM_API_KEY, LLM_MODEL.
@@ -191,12 +191,14 @@ async function generateWithProvider<T>(p: OpenAiProvider, args: { system: string
       body: JSON.stringify({
         model, ...(temperature === undefined ? {} : { temperature }), max_tokens: args.maxTokens ?? 6000,
         ...(spec.jsonMode ? { response_format: { type: "json_object" } } : {}),
+        // Nemotron reasoning models: skip the thinking phase, it is slow and not needed for structured writing.
+        ...(spec.noThink ? { chat_template_kwargs: { enable_thinking: false } } : {}),
         messages: [
-          { role: "system", content: `${args.system}\n\nRespond with ONLY a JSON object matching this JSON Schema:\n${JSON.stringify(args.schema)}` },
+          { role: "system", content: `${spec.noThink ? "/no_think\n" : ""}${args.system}\n\nRespond with ONLY a JSON object matching this JSON Schema:\n${JSON.stringify(args.schema)}` },
           { role: "user", content: args.user },
         ],
       }),
-      signal: AbortSignal.timeout(150_000),
+      signal: AbortSignal.timeout(spec.timeoutMs ?? 150_000),
     });
     let r = await call(0.7);
     let raw = await r.text();

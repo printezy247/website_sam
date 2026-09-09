@@ -1,5 +1,5 @@
 import { db } from "./index";
-import { count } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import { products, signals, users } from "./schema";
 
 async function main() {
@@ -34,15 +34,19 @@ async function main() {
       billing: "lifetime",
       tierIncluded: "elite",
     },
-    // Ebook catalog. Files are attached later in /admin/products (file_path).
-    { slug: "sniper-checklist", type: "ebook", name: "Sniper Checklist", description: "One-page pre-trade checklist for XAUUSD entries.", priceCents: 0, billing: "one_time", tierIncluded: null, ebookTier: "free", language: "en" },
-    { slug: "7-step-protocol", type: "ebook", name: "7 Step Protocol", description: "The seven steps from bias to exit, in order.", priceCents: 1900, billing: "one_time", tierIncluded: "free", ebookTier: "standard", language: "en" },
-    { slug: "gold-trading-field-manual", type: "ebook", name: "Gold Trading Field Manual", description: "Sessions, structure, risk and journaling for gold.", priceCents: 1900, billing: "one_time", tierIncluded: "free", ebookTier: "standard", language: "en" },
-    { slug: "checklist-sniper", type: "ebook", name: "Checklist Sniper", description: "Senarai semak sebelum entry XAUUSD, satu muka surat.", priceCents: 0, billing: "one_time", tierIncluded: null, ebookTier: "free", language: "ms" },
-    { slug: "13-teknik-minda-trader", type: "ebook", name: "13 Teknik Minda Trader", description: "Tiga belas teknik minda untuk kekal disiplin.", priceCents: 1900, billing: "one_time", tierIncluded: "free", ebookTier: "standard", language: "ms" },
-    { slug: "protokol-7-langkah", type: "ebook", name: "Protokol 7 Langkah", description: "Tujuh langkah dari bias ke exit, mengikut urutan.", priceCents: 1900, billing: "one_time", tierIncluded: "free", ebookTier: "standard", language: "ms" },
-    { slug: "bang-bang-news-gold", type: "ebook", name: "Bang Bang News Gold", description: "Cara trade emas sekitar berita merah.", priceCents: 1900, billing: "one_time", tierIncluded: "free", ebookTier: "standard", language: "ms" },
-    { slug: "manual-rekrut-emas", type: "ebook", name: "Manual Rekrut Emas", description: "Panduan penuh dan SOP untuk rekrut baharu.", priceCents: 4900, billing: "one_time", tierIncluded: "pro", ebookTier: "premium", language: "ms" },
+    // Ebook catalog. PDFs are bundled under assets/ebooks (copied from designresources Sam/Ebooks); UPLOAD_DIR overrides.
+    { slug: "sniper-checklist", type: "ebook", name: "Sniper Checklist", description: "One-page pre-trade checklist for XAUUSD entries.", priceCents: 0, billing: "one_time", tierIncluded: null, ebookTier: "free", language: "en", filePath: "ebooks/English/Free/SniperChecklist_v1.pdf" },
+    { slug: "7-step-protocol", type: "ebook", name: "7 Step Protocol", description: "The seven steps from bias to exit, in order.", priceCents: 1900, billing: "one_time", tierIncluded: "free", ebookTier: "standard", language: "en", filePath: "ebooks/English/Standard/7StepProtocol_v1.pdf" },
+    { slug: "gold-trading-field-manual", type: "ebook", name: "Gold Trading Field Manual", description: "Sessions, structure, risk and journaling for gold.", priceCents: 1900, billing: "one_time", tierIncluded: "free", ebookTier: "standard", language: "en", filePath: "ebooks/English/Standard/GoldTradingFieldManual_v1.pdf" },
+    { slug: "13-trader-mindset-techniques", type: "ebook", name: "13 Trader Mindset Techniques", description: "Thirteen mindset techniques to stay disciplined.", priceCents: 1900, billing: "one_time", tierIncluded: "free", ebookTier: "standard", language: "en", filePath: "ebooks/English/Standard/13TraderMindsetTechniques_v1.pdf" },
+    { slug: "gold-on-news-time", type: "ebook", name: "Gold On News Time", description: "How to trade gold around red news.", priceCents: 1900, billing: "one_time", tierIncluded: "free", ebookTier: "standard", language: "en", filePath: "ebooks/English/Standard/GoldOnNewsTime_v1.pdf" },
+    { slug: "gold-recruit-manual", type: "ebook", name: "Gold Recruit Manual", description: "Full guidance and SOP for new recruits.", priceCents: 4900, billing: "one_time", tierIncluded: "pro", ebookTier: "premium", language: "en", filePath: "ebooks/English/Premium/GoldRecruitManual_v1.pdf" },
+    { slug: "checklist-sniper", type: "ebook", name: "Checklist Sniper", description: "Senarai semak sebelum entry XAUUSD, satu muka surat.", priceCents: 0, billing: "one_time", tierIncluded: null, ebookTier: "free", language: "ms", filePath: "ebooks/Malay/Free/SniperChecklist_v1.pdf" },
+    { slug: "13-teknik-minda-trader", type: "ebook", name: "13 Teknik Minda Trader", description: "Tiga belas teknik minda untuk kekal disiplin.", priceCents: 1900, billing: "one_time", tierIncluded: "free", ebookTier: "standard", language: "ms", filePath: "ebooks/Malay/Standard/13TeknikMindaTrader_v1.pdf" },
+    { slug: "protokol-7-langkah", type: "ebook", name: "Protokol 7 Langkah", description: "Tujuh langkah dari bias ke exit, mengikut urutan.", priceCents: 1900, billing: "one_time", tierIncluded: "free", ebookTier: "standard", language: "ms", filePath: "ebooks/Malay/Standard/Protokol7Langkah_v1.pdf" },
+    { slug: "bang-bang-news-gold", type: "ebook", name: "Bang Bang News Gold", description: "Cara trade emas sekitar berita merah.", priceCents: 1900, billing: "one_time", tierIncluded: "free", ebookTier: "standard", language: "ms", filePath: "ebooks/Malay/Standard/BangBangNewsGold_v1.pdf" },
+    { slug: "manual-padang-dagangan-emas", type: "ebook", name: "Manual Padang Dagangan Emas", description: "Sesi, struktur, risiko dan jurnal untuk emas.", priceCents: 1900, billing: "one_time", tierIncluded: "free", ebookTier: "standard", language: "ms", filePath: "ebooks/Malay/Standard/ManualPadangDaganganEmas_v1.pdf" },
+    { slug: "manual-rekrut-emas", type: "ebook", name: "Manual Rekrut Emas", description: "Panduan penuh dan SOP untuk rekrut baharu.", priceCents: 4900, billing: "one_time", tierIncluded: "pro", ebookTier: "premium", language: "ms", filePath: "ebooks/Malay/Premium/ManualRekrutEmas_v1.pdf" },
     {
       slug: "telegram-mt5-copier",
       type: "copier",
@@ -95,6 +99,11 @@ async function main() {
   }
 
   await db.insert(products).values(sampleProducts).onConflictDoNothing();
+  // Ebook catalog rows keep their file, tier and language in sync with the repo; price and name stay editable in admin.
+  for (const p of sampleProducts.filter((x) => x.type === "ebook")) {
+    await db.update(products).set({ filePath: p.filePath, ebookTier: p.ebookTier, language: p.language, tierIncluded: p.tierIncluded }).where(eq(products.slug, p.slug));
+  }
+  await db.update(products).set({ active: false }).where(eq(products.slug, "ebook-gold-starter")); // replaced by the catalog
   const [{ n }] = await db.select({ n: count() }).from(signals);
   if (n === 0) await db.insert(signals).values(sampleSignals());
   else console.log(`signals already seeded (${n}), skipping`);
