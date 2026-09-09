@@ -116,6 +116,42 @@ export const licenses = pgTable("licenses", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// ---- Copier (Telegram signals to MT5) ----
+// One row per MT5 terminal a member connects. The licence row carries entitlement and expiry;
+// this carries the client's own risk settings and the terminal's heartbeat.
+export const copierLinks = pgTable("copier_links", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  licenseId: text("license_id").references(() => licenses.id, { onDelete: "set null" }),
+  mt5Account: text("mt5_account"),
+  broker: text("broker"),
+  currency: text("currency"),
+  enabled: boolean("enabled").notNull().default(true),
+  riskMode: text("risk_mode").notNull().default("percent"), // fixed | percent
+  lotFixed: numeric("lot_fixed", { precision: 8, scale: 2 }).notNull().default("0.01"),
+  riskPercent: numeric("risk_percent", { precision: 5, scale: 2 }).notNull().default("1.00"),
+  maxLot: numeric("max_lot", { precision: 8, scale: 2 }).notNull().default("1.00"),
+  expiryMinutes: integer("expiry_minutes").notNull().default(240), // pending order lifetime
+  symbolSuffix: text("symbol_suffix").notNull().default(""), // XAUUSD.m and friends
+  lastSeenAt: timestamp("last_seen_at"),
+  lastError: text("last_error"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (t) => [index("copier_links_user_idx").on(t.userId)]);
+
+// What a terminal actually did with a signal. Also stops the same signal being placed twice.
+export const copierTrades = pgTable("copier_trades", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  linkId: text("link_id").notNull().references(() => copierLinks.id, { onDelete: "cascade" }),
+  signalId: text("signal_id").notNull().references(() => signals.id, { onDelete: "cascade" }),
+  action: text("action").notNull(), // open | close | move_sl
+  ticket: text("ticket"),
+  lots: numeric("lots", { precision: 8, scale: 2 }),
+  price: numeric("price", { precision: 12, scale: 3 }),
+  status: text("status").notNull(), // placed | filled | rejected | closed | skipped
+  detail: text("detail"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (t) => [index("copier_trades_link_idx").on(t.linkId), index("copier_trades_sig_idx").on(t.signalId)]);
+
 export const tvAccessRequests = pgTable("tv_access_requests", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),

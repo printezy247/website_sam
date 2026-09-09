@@ -21,7 +21,7 @@ const T = {
     status: (tier: string, exp: string) => `Pangkat semasa: <b>${tierLabel(tier)}</b>${exp}`,
     no_link: "Akaun Telegram ini belum dipautkan ke akaun web. Log masuk di laman web dan pautkan Telegram, atau guna /verify.",
     plans: "Pangkat (bulanan, atau tanpa yuran melalui HFM):",
-    support: "Hubungi sokongan:", help: "Arahan: /start /verify /status /upgrade /plans /products /ebook /news /mystats /leaderboard /language /support",
+    support: "Hubungi sokongan:", help: "Arahan: /start /verify /status /upgrade /plans /products /ebook /copier /news /mystats /leaderboard /language /support",
   },
   en: {
     welcome: (n: string) => `<b>${n}</b>. Gold (XAUUSD) signals with a public record.\n\nTwo ways in:\n<b>A.</b> HFM account under our link. General: no deposit. A-Team: $100. Rambo: $500.\n<b>B.</b> Monthly plan on your own broker.\n\n⚠️ CFD trading carries high risk. Education only, not financial advice.`,
@@ -32,7 +32,7 @@ const T = {
     status: (tier: string, exp: string) => `Current rank: <b>${tierLabel(tier)}</b>${exp}`,
     no_link: "This Telegram account is not linked to a web account yet. Sign in on the website and link Telegram, or use /verify.",
     plans: "Ranks (monthly, or no fee via HFM):",
-    support: "Contact support:", help: "Commands: /start /verify /status /upgrade /plans /products /ebook /news /mystats /leaderboard /language /support",
+    support: "Contact support:", help: "Commands: /start /verify /status /upgrade /plans /products /ebook /copier /news /mystats /leaderboard /language /support",
   },
 };
 const fromCode = (code?: string | null) => (code?.startsWith("ms") || code?.startsWith("id") ? "ms" : code?.startsWith("en") ? "en" : null);
@@ -182,6 +182,26 @@ export function createBot(token: string) {
     const tier = u ? await effectiveTier(u.id) : "public";
     if ((tierByKey(tier)?.rank ?? 0) >= (tierByKey(needed)?.rank ?? 99)) await ctx.approveChatJoinRequest(ctx.chatJoinRequest.from.id).catch(() => {});
     else await ctx.declineChatJoinRequest(ctx.chatJoinRequest.from.id).catch(() => {});
+  });
+
+  bot.command("copier", async (ctx) => {
+    const ms = (await langOf(ctx)) === "ms";
+    const [u] = await db.select().from(users).where(eq(users.telegramId, String(ctx.from!.id)));
+    const kb = new InlineKeyboard().url(ms ? "Buka akaun" : "Open account", `${BRAND.siteUrl}/account`).url(ms ? "Panduan" : "Guide", `${BRAND.siteUrl}/copier`);
+    if (!u) return ctx.reply(ms ? "Sambung akaun laman anda dahulu, kemudian cuba semula." : "Link your website account first, then try again.", { reply_markup: kb });
+    const { copierLinksOf, ensureCopierLicense, isLive } = await import("@/lib/copier");
+    const lic = await ensureCopierLicense(u.id).catch(() => null);
+    if (!lic) {
+      return ctx.reply(ms
+        ? "Copier termasuk dalam pangkat Rambo, atau langgan berasingan di kedai."
+        : "The copier comes with the Rambo rank, or subscribe to it on its own in the store.", { reply_markup: kb });
+    }
+    const links = await copierLinksOf(u.id);
+    const lines = links.length
+      ? links.map((l) => `${isLive(l.lastSeenAt) ? "✅" : "⚠️"} ${l.mt5Account} · ${l.riskMode === "percent" ? `${Number(l.riskPercent)}%` : `${Number(l.lotFixed)} lot`}${l.enabled ? "" : ms ? " · dijeda" : " · paused"}`)
+      : [ms ? "Tiada terminal lagi. Ikut panduan pemasangan." : "No terminal yet. Follow the setup guide."];
+    const text = `<b>${ms ? "Copier MT5" : "MT5 copier"}</b>\n\n${ms ? "Kunci" : "Key"}: <code>${lic.id}</code>\n\n${lines.join("\n")}`;
+    return ctx.reply(text, { parse_mode: "HTML", reply_markup: kb });
   });
 
   bot.command("news", async (ctx) => {

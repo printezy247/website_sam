@@ -7,6 +7,10 @@ import { cookies } from "next/headers";
 import { attachReferrer } from "@/lib/referral";
 import { attachCampaign } from "@/lib/analytics";
 import { captureLead } from "@/lib/leads";
+import { CopierPanel } from "@/components/CopierPanel";
+import { copierLinksOf, ensureCopierLicense, isLive } from "@/lib/copier";
+import { copierTrades } from "@/db/schema";
+import { inArray } from "drizzle-orm";
 import { accessibleProducts } from "@/lib/access";
 import { auth, signOut } from "@/auth";
 import { db } from "@/db";
@@ -47,6 +51,12 @@ export default async function Account({ params, searchParams }: { params: Promis
     accessibleProducts(uid),
   ]);
   const wantTier = TIERS.find((t) => t.key === sp.checkout);
+  // Copier: the licence appears the moment the member's rank includes it.
+  const copierLicense = await ensureCopierLicense(uid).catch(() => null);
+  const copier = (copierLicense ? await copierLinksOf(uid) : []).map((l) => ({ ...l, live: isLive(l.lastSeenAt) }));
+  const copierLog = copier.length
+    ? await db.select().from(copierTrades).where(inArray(copierTrades.linkId, copier.map((l) => l.id))).orderBy(desc(copierTrades.createdAt)).limit(8).catch(() => [])
+    : [];
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-16 space-y-8">
@@ -132,6 +142,9 @@ export default async function Account({ params, searchParams }: { params: Promis
               {p.filePath ? (p.filePath.startsWith("tg:") ? <span className="text-muted">{ms ? "hantar /ebook pada bot" : "send /ebook to the bot"}</span> : <a className="text-gold underline" href={`/api/downloads/${p.id}`}>{ms ? "muat turun" : "download"}</a>) : <span className="text-muted">{ms ? "akan datang" : "coming soon"}</span>}
             </li>))}</ul>
         </section>
+      )}
+      {copierLicense && (
+        <CopierPanel licenseKey={copierLicense.id} links={copier} trades={copierLog} guideHref={`/${locale}/copier`} robotHref={"/api/copier/robot"} />
       )}
       {lics.length > 0 && (
         <section className="glass rounded-2xl p-6">

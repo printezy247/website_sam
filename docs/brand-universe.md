@@ -22,6 +22,14 @@ The landing page carries the Free tier as a rolling deck (`src/components/EbookD
 
 Premium surfaces use the `lux` class in `src/app/globals.css`: layered glass, a gold hairline, a spotlight that follows the cursor (`src/components/LuxCursor.tsx`), and a light sweep on hover. `lux-gold` adds a slow beam around the edge and marks the featured card. It is on the two door cards, the rank cards, the store cards and the reader gate.
 
+## MT5 copier
+
+Rambo includes the copier; anyone else subscribes to it in the store ($39 monthly, the `telegram-mt5-copier` row). The robot (`tools/mt5/SamBangGoldCopier.mq5`) runs in the member's own MT5 and talks to three routes under `/api/copier/`: `hello` binds the terminal to their licence and returns their risk settings, `signals` hands out what to do next, `ack` records what happened. Commands are derived from the signals their rank can see, so a terminal that misses a poll catches up on the next one, and a signal already acted on is never sent twice.
+
+Each signal becomes a pending order at our published entry, cancelled after the member's window (four hours by default), with the first target as take profit. Risk is either a fixed lot or a percent of balance sized off the stop distance, capped by a maximum lot. When we close a signal, the robot closes its side too.
+
+Members manage it on the account page (`src/components/CopierPanel.tsx`): key, download, a green light per terminal, risk settings and the last trades. The bot answers `/copier` with the same state. Setup guide lives at `/copier` in both languages. Sam compiles the robot once in MetaEditor and drops the `.ex5` into `assets/copier/`; until then the download hands over the source.
+
 ## Source assets
 
 Design files live in `printezy247/designresources`, folder `Sam/` (channel code `SAM`, naming `SAM_{Project}_{Description}_v{N}.{ext}`). Current: `BrandAssets/3DModels/SamBangGoldMascot_v1.obj` + `.mtl` (mesh with named parts: anvil, gold_bar, legs, torso, belt, hammer), `BrandAssets/Fonts/Anton_v1.woff2`. This repo keeps its own copies under `public/brand/` (including `mascot-raise.png` and `mascot-strike.png`, rendered from the mesh with three.js) and `src/app/fonts/`.

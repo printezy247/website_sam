@@ -405,7 +405,8 @@ timeline
 ```
 
 - [x] **P0 – P6** shipped, live on Railway
-- [ ] **P7** Telegram→MT5 copier · mentorship tier · prop-firm plans · PWA · Myfxbook verification
+- [x] **P7a** Telegram→MT5 copier: MQL5 robot, `/api/copier/*`, account panel, `/copier` guide, bot `/copier`
+- [ ] **P7b** mentorship tier · prop-firm plans · PWA · Myfxbook verification
 
 <br/>
 

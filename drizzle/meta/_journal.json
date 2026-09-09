@@ -64,6 +64,13 @@
       "when": 1788957749104,
       "tag": "0008_product_pair",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1788977683265,
+      "tag": "0009_copier",
+      "breakpoints": true
     }
   ]
 }
