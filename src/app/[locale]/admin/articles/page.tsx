@@ -3,7 +3,7 @@ import { db } from "@/db";
 import { articles } from "@/db/schema";
 import { TOPICS } from "@/lib/articles";
 import { llmConfigured, llmInventory, llmLabel } from "@/lib/llm";
-import { adminGenerateArticle, adminToggleArticle } from "@/lib/actions";
+import { adminGenerateArticle, adminTestProvider, adminToggleArticle } from "@/lib/actions";
 import { Link } from "@/i18n/navigation";
 export const dynamic = "force-dynamic";
 export default async function AdminArticles({ searchParams }: { searchParams: Promise<{ r?: string }> }) {
@@ -21,7 +21,7 @@ export default async function AdminArticles({ searchParams }: { searchParams: Pr
       </form>
       <div className="glass rounded-2xl p-5">
         <h2 className="font-semibold">LLM providers</h2>
-        <p className="text-xs text-muted">Every key found is used in this order; the next one takes over when a provider fails. Models come from each provider&apos;s live list, best first. Pin with LLM_PROVIDER and LLM_MODEL_&lt;PROVIDER&gt; (exact id, or words like &quot;nemotron 3.5 lightning&quot;).</p>
+        <p className="text-xs text-muted">Every key found is used in this order; the next one takes over when a provider fails. Models come from each provider&apos;s live list, best first. Pin with LLM_PROVIDER and LLM_MODEL_&lt;PROVIDER&gt; (exact id, or words like &quot;nemotron 3.5 lightning&quot;). Test sends one tiny prompt through the provider and the chosen model (NVIDIA can take up to 5 min).</p>
         {inventory.length === 0 ? <p className="mt-2 text-sm text-loss">No key set.</p> : (
           <ul className="mt-3 grid gap-2 md:grid-cols-2 text-xs">
             {inventory.map((x, i) => (
@@ -29,6 +29,11 @@ export default async function AdminArticles({ searchParams }: { searchParams: Pr
                 <div className="font-semibold text-sm">{i + 1}. {x.provider} <span className="text-muted font-normal">{x.label}</span>{!x.live && <span className="ml-2 text-loss font-normal">list unavailable</span>}</div>
                 <div className="mt-1">uses <span className="text-gold">{x.uses}</span>{x.pin && <span className="text-muted"> (pin: {x.pin})</span>}</div>
                 <div className="mt-1 text-muted break-all">{x.models.join(" · ")}</div>
+                <form action={adminTestProvider} className="mt-2 flex gap-2">
+                  <input type="hidden" name="provider" value={x.provider} />
+                  <select name="model" defaultValue={x.uses} className="rounded-md bg-surface border border-border px-2 py-1 text-xs min-w-0 flex-1">{Array.from(new Set([x.uses, ...x.models])).map((m) => <option key={m} value={m}>{m}</option>)}</select>
+                  <button className="rounded-md border border-gold/50 text-gold px-3 py-1 text-xs">Test</button>
+                </form>
               </li>
             ))}
           </ul>

@@ -4,7 +4,8 @@ import { products } from "@/db/schema";
 import { adminUpsertProduct } from "@/lib/actions";
 export const dynamic = "force-dynamic";
 const inp = "rounded-md bg-surface border border-border px-3 py-2 text-sm w-full";
-function Form({ p }: { p?: typeof products.$inferSelect }) {
+function Form({ p, ebooks }: { p?: typeof products.$inferSelect; ebooks: typeof products.$inferSelect[] }) {
+  const twins = ebooks.filter((e) => e.id !== p?.id && e.language && e.language !== (p?.language ?? ""));
   return (
     <form action={adminUpsertProduct} className="glass rounded-xl p-4 grid gap-2 md:grid-cols-4 text-sm">
       {p && <input type="hidden" name="id" value={p.id} />}
@@ -16,6 +17,7 @@ function Form({ p }: { p?: typeof products.$inferSelect }) {
       <select name="ebookTier" defaultValue={p?.ebookTier ?? ""} className={inp}><option value="">ebook tier: none</option><option value="free">Free (snippet, $0)</option><option value="standard">Standard ($19, in General)</option><option value="premium">Premium ($49, in A-Team)</option></select>
       <select name="language" defaultValue={p?.language ?? ""} className={inp}><option value="">language: both</option><option value="en">English</option><option value="ms">Bahasa Melayu</option></select>
       <select name="tierIncluded" defaultValue={p?.tierIncluded ?? ""} className={inp}><option value="">included rank: auto from ebook tier / none</option><option value="free">General (free)</option><option value="pro">A-Team (pro)</option><option value="elite">Rambo (elite)</option></select>
+      <select name="pairSlug" defaultValue={p?.pairSlug ?? ""} className={inp}><option value="">twin (other language): auto by name</option>{twins.map((e) => <option key={e.id} value={e.slug}>{e.language}: {e.name}</option>)}</select>
       <input name="stripePriceId" defaultValue={p?.stripePriceId ?? ""} placeholder="Stripe price id (optional)" className={inp} />
       <input name="filePath" defaultValue={p?.filePath ?? ""} placeholder="file: name.pdf in UPLOAD_DIR, https://url, or tg:<file_id>" className={inp} />
       <input name="description" defaultValue={p?.description ?? ""} placeholder="Description" className={`${inp} md:col-span-3`} />
@@ -25,11 +27,12 @@ function Form({ p }: { p?: typeof products.$inferSelect }) {
 }
 export default async function AdminProducts() {
   const rows = await db.select().from(products).orderBy(desc(products.createdAt));
+  const ebooks = rows.filter((r) => r.type === "ebook");
   return (
     <div className="space-y-6">
-      <h2 className="font-semibold">New product</h2><Form />
+      <h2 className="font-semibold">New product</h2><Form ebooks={ebooks} />
       <h2 className="font-semibold">Products</h2>
-      {rows.map((p) => <Form key={p.id} p={p} />)}
+      {rows.map((p) => <Form key={p.id} p={p} ebooks={ebooks} />)}
     </div>
   );
 }

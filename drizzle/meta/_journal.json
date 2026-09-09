@@ -57,6 +57,13 @@
       "when": 1788943542024,
       "tag": "0007_product_language",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1788957749104,
+      "tag": "0008_product_pair",
+      "breakpoints": true
     }
   ]
 }

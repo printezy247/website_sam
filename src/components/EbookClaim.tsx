@@ -19,6 +19,7 @@ export function EbookClaim({ botLink, ebooks, signedIn }: { botLink: string; ebo
   useEffect(() => {
     let seen = false;
     try { seen = localStorage.getItem(KEY) === "1"; } catch { /* private mode */ }
+    if (new URLSearchParams(location.search).get("claim") === "free") { const t = setTimeout(() => setOpen(true), 0); return () => clearTimeout(t); } // bot "Claim free" button
     if (seen) return;
     const mark = () => { try { localStorage.setItem(KEY, "1"); } catch { /* ignore */ } };
     const timer = setTimeout(() => { setOpen(true); mark(); }, 20000);

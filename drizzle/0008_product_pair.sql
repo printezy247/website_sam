@@ -1,0 +1,1 @@
+ALTER TABLE "products" ADD COLUMN "pair_slug" text;
