@@ -21,7 +21,7 @@ export function TierCards({ showMatrix = false }: { showMatrix?: boolean }) {
       </div>
       <div className="grid gap-4 md:grid-cols-3">
         {tiers.map((tier) => (
-          <div key={tier.key} className={cn("glass rounded-2xl p-6 flex flex-col relative", tier.popular && "glow-gold")}>
+          <div key={tier.key} className={cn("glass lux rounded-2xl p-6 flex flex-col relative", tier.popular && "lux-gold")}>
             {tier.popular && <span className="absolute -top-3 left-6 text-[11px] uppercase tracking-wide bg-gold text-black px-2 py-0.5 rounded">{t("popular")}</span>}
             <div className="text-lg font-semibold">{t(tier.key)}</div>
             <div className="mt-3 min-h-16">

@@ -36,7 +36,7 @@ export default async function Products({ params, searchParams }: { params: Promi
       <div className="mt-6 grid gap-4 md:grid-cols-3">
         {rows.map((p) => { const twin = p.pairSlug ? bySlug.get(p.pairSlug) : undefined; return (
           <div key={p.id} className="flex flex-col gap-1">
-          <Link href={`/products/${p.slug}`} className="glass rounded-2xl p-5 hover:border-gold/40 flex flex-col flex-1">
+          <Link href={`/products/${p.slug}`} className="glass lux rounded-2xl p-5 flex flex-col flex-1">
             <div className="flex items-center justify-between"><span className="text-xs uppercase text-muted">{p.type.replace("_", " ")}{p.language && <span className="ml-2 border border-border rounded px-1 py-px text-[10px]">{p.language}</span>}</span><EbookTierBadge tier={p.ebookTier} /></div>
             <div className="mt-1 font-semibold text-lg">{p.name}</div>
             <p className="mt-2 text-sm text-muted flex-1">{p.description}</p>

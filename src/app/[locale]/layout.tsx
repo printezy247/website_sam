@@ -11,6 +11,7 @@ import { Footer } from "@/components/Footer";
 import { RiskBanner } from "@/components/RiskBanner";
 import { Ticker } from "@/components/Ticker";
 import { StickyCta } from "@/components/StickyCta";
+import { LuxCursor } from "@/components/LuxCursor";
 import { SupportChat } from "@/components/SupportChat";
 import { Track } from "@/components/Track";
 import { JsonLd, absUrl, localePath, orgJsonLd, websiteJsonLd, OG_LOCALE } from "@/lib/seo";
@@ -58,6 +59,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
           <Footer />
           <StickyCta />
           <SupportChat />
+        <LuxCursor />
           <Track />
         </NextIntlClientProvider>
       </body>

@@ -319,6 +319,8 @@
     "gate_body": "Create an account to read the rest and download every Free ebook.",
     "gate_cta": "Create account",
     "end_title": "End of the book",
-    "end_body": "Keep a copy for the desk."
+    "end_body": "Keep a copy for the desk.",
+    "gate_list_title": "What you miss",
+    "gate_pages": "{n} more pages behind the account."
   }
 }

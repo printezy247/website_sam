@@ -1,8 +1,8 @@
 import { readFileSync, statSync } from "node:fs";
 import { PDFDocument } from "pdf-lib";
 
-/** How many pages an anonymous visitor may read before the sign-up gate. */
-export const PREVIEW_PAGES = 3;
+/** Pages an anonymous visitor receives. The reader shows this page part-way, then the gate. */
+export const PREVIEW_PAGES = 1;
 
 const cache = new Map<string, Uint8Array>();
 

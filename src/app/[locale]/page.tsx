@@ -96,7 +96,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         <h2 className="text-3xl font-semibold tracking-tight">{t("doors.title")}</h2>
         <p className="text-muted mt-2">{t("doors.subtitle")}</p>
         <div className="mt-8 grid gap-4 md:grid-cols-2">
-          <div className="glass rounded-2xl p-6 glow-gold">
+          <div className="glass lux lux-gold rounded-2xl p-6">
             <div className="text-xs text-gold uppercase tracking-wide">A</div>
             <h3 className="mt-1 text-xl font-semibold">{t("doors.a_title")}</h3>
             <p className="mt-2 text-muted">{t("doors.a_body")}</p>
@@ -106,7 +106,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
               <a href={BRAND.telegram.registerGuide} target="_blank" rel="noopener" className="text-sm text-muted underline self-center">{t("doors.guide")}</a>
             </div>
           </div>
-          <div className="glass rounded-2xl p-6">
+          <div className="glass lux rounded-2xl p-6">
             <div className="text-xs text-muted uppercase tracking-wide">B</div>
             <h3 className="mt-1 text-xl font-semibold">{t("doors.b_title")}</h3>
             <p className="mt-2 text-muted">{t("doors.b_body")}</p>
@@ -140,7 +140,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           <p className="text-muted mt-2">{t("products.subtitle")}</p>
           <div className="mt-6 grid gap-3 md:grid-cols-3">
             {prods.map((p) => (
-              <Link key={p.id} href={`/products/${p.slug}`} className="glass rounded-xl p-5 hover:border-gold/40">
+              <Link key={p.id} href={`/products/${p.slug}`} className="glass lux rounded-xl p-5">
                 <div className="text-xs uppercase text-muted">{p.type.replace("_", " ")}</div>
                 <div className="mt-1 font-semibold">{p.name}</div>
                 <div className="mt-2 text-sm text-muted line-clamp-2">{p.description}</div>
