@@ -1,30 +1,48 @@
-// Provider-agnostic JSON generation. Default: Google Gemini (free tier, OpenAI-compatible endpoint).
-// Also: groq (Llama), openrouter (free models), anthropic (Claude SDK). Pick with LLM_PROVIDER.
+// Provider-agnostic JSON generation over OpenAI-compatible chat endpoints, plus the Anthropic SDK.
+// Providers: gemini, groq, openrouter, nvidia, moonshot, ollama, custom (LLM_BASE_URL), anthropic.
+// Order: LLM_PROVIDER first, then every other provider with a key, as failover. LLM_MODEL pins a model on the first provider.
 
-export type Provider = "gemini" | "groq" | "openrouter" | "anthropic";
+export type Provider = "gemini" | "groq" | "openrouter" | "nvidia" | "moonshot" | "ollama" | "custom" | "anthropic";
+export type OpenAiProvider = Exclude<Provider, "anthropic">;
 
-const PROVIDERS: Record<Exclude<Provider, "anthropic">, { url: string; keyEnv: string; models: string[]; headers?: Record<string, string> }> = {
-  gemini: { url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", keyEnv: "GEMINI_API_KEY", models: ["gemini-3-flash", "gemini-2.5-flash"] },
-  groq: { url: "https://api.groq.com/openai/v1/chat/completions", keyEnv: "GROQ_API_KEY", models: ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"] },
-  openrouter: { url: "https://openrouter.ai/api/v1/chat/completions", keyEnv: "OPENROUTER_API_KEY", models: ["meta-llama/llama-3.3-70b-instruct:free", "meta-llama/llama-4-maverick:free"], headers: { "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL ?? "", "X-Title": "Sam Trading" } },
+type Spec = { url: string; keyEnv: string; models: string[]; headers?: Record<string, string>; jsonMode?: boolean; free?: boolean };
+const ollamaBase = (process.env.OLLAMA_BASE_URL ?? "https://ollama.com").replace(/\/+$/, "");
+const customBase = (process.env.LLM_BASE_URL ?? "").replace(/\/+$/, "");
+const PROVIDERS: Record<OpenAiProvider, Spec> = {
+  gemini: { url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", keyEnv: "GEMINI_API_KEY", models: ["gemini-3-flash", "gemini-2.5-flash"], jsonMode: true },
+  groq: { url: "https://api.groq.com/openai/v1/chat/completions", keyEnv: "GROQ_API_KEY", models: ["llama-3.3-70b-versatile", "openai/gpt-oss-120b", "llama-3.1-8b-instant"], jsonMode: true },
+  openrouter: { url: "https://openrouter.ai/api/v1/chat/completions", keyEnv: "OPENROUTER_API_KEY", models: ["meta-llama/llama-3.3-70b-instruct:free", "deepseek/deepseek-chat-v3.1:free", "moonshotai/kimi-k2:free"], headers: { "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL ?? "", "X-Title": "SAMBANGGOLD" }, jsonMode: true, free: true },
+  // NVIDIA NIM: free developer tier, OpenAI-compatible. Model ids are namespaced (vendor/model).
+  nvidia: { url: "https://integrate.api.nvidia.com/v1/chat/completions", keyEnv: "NVIDIA_API_KEY", models: ["meta/llama-3.3-70b-instruct", "moonshotai/kimi-k2-instruct", "deepseek-ai/deepseek-v3.1", "qwen/qwen3-235b-a22b", "nvidia/llama-3.3-nemotron-super-49b-v1.5"], jsonMode: false },
+  // Moonshot Kimi (api.moonshot.ai). Set MOONSHOT_BASE_URL=https://api.moonshot.cn/v1 for the China endpoint.
+  moonshot: { url: `${(process.env.MOONSHOT_BASE_URL ?? "https://api.moonshot.ai/v1").replace(/\/+$/, "")}/chat/completions`, keyEnv: "MOONSHOT_API_KEY", models: ["kimi-k2-0905-preview", "kimi-k2-turbo-preview", "moonshot-v1-32k"], jsonMode: true },
+  // Ollama cloud (ollama.com, key from ollama.com/settings/keys) or a self-hosted server via OLLAMA_BASE_URL.
+  ollama: { url: `${ollamaBase}/v1/chat/completions`, keyEnv: "OLLAMA_API_KEY", models: ["gpt-oss:120b", "deepseek-v3.1:671b", "kimi-k2:1t", "qwen3:235b", "gemma3:27b"], jsonMode: true },
+  // Any other OpenAI-compatible server: LLM_BASE_URL=https://host/v1, LLM_API_KEY, LLM_MODEL.
+  custom: { url: `${customBase}/chat/completions`, keyEnv: "LLM_API_KEY", models: [], jsonMode: true },
 };
+export const PROVIDER_ORDER: Provider[] = ["gemini", "groq", "nvidia", "openrouter", "moonshot", "ollama", "custom", "anthropic"];
 
-export function llmProvider(): Provider {
-  const p = (process.env.LLM_PROVIDER ?? "").toLowerCase() as Provider;
-  if (p && (p === "anthropic" || p in PROVIDERS)) return p;
-  if (process.env.GEMINI_API_KEY) return "gemini";
-  if (process.env.GROQ_API_KEY) return "groq";
-  if (process.env.OPENROUTER_API_KEY) return "openrouter";
-  if (process.env.ANTHROPIC_API_KEY) return "anthropic";
-  return "gemini";
+function hasKey(p: Provider) {
+  if (p === "anthropic") return Boolean(process.env.ANTHROPIC_API_KEY);
+  if (p === "custom") return Boolean(customBase && process.env.LLM_API_KEY);
+  if (p === "ollama") return Boolean(process.env.OLLAMA_API_KEY || process.env.OLLAMA_BASE_URL);
+  return Boolean(process.env[PROVIDERS[p].keyEnv]);
 }
-export function llmConfigured() {
-  const p = llmProvider();
-  return Boolean(p === "anthropic" ? process.env.ANTHROPIC_API_KEY : process.env[PROVIDERS[p].keyEnv]);
+/** Every provider with credentials, preferred one first. */
+export function llmProviders(): Provider[] {
+  const pinned = (process.env.LLM_PROVIDER ?? "").toLowerCase() as Provider;
+  const rest = PROVIDER_ORDER.filter((p) => p !== pinned && hasKey(p));
+  return pinned && PROVIDER_ORDER.includes(pinned) ? [pinned, ...rest] : rest;
 }
+export function llmProvider(): Provider { return llmProviders()[0] ?? "gemini"; }
+export function llmConfigured() { return llmProviders().some(hasKey); }
 export function llmLabel() {
-  const p = llmProvider();
-  return p === "anthropic" ? "anthropic / claude-opus-5" : `${p} / ${process.env.LLM_MODEL ?? PROVIDERS[p].models[0]}`;
+  const ps = llmProviders();
+  if (!ps.length) return "none";
+  const p = ps[0];
+  const first = p === "anthropic" ? "claude-opus-5" : process.env.LLM_MODEL ?? PROVIDERS[p].models[0] ?? "auto";
+  return `${p} / ${first}${ps.length > 1 ? ` (+${ps.slice(1).join(", ")})` : ""}`;
 }
 
 /** Extract a JSON object from model text (tolerates ```json fences and leading prose). */
@@ -58,8 +76,8 @@ export async function discoverGeminiModels(key: string): Promise<string[]> {
 }
 
 const listCache = new Map<string, { at: number; models: string[] }>();
-/** Ask an OpenAI-compatible provider (groq, openrouter) which chat models exist; ranked by size/recency, cached 1h. */
-export async function discoverOpenAiModels(p: "groq" | "openrouter", key: string): Promise<string[]> {
+/** Ask an OpenAI-compatible provider which chat models exist; ranked for long bilingual JSON writing, cached 1h. */
+export async function discoverOpenAiModels(p: OpenAiProvider, key: string): Promise<string[]> {
   const hit = listCache.get(p);
   if (hit && Date.now() - hit.at < 36e5) return hit.models;
   try {
@@ -67,15 +85,27 @@ export async function discoverOpenAiModels(p: "groq" | "openrouter", key: string
     const r = await fetch(`${base}/models`, { headers: { authorization: `Bearer ${key}` }, signal: AbortSignal.timeout(15_000) });
     if (!r.ok) return [];
     const j = (await r.json()) as { data?: { id: string; active?: boolean; pricing?: { prompt?: string } }[] };
-    const bad = /(whisper|tts|guard|embed|vision|image|audio|moderation|rerank|allam|compound|safeguard|prompt-guard)/i;
+    const bad = /(whisper|tts|guard|embed|vision|image|audio|moderation|rerank|allam|compound|safeguard|prompt-guard|reward|retriever|ocr|parse|speech|translate|nv-|clip|sd|flux|video|3d|classif|safety|-vl|vl-|omni|coder|math|code)/i;
     let ids = (j.data ?? []).filter((m) => m.active !== false && !bad.test(m.id)).map((m) => ({ id: m.id, free: m.pricing?.prompt === "0" || /:free$/.test(m.id) }));
-    if (p === "openrouter") ids = ids.filter((m) => m.free); // only free-tier routes
-    const size = (id: string) => { const m = id.match(/(\d{2,3})b/i); return m ? Number(m[1]) : /maverick|scout|gpt-oss|deepseek|qwen3/i.test(id) ? 70 : 10; };
-    const score = (id: string) => (/llama/i.test(id) ? 30 : 0) + (/instruct|versatile|chat/i.test(id) ? 10 : 0) + Math.min(size(id), 200) + (/preview|exp/i.test(id) ? -15 : 0);
+    if (PROVIDERS[p].free) ids = ids.filter((m) => m.free); // only free-tier routes
+    const size = (id: string) => { const m = id.match(/(\d{2,3})b/i) ?? id.match(/(\d)t\b/i); return m ? (/t\b/i.test(m[0]) ? Number(m[1]) * 1000 : Number(m[1])) : /maverick|scout|gpt-oss|deepseek|qwen3|kimi|nemotron|mistral-large|glm/i.test(id) ? 70 : 10; };
+    const score = (id: string) => (/llama|kimi|deepseek|gpt-oss|qwen3|nemotron/i.test(id) ? 30 : 0) + (/instruct|versatile|chat/i.test(id) ? 10 : 0) + Math.min(size(id), 200) + (/preview|exp|thinking|reasoning|r1|-mini|nano|lite|small|tiny|1b|3b|7b|8b/i.test(id) ? -15 : 0);
     const models = ids.map((m) => m.id).sort((a, b) => score(b) - score(a));
     listCache.set(p, { at: Date.now(), models });
     return models;
   } catch { return []; }
+}
+
+/** Providers with keys and the models each one exposes right now (for the admin panel). */
+export async function llmInventory() {
+  const out: { provider: Provider; label: string; models: string[] }[] = [];
+  for (const p of llmProviders()) {
+    if (p === "anthropic") { out.push({ provider: p, label: "Anthropic SDK", models: ["claude-opus-5"] }); continue; }
+    const key = process.env[PROVIDERS[p].keyEnv] ?? "";
+    const found = p === "gemini" ? await discoverGeminiModels(key) : await discoverOpenAiModels(p, key);
+    out.push({ provider: p, label: PROVIDERS[p].url.replace(/\/(v1beta\/openai|openai\/v1|api\/v1|v1)?\/chat\/completions$/, ""), models: found.length ? found.slice(0, 12) : PROVIDERS[p].models });
+  }
+  return out;
 }
 
 /** Native Gemini generateContent fallback (used when the OpenAI-compatible route 404s). */
@@ -95,16 +125,32 @@ async function geminiNative<T>(key: string, model: string, args: { system: strin
   return { json: extractJson<T>(text), model: `gemini/${model}` };
 }
 
-/** Call an OpenAI-compatible chat endpoint and return { json, model }. Tries fallback models on 404/400 model errors. */
-export async function generateJson<T>(args: { system: string; user: string; schema: Record<string, unknown>; maxTokens?: number }): Promise<{ json: T; model: string }> {
-  const p = llmProvider();
-  if (p === "anthropic") return generateWithAnthropic<T>(args);
+/** Generate JSON. Walks every configured provider in order; within one, tries discovered models on model errors. */
+export async function generateJson<T>(args: { system: string; user: string; schema: Record<string, unknown>; maxTokens?: number; provider?: Provider; model?: string }): Promise<{ json: T; model: string }> {
+  const providers = args.provider ? [args.provider] : llmProviders();
+  if (!providers.length) throw new Error("No LLM API key set (GEMINI_API_KEY, GROQ_API_KEY, NVIDIA_API_KEY, OPENROUTER_API_KEY, MOONSHOT_API_KEY, OLLAMA_API_KEY, LLM_BASE_URL+LLM_API_KEY or ANTHROPIC_API_KEY)");
+  const errors: string[] = [];
+  for (const [i, p] of providers.entries()) {
+    try {
+      if (p === "anthropic") return await generateWithAnthropic<T>(args);
+      const pinned = args.model ?? (i === 0 ? process.env.LLM_MODEL : undefined);
+      return await generateWithProvider<T>(p, args, pinned);
+    } catch (e) {
+      errors.push((e as Error).message);
+      console.warn(`[llm] ${p} failed: ${(e as Error).message.slice(0, 200)}`);
+    }
+  }
+  throw new Error(errors.join(" | "));
+}
+
+async function generateWithProvider<T>(p: OpenAiProvider, args: { system: string; user: string; schema: Record<string, unknown>; maxTokens?: number }, pinned?: string): Promise<{ json: T; model: string }> {
   const spec = PROVIDERS[p];
-  const key = process.env[spec.keyEnv];
+  const key = process.env[spec.keyEnv] ?? (p === "ollama" ? "ollama" : "");
   if (!key) throw new Error(`${spec.keyEnv} not set`);
-  let models = process.env.LLM_MODEL ? [process.env.LLM_MODEL, ...spec.models] : spec.models;
+  let models = pinned ? [pinned, ...spec.models] : spec.models;
   const found = p === "gemini" ? await discoverGeminiModels(key) : await discoverOpenAiModels(p, key);
-  if (found.length) models = [...new Set([...(process.env.LLM_MODEL ? [process.env.LLM_MODEL] : []), ...found.slice(0, 4), ...spec.models])];
+  if (found.length) models = [...new Set([...(pinned ? [pinned] : []), ...found.slice(0, 4), ...spec.models])];
+  if (!models.length) throw new Error(`${p}: no model (set LLM_MODEL)`);
   let lastErr = "";
   let sawNotFound = false;
   for (const model of models) {
@@ -113,29 +159,29 @@ export async function generateJson<T>(args: { system: string; user: string; sche
       headers: { "content-type": "application/json", authorization: `Bearer ${key}`, ...(spec.headers ?? {}) },
       body: JSON.stringify({
         model, temperature: 0.7, max_tokens: args.maxTokens ?? 6000,
-        response_format: { type: "json_object" },
+        ...(spec.jsonMode ? { response_format: { type: "json_object" } } : {}),
         messages: [
           { role: "system", content: `${args.system}\n\nRespond with ONLY a JSON object matching this JSON Schema:\n${JSON.stringify(args.schema)}` },
           { role: "user", content: args.user },
         ],
       }),
-      signal: AbortSignal.timeout(120_000),
+      signal: AbortSignal.timeout(150_000),
     });
     const raw = await r.text();
     let j: { choices?: { message?: { content?: string } }[]; error?: { message?: string } } = {};
     try { j = JSON.parse(raw); } catch { /* non-JSON body (HTML 404 etc.) */ }
     if (!r.ok) {
       lastErr = `${p} ${model}: ${r.status} ${(j.error?.message ?? raw.replace(/\s+/g, " ")).slice(0, 200)}`.trim();
-      if (r.status === 404 || /model|not found|decommission/i.test(j.error?.message ?? "")) { sawNotFound = true; continue; } // try next model
+      if (r.status === 404 || r.status === 400 || r.status === 429 || /model|not found|decommission|unsupported|quota|rate/i.test(j.error?.message ?? "")) { sawNotFound = true; continue; } // try next model
       throw new Error(lastErr);
     }
     const text = j.choices?.[0]?.message?.content ?? "";
-    return { json: extractJson<T>(text), model: `${p}/${model}` };
+    try { return { json: extractJson<T>(text), model: `${p}/${model}` }; }
+    catch (e) { lastErr = `${p} ${model}: bad JSON (${(e as Error).message})`; continue; }
   }
   // OpenAI-compatible route rejected every model: for Gemini, fall back to the native API with a discovered model.
   if (p === "gemini" && sawNotFound) {
-    const found = await discoverGeminiModels(key);
-    const model = process.env.LLM_MODEL ?? found[0] ?? spec.models[1];
+    const model = pinned ?? found[0] ?? spec.models[1];
     return geminiNative<T>(key, model, args);
   }
   throw new Error(lastErr || `${p}: no model available`);
