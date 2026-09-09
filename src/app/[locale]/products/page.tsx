@@ -20,7 +20,8 @@ export default async function Products({ params, searchParams }: { params: Promi
   const all = await db.select().from(products).where(eq(products.active, true)).catch(() => []);
   const rows = filter === "ebook" ? all.filter((p) => p.type === "ebook") : filter === "tools" ? all.filter((p) => p.type !== "ebook") : all;
   const order = { free: 0, standard: 1, premium: 2 } as const;
-  rows.sort((a, b) => (order[(a.ebookTier ?? "premium") as keyof typeof order] ?? 3) - (order[(b.ebookTier ?? "premium") as keyof typeof order] ?? 3));
+  const langRank = (l: string | null) => (l === locale ? 0 : l ? 2 : 1);
+  rows.sort((a, b) => langRank(a.language) - langRank(b.language) || (order[(a.ebookTier ?? "premium") as keyof typeof order] ?? 3) - (order[(b.ebookTier ?? "premium") as keyof typeof order] ?? 3));
   const tabs = [["all", t("filter_all")], ["ebook", t("filter_ebook")], ["tools", t("filter_tools")]] as const;
   return (
     <div className="mx-auto max-w-6xl px-4 py-16">
@@ -34,7 +35,7 @@ export default async function Products({ params, searchParams }: { params: Promi
       <div className="mt-6 grid gap-4 md:grid-cols-3">
         {rows.map((p) => (
           <Link key={p.id} href={`/products/${p.slug}`} className="glass rounded-2xl p-5 hover:border-gold/40 flex flex-col">
-            <div className="flex items-center justify-between"><span className="text-xs uppercase text-muted">{p.type.replace("_", " ")}</span><EbookTierBadge tier={p.ebookTier} /></div>
+            <div className="flex items-center justify-between"><span className="text-xs uppercase text-muted">{p.type.replace("_", " ")}{p.language && <span className="ml-2 border border-border rounded px-1 py-px text-[10px]">{p.language}</span>}</span><EbookTierBadge tier={p.ebookTier} /></div>
             <div className="mt-1 font-semibold text-lg">{p.name}</div>
             <p className="mt-2 text-sm text-muted flex-1">{p.description}</p>
             <div className="mt-4 flex items-center justify-between">

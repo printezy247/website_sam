@@ -1,13 +1,13 @@
 import { and, eq, isNull, lte, or, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { leads, products, users } from "@/db/schema";
+import { leads, users } from "@/db/schema";
 import { DRIP, emailConfigured, sendEmail } from "@/lib/email";
 import { BRAND } from "@/config/brand";
-
-const EBOOK_SLUG = "ebook-gold-starter";
+import { leadEbook } from "@/lib/ebooks";
 
 export async function ebookUrlFor(leadId: string) {
-  const [p] = await db.select().from(products).where(eq(products.slug, EBOOK_SLUG));
+  const [l] = await db.select({ locale: leads.locale }).from(leads).where(eq(leads.id, leadId));
+  const p = await leadEbook(l?.locale);
   if (p?.filePath && /^https?:\/\//.test(p.filePath)) return p.filePath;
   return `${BRAND.siteUrl}/api/leads/${leadId}/ebook`;
 }

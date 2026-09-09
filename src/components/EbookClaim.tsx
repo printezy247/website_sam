@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 
 const KEY = "sam_ebook_seen";
-export type FreeEbook = { id: string; name: string; description: string | null; filePath: string | null };
+export type FreeEbook = { id: string; name: string; description: string | null; filePath: string | null; language?: string | null };
 
 /**
  * Free ebook claim: floating button + 3D glass modal.
@@ -66,7 +66,7 @@ export function EbookClaim({ botLink, ebooks, signedIn }: { botLink: string; ebo
                   <li key={b.id} className="claim-book flex items-center gap-3 rounded-xl border border-border/70 bg-black/30 px-3 py-2.5" style={{ "--i": i } as React.CSSProperties}>
                     <span className="claim-cover" aria-hidden><span /></span>
                     <span className="min-w-0 flex-1">
-                      <span className="block text-sm font-semibold truncate">{b.name}</span>
+                      <span className="block text-sm font-semibold truncate">{b.name}{b.language && <span className="ml-2 text-[10px] uppercase tracking-wide text-muted border border-border rounded px-1 py-px align-middle">{b.language}</span>}</span>
                       {b.description && <span className="block text-xs text-muted truncate">{b.description}</span>}
                     </span>
                     {signedIn ? (

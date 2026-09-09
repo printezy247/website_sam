@@ -150,8 +150,9 @@ export function createBot(token: string) {
   });
 
   bot.command("ebook", async (ctx) => {
-    const [p] = await db.select().from(products).where(eq(products.slug, "ebook-gold-starter"));
-    const ms = (await langOf(ctx)) === "ms";
+    const lang = await langOf(ctx); const ms = lang === "ms";
+    const { leadEbook } = await import("@/lib/ebooks");
+    const p = await leadEbook(lang);
     if (p?.filePath?.startsWith("tg:")) return ctx.replyWithDocument(p.filePath.slice(3), { caption: p.name });
     await ctx.reply(ms ? "Ebook akan dihantar tidak lama lagi. Sementara itu, sertai channel awam." : "Ebook coming shortly. Meanwhile, join the public channel.", { reply_markup: new InlineKeyboard().url("Channel", BRAND.telegram.publicChannel) });
   });

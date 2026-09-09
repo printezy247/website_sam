@@ -9,6 +9,15 @@ Reference for every design, copy and product request. Load this before writing a
 - Voice: cool, blunt, professional, light military register. Short declaratives. No exclamation marks, no hype, no em dashes, no forced triads. Compliance lines stay verbatim. Web copy has no decorative emoji; bot and email keep only functional marks (✅ ❌ ⚠️ 🔴).
 - Locales: Bahasa Melayu first, English second. Rank names are brand terms and are not translated.
 
+### Ebook catalog
+
+| Language | Free | Standard ($19) | Premium ($49) |
+|---|---|---|---|
+| English | Sniper Checklist | 7 Step Protocol · Gold Trading Field Manual | |
+| Bahasa Melayu | Checklist Sniper | 13 Teknik Minda Trader · Protokol 7 Langkah · Bang Bang News Gold | Manual Rekrut Emas |
+
+Seeded in `src/db/seed.ts` with `products.language` (`ms | en | null`). The store, the claim modal, the lead ebook and the bot `/ebook` pick the reader's language first. Attach files per ebook in `/admin/products`.
+
 ## Source assets
 
 Design files live in `printezy247/designresources`, folder `Sam/` (channel code `SAM`, naming `SAM_{Project}_{Description}_v{N}.{ext}`). Current: `BrandAssets/3DModels/SamBangGoldMascot_v1.obj` + `.mtl` (mesh with named parts: anvil, gold_bar, legs, torso, belt, hammer), `BrandAssets/Fonts/Anton_v1.woff2`. This repo keeps its own copies under `public/brand/` (including `mascot-raise.png` and `mascot-strike.png`, rendered from the mesh with three.js) and `src/app/fonts/`.
