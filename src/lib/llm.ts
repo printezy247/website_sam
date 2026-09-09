@@ -106,6 +106,19 @@ export async function discoverOpenAiModels(p: OpenAiProvider, key: string): Prom
   } catch { return []; }
 }
 
+/** Raw /models ids from one provider (no filtering), for debugging pins. */
+export async function rawModels(p: OpenAiProvider): Promise<{ status: number; ids: string[]; error?: string }> {
+  const key = process.env[PROVIDERS[p].keyEnv] ?? (p === "ollama" ? "ollama" : "");
+  const base = PROVIDERS[p].url.replace(/\/chat\/completions$/, "");
+  try {
+    const r = await fetch(p === "gemini" ? `${GEMINI_NATIVE}/models?pageSize=200&key=${encodeURIComponent(key)}` : `${base}/models`, { headers: { authorization: `Bearer ${key}` }, signal: AbortSignal.timeout(15_000) });
+    const text = await r.text();
+    if (!r.ok) return { status: r.status, ids: [], error: text.slice(0, 300) };
+    const j = JSON.parse(text) as { data?: { id: string }[]; models?: { name: string }[] };
+    return { status: r.status, ids: (j.data ?? []).map((m) => m.id).concat((j.models ?? []).map((m) => m.name.replace(/^models\//, ""))) };
+  } catch (e) { return { status: 0, ids: [], error: String(e) }; }
+}
+
 /** Providers with keys and the models each one exposes right now (for the admin panel). */
 export async function llmInventory() {
   const out: { provider: Provider; label: string; models: string[]; pin?: string; uses: string; live: boolean }[] = [];
@@ -165,6 +178,7 @@ async function generateWithProvider<T>(p: OpenAiProvider, args: { system: string
   let models = first ? [first, ...spec.models] : spec.models;
   if (found.length) models = [...new Set([...(first ? [first] : []), ...spec.models.filter((m) => found.includes(m)), ...found.slice(0, 4), ...spec.models])];
   if (!models.length) throw new Error(`${p}: no model (set LLM_MODEL)`);
+  const errs: string[] = [];
   let lastErr = "";
   let sawNotFound = false;
   for (const model of models) {
@@ -185,7 +199,8 @@ async function generateWithProvider<T>(p: OpenAiProvider, args: { system: string
     let j: { choices?: { message?: { content?: string } }[]; error?: { message?: string } } = {};
     try { j = JSON.parse(raw); } catch { /* non-JSON body (HTML 404 etc.) */ }
     if (!r.ok) {
-      lastErr = `${p} ${model}: ${r.status} ${(j.error?.message ?? raw.replace(/\s+/g, " ")).slice(0, 200)}`.trim();
+      lastErr = `${p} ${model}: ${r.status} ${(j.error?.message ?? raw.replace(/\s+/g, " ")).slice(0, 120)}`.trim();
+      errs.push(lastErr);
       if (r.status === 404 || r.status === 400 || r.status === 429 || /model|not found|decommission|unsupported|quota|rate/i.test(j.error?.message ?? "")) { sawNotFound = true; continue; } // try next model
       throw new Error(lastErr);
     }
@@ -198,7 +213,7 @@ async function generateWithProvider<T>(p: OpenAiProvider, args: { system: string
     const model = pinned ?? found[0] ?? spec.models[1];
     return geminiNative<T>(key, model, args);
   }
-  throw new Error(lastErr || `${p}: no model available`);
+  throw new Error(`${errs.join(" | ") || `${p}: no model available`}${found.length ? ` || live list: ${found.slice(0, 8).join(", ")}` : " || live list empty (check key / base URL)"}`);
 }
 
 async function generateWithAnthropic<T>(args: { system: string; user: string; schema: Record<string, unknown>; maxTokens?: number }): Promise<{ json: T; model: string }> {
