@@ -14,6 +14,8 @@ import { products, signals } from "@/db/schema";
 import { GoldChart } from "@/components/GoldChart";
 import { NewsCalendar } from "@/components/NewsCalendar";
 import { EbookClaim } from "@/components/EbookClaim";
+import { auth } from "@/auth";
+import { and } from "drizzle-orm";
 import { Mascot } from "@/components/Mascot";
 import { desc, eq } from "drizzle-orm";
 import { fmtPct } from "@/lib/utils";
@@ -31,9 +33,11 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const t = await getTranslations();
   await rebaseSeedSignals().catch((e) => console.error("[rebase]", e));
   await evaluateRunningSignals().catch((e) => console.error("[evaluate]", e));
-  const [closed, latest, prods] = await Promise.all([
+  const [closed, latest, prods, freeEbooks, session] = await Promise.all([
     closedSignals().catch(() => []), latestSignals(["public"], 6).catch(() => []),
     db.select().from(products).where(eq(products.active, true)).limit(6).catch(() => []),
+    db.select({ id: products.id, name: products.name, description: products.description, filePath: products.filePath }).from(products).where(and(eq(products.active, true), eq(products.ebookTier, "free"))).catch(() => []),
+    auth().catch(() => null),
   ]);
   const stats = computeStats(recent(closed, 90));
   const [running] = await db.select().from(signals).where(eq(signals.status, "running")).orderBy(desc(signals.publishedAt)).limit(1).catch(() => []);
@@ -44,7 +48,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   return (
     <div>
       <JsonLd data={faq} />
-      <EbookClaim botLink={botDeepLink("ebook_lead")} />
+      <EbookClaim botLink={botDeepLink("ebook_lead")} ebooks={freeEbooks} signedIn={Boolean(session?.user)} />
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 grid-bg" />

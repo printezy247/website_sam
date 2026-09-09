@@ -6,6 +6,7 @@ import { count, desc, eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { attachReferrer } from "@/lib/referral";
 import { attachCampaign } from "@/lib/analytics";
+import { captureLead } from "@/lib/leads";
 import { accessibleProducts } from "@/lib/access";
 import { auth, signOut } from "@/auth";
 import { db } from "@/db";
@@ -24,7 +25,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return pageMetadata({ locale, path: "/account", title: locale === "ms" ? "Akaun" : "Account", description: "", noindex: true });
 }
 
-export default async function Account({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ checkout?: string; interval?: string; product?: string; paid?: string }> }) {
+export default async function Account({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ checkout?: string; interval?: string; product?: string; paid?: string; claim?: string }> }) {
   const { locale } = await params; setRequestLocale(locale);
   const sp = await searchParams;
   const session = await auth();
@@ -34,6 +35,8 @@ export default async function Account({ params, searchParams }: { params: Promis
   const jar = await cookies();
   await attachReferrer(uid, jar.get("ref")?.value).catch(() => {});
   await attachCampaign(uid, jar.get("camp")?.value).catch(() => {});
+  // Free ebook claim after sign-up: start the ebook drip for this email once.
+  if (sp.claim === "free" && session.user.email) await captureLead({ email: session.user.email, name: session.user.name ?? undefined, locale, source: "site_signup" }).catch(() => {});
   const [[u], tier, ents, ibs, tvs, lics, [refs], dl] = await Promise.all([
     db.select().from(users).where(eq(users.id, uid)),
     effectiveTier(uid), activeEntitlements(uid),
