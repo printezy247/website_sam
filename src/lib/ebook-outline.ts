@@ -52,8 +52,19 @@ export async function ebookOutline(abs: string): Promise<{ points: string[]; pag
     const ls = lines(content.items as Item[]).map((l) => ({ ...l, text: tidy(l.text) })).filter((l) => l.text.length >= 6 && l.text.length <= 70);
     if (!ls.length) continue;
     const max = Math.max(...ls.map((l) => l.h));
-    const head = ls.find((l) => l.h >= Math.max(18, max * 0.8) && l.text.split(" ").length >= 2);
-    if (head) points.push(headline(head.text));
+    const at = ls.findIndex((l) => l.h >= Math.max(18, max * 0.8) && l.text.split(" ").length >= 2);
+    if (at < 0) continue;
+    // A heading that wraps in the PDF arrives as several lines of the same size, stacked
+    // one line-height apart. Join them so the point reads as one phrase.
+    let text = ls[at].text;
+    for (let k = at + 1; k < ls.length; k++) {
+      const prev = ls[k - 1], cur = ls[k];
+      const sameSize = Math.abs(cur.h - prev.h) <= prev.h * 0.1;
+      const nextLine = prev.y - cur.y > 0 && prev.y - cur.y < prev.h * 1.8;
+      if (!sameSize || !nextLine) break;
+      text += " " + cur.text;
+    }
+    points.push(headline(text));
   }
   const result = { points: [...new Set(points)], pages: doc.numPages };
   cache.set(key, result);
