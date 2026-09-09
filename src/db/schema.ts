@@ -84,6 +84,7 @@ export const products = pgTable("products", {
   tierIncluded: text("tier_included"), // tier key that includes it, or null
   ebookTier: text("ebook_tier"), // ebooks only: free | standard | premium
   language: text("language"), // ms | en | null (both)
+  pairSlug: text("pair_slug"), // ebooks: slug of the same title in the other language
   stripePriceId: text("stripe_price_id"),
   filePath: text("file_path"),
   active: boolean("active").notNull().default(true),

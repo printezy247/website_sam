@@ -160,16 +160,19 @@ export async function adminUpsertProduct(fd: FormData) {
     language: (["ms", "en"].includes(str(fd, "language")) ? str(fd, "language") : null) as "ms" | "en" | null,
     stripePriceId: str(fd, "stripePriceId") || null, filePath: str(fd, "filePath") || null,
     description: str(fd, "description") || null, active: fd.get("active") === "on",
+    pairSlug: str(fd, "pairSlug") || null,
   };
   const id = str(fd, "id");
-  if (id) await db.update(productsTable).set(row).where(eq(productsTable.id, id));
-  else await db.insert(productsTable).values(row);
+  const [saved] = id ? await db.update(productsTable).set(row).where(eq(productsTable.id, id)).returning() : await db.insert(productsTable).values(row).returning();
+  if (saved) await linkEbookTwin(saved);
   revalidatePath("/admin/products"); revalidatePath("/products");
 }
 
 // ---- P3: education ----
 import { articles as articlesTable } from "@/db/schema";
 import { announceArticle, generateArticle } from "@/lib/articles";
+import { llmPing, type Provider } from "@/lib/llm";
+import { linkEbookTwin } from "@/lib/ebooks";
 
 export async function adminGenerateArticle(fd: FormData) {
   if (!(await requireAdmin())) throw new Error("forbidden");
@@ -181,6 +184,13 @@ export async function adminGenerateArticle(fd: FormData) {
   } catch (e) { msg = `error: ${(e as Error).message}`; }
   revalidatePath("/education");
   redirect(`/admin/articles?r=${encodeURIComponent(msg)}`);
+}
+/** Send one tiny prompt through a provider (and optional model) so the admin can see it answer. */
+export async function adminTestProvider(fd: FormData) {
+  if (!(await requireAdmin())) throw new Error("forbidden");
+  const provider = str(fd, "provider") as Provider;
+  const r = await llmPing(provider, str(fd, "model") || undefined);
+  redirect(`/admin/articles?r=${encodeURIComponent(r.ok ? `test ${provider}: ok · ${r.model} · ${r.ms} ms` : `test ${provider}: error · ${r.error}`)}`);
 }
 export async function adminToggleArticle(fd: FormData) {
   if (!(await requireAdmin())) throw new Error("forbidden");

@@ -1,4 +1,4 @@
-import { Bot, InlineKeyboard, webhookCallback, type Context } from "grammy";
+import { Bot, InlineKeyboard, InputFile, webhookCallback, type Context } from "grammy";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { ibAccounts, products, telegramAccounts, users } from "@/db/schema";
@@ -151,10 +151,26 @@ export function createBot(token: string) {
 
   bot.command("ebook", async (ctx) => {
     const lang = await langOf(ctx); const ms = lang === "ms";
-    const { leadEbook } = await import("@/lib/ebooks");
-    const p = await leadEbook(lang);
-    if (p?.filePath?.startsWith("tg:")) return ctx.replyWithDocument(p.filePath.slice(3), { caption: p.name });
-    await ctx.reply(ms ? "Ebook akan dihantar tidak lama lagi. Sementara itu, sertai channel awam." : "Ebook coming shortly. Meanwhile, join the public channel.", { reply_markup: new InlineKeyboard().url("Channel", BRAND.telegram.publicChannel) });
+    const { ebookCatalog } = await import("@/lib/ebooks");
+    const { resolveProductFile } = await import("@/lib/files");
+    const rows = await ebookCatalog(lang);
+    const free = rows.find((p) => p.ebookTier === "free" && p.filePath);
+    if (free?.filePath) {
+      const f = resolveProductFile(free.filePath);
+      const doc = f.kind === "file" ? new InputFile(f.abs) : f.kind === "url" ? new InputFile(new URL(f.url)) : f.kind === "telegram" ? f.fileId : null;
+      if (doc) await ctx.replyWithDocument(doc, { caption: `${free.name} [${ms ? "Percuma" : "Free"}]` }).catch((e) => console.warn("[bot] ebook send failed", (e as Error).message));
+    }
+    const badge = { free: ms ? "Percuma" : "Free", standard: "Standard", premium: "Premium" } as const;
+    const lines = rows.map((p) => {
+      const tag = `[${badge[(p.ebookTier ?? "standard") as keyof typeof badge]}]`;
+      const other = p.language && p.language !== lang ? ` (${p.language.toUpperCase()})` : "";
+      const price = p.priceCents ? ` · $${p.priceCents / 100}` : "";
+      const inc = p.tierIncluded ? ` · ${ms ? "dalam" : "in"} ${tierLabel(p.tierIncluded)}` : "";
+      return `${tag} <b>${escapeHtml(p.name)}</b>${other}${price}${inc}`;
+    });
+    const kb = new InlineKeyboard().url(ms ? "Buka kedai" : "Open store", `${BRAND.siteUrl}/products?filter=ebook`).url(ms ? "Tuntut percuma" : "Claim free", `${BRAND.siteUrl}/?claim=free`);
+    const foot = ms ? "Standard dan Premium: muat turun di /account bila pangkat anda termasuk, atau beli di kedai." : "Standard and Premium: download at /account when your rank includes them, or buy in the store.";
+    await ctx.reply(`${ms ? "<b>Ebook</b>" : "<b>Ebooks</b>"}\n\n${lines.join("\n") || (ms ? "Tiada ebook lagi." : "No ebooks yet.")}\n\n<i>${foot}</i>`, { parse_mode: "HTML", reply_markup: kb });
   });
 
   // Auto-approve join requests when the user holds the right tier.

@@ -238,3 +238,12 @@ async function generateWithAnthropic<T>(args: { system: string; user: string; sc
   const text = msg.content.filter((b) => b.type === "text").map((b) => b.text).join("");
   return { json: extractJson<T>(text), model: msg.model };
 }
+
+/** One tiny prompt through a provider (admin "Test" button). Never throws. */
+export async function llmPing(provider: Provider, model?: string): Promise<{ ok: boolean; model: string; ms: number; error?: string }> {
+  const t0 = Date.now();
+  try {
+    const r = await generateJson<{ ok?: boolean }>({ system: "Reply with JSON only.", user: 'Return exactly {"ok":true}', schema: { type: "object", properties: { ok: { type: "boolean" } }, required: ["ok"] }, maxTokens: 64, provider, model });
+    return { ok: r.json?.ok === true, model: r.model, ms: Date.now() - t0, error: r.json?.ok === true ? undefined : "answer was not {\"ok\":true}" };
+  } catch (e) { return { ok: false, model: model ?? "", ms: Date.now() - t0, error: (e as Error).message.slice(0, 300) }; }
+}

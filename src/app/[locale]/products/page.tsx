@@ -22,6 +22,7 @@ export default async function Products({ params, searchParams }: { params: Promi
   const order = { free: 0, standard: 1, premium: 2 } as const;
   const langRank = (l: string | null) => (l === locale ? 0 : l ? 2 : 1);
   rows.sort((a, b) => langRank(a.language) - langRank(b.language) || (order[(a.ebookTier ?? "premium") as keyof typeof order] ?? 3) - (order[(b.ebookTier ?? "premium") as keyof typeof order] ?? 3));
+  const bySlug = new Map(all.map((p) => [p.slug, p]));
   const tabs = [["all", t("filter_all")], ["ebook", t("filter_ebook")], ["tools", t("filter_tools")]] as const;
   return (
     <div className="mx-auto max-w-6xl px-4 py-16">
@@ -33,8 +34,9 @@ export default async function Products({ params, searchParams }: { params: Promi
         ))}
       </div>
       <div className="mt-6 grid gap-4 md:grid-cols-3">
-        {rows.map((p) => (
-          <Link key={p.id} href={`/products/${p.slug}`} className="glass rounded-2xl p-5 hover:border-gold/40 flex flex-col">
+        {rows.map((p) => { const twin = p.pairSlug ? bySlug.get(p.pairSlug) : undefined; return (
+          <div key={p.id} className="flex flex-col gap-1">
+          <Link href={`/products/${p.slug}`} className="glass rounded-2xl p-5 hover:border-gold/40 flex flex-col flex-1">
             <div className="flex items-center justify-between"><span className="text-xs uppercase text-muted">{p.type.replace("_", " ")}{p.language && <span className="ml-2 border border-border rounded px-1 py-px text-[10px]">{p.language}</span>}</span><EbookTierBadge tier={p.ebookTier} /></div>
             <div className="mt-1 font-semibold text-lg">{p.name}</div>
             <p className="mt-2 text-sm text-muted flex-1">{p.description}</p>
@@ -43,7 +45,9 @@ export default async function Products({ params, searchParams }: { params: Promi
               {p.tierIncluded && <span className="text-[11px] text-gold border border-gold/30 rounded px-1.5 py-0.5">{t("included", { tier: tt(p.tierIncluded as "free") })}</span>}
             </div>
           </Link>
-        ))}
+          {twin && <Link href={`/products/${twin.slug}`} locale={twin.language === "en" ? "en" : "ms"} className="text-xs text-muted hover:text-gold px-2">{t(twin.language === "en" ? "twin_en" : "twin_ms")}: {twin.name}</Link>}
+          </div>
+        ); })}
       </div>
     </div>
   );
