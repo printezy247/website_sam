@@ -248,18 +248,23 @@
     "previous": "Previous"
   },
   "lead": {
-    "fab": "Free ebook",
-    "badge": "Free · PDF",
-    "title": "Gold Trading Starter",
-    "body": "Market structure, sessions, risk and journaling. Enter your email. We send it.",
+    "fab": "Free ebooks",
+    "badge": "Free tier · PDF",
+    "title": "Claim your free ebooks",
+    "body": "Create an account. Every Free tier ebook unlocks in your dashboard, no card, no deposit.",
+    "body_member": "You are in. Download any Free tier ebook below.",
+    "cta": "Create account and claim",
+    "account": "Open dashboard",
+    "download": "Download",
+    "bot": "Open Telegram bot",
+    "bot_short": "Via bot",
+    "locked": "Sign up",
+    "none": "Free ebooks are being added.",
+    "fine": "Magic link or Google. No spam. Three short emails, unsubscribe anytime.",
     "name": "Name (optional)",
     "email": "Your email",
-    "cta": "Send the ebook",
     "done": "Check your inbox. The link is also right here:",
-    "download": "Download now",
-    "bot": "Open Telegram bot",
-    "error": "Invalid email. Try again.",
-    "fine": "No spam. Three short emails. Unsubscribe anytime."
+    "error": "Invalid email. Try again."
   },
   "support": {
     "open": "Support",
