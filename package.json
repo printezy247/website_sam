@@ -11,7 +11,10 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/db/migrate.ts",
     "db:seed": "tsx src/db/seed.ts",
-    "jobs": "tsx src/jobs.ts"
+    "jobs": "tsx src/jobs.ts",
+    "covers": "node tools/ebook-covers.mjs",
+    "prebuild": "node tools/copy-pdf-worker.mjs",
+    "predev": "node tools/copy-pdf-worker.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.124.0",
@@ -25,6 +28,8 @@
     "next": "16.3.4",
     "next-auth": "^5.0.0-beta.32",
     "next-intl": "^4.14.2",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^4.10.38",
     "postgres": "^3.4.9",
     "react": "19.2.8",
     "react-dom": "19.2.8",

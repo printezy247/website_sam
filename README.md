@@ -313,6 +313,7 @@ sequenceDiagram
 2. `+ New → Database → PostgreSQL`.
 3. Web service → **Variables** → `DATABASE_URL = ${{Postgres.DATABASE_URL}}` plus everything in [`.env.example`](.env.example). Generate a domain; set `AUTH_URL` and `NEXT_PUBLIC_SITE_URL` to it.
 4. `npm start` runs migrations and the idempotent seed on every boot. `SEED_ADMIN_EMAIL` makes that user admin → `/admin`.
+5. Ebook covers: `npm run covers` renders page one of every bundled PDF to `public/ebooks/<slug>.png` (headless Chromium + pdf.js). Run it after adding an ebook and commit the PNGs; the landing page deck and the reader use them.
 
 </details>
 

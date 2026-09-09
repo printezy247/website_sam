@@ -54,3 +54,10 @@ export async function linkEbookTwin(row: { id: string; slug: string; type: strin
   await db.update(products).set({ pairSlug: null }).where(and(eq(products.pairSlug, row.slug), ne(products.slug, pair ?? "")));
   if (pair) await db.update(products).set({ pairSlug: row.slug }).where(eq(products.slug, pair));
 }
+
+/** Active Free ebooks grouped by language, for the landing page deck. Untagged rows are dropped: a deck is one language. */
+export async function freeEbooksByLanguage() {
+  const rows = await freeEbooks("ms");
+  const byLang = (l: Locale) => rows.filter((p) => p.language === l).sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+  return { ms: byLang("ms"), en: byLang("en") };
+}
