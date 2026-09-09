@@ -55,7 +55,7 @@ async function main() {
   console.log(recap ? `[jobs] weekly recap ${recap.weekStart} posted=${Boolean(recap.postedAt)}` : "[jobs] recap: not Monday");
   console.log("[jobs] drip emails sent", await runDrip().catch((e) => String(e)));
   if (llmConfigured()) {
-    const a = await ensureDailyArticle().catch((e) => { console.error("[jobs] article", e); return null; });
+    const a = await ensureDailyArticle(process.env.ARTICLE_FORCE === "1").catch((e) => { console.error("[jobs] article", e); return null; });
     console.log(a ? `[jobs] article published: ${a.slug}` : "[jobs] article: nothing to do");
   }
   process.exit(0);
