@@ -15,7 +15,8 @@ import { GoldChart } from "@/components/GoldChart";
 import { NewsCalendar } from "@/components/NewsCalendar";
 import { EbookClaim } from "@/components/EbookClaim";
 import { auth } from "@/auth";
-import { freeEbooks } from "@/lib/ebooks";
+import { freeEbooks, freeEbooksByLanguage } from "@/lib/ebooks";
+import { EbookDeck } from "@/components/EbookDeck";
 import { Mascot } from "@/components/Mascot";
 import { desc, eq } from "drizzle-orm";
 import { fmtPct } from "@/lib/utils";
@@ -33,10 +34,11 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const t = await getTranslations();
   await rebaseSeedSignals().catch((e) => console.error("[rebase]", e));
   await evaluateRunningSignals().catch((e) => console.error("[evaluate]", e));
-  const [closed, latest, prods, ebooksFree, session] = await Promise.all([
+  const [closed, latest, prods, ebooksFree, decks, session] = await Promise.all([
     closedSignals().catch(() => []), latestSignals(["public"], 6).catch(() => []),
     db.select().from(products).where(eq(products.active, true)).limit(6).catch(() => []),
     freeEbooks(locale),
+    freeEbooksByLanguage().catch(() => ({ ms: [], en: [] })),
     auth().catch(() => null),
   ]);
   const stats = computeStats(recent(closed, 90));
@@ -79,6 +81,11 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         <StatTile label={t("stats.avg_r")} value={stats.n ? `${stats.avgR.toFixed(2)}R` : "—"} />
         <StatTile label={t("stats.signals_month")} value={String(recent(closed, 30).length)} />
         <StatTile label={t("stats.since")} value={String(BRAND.since)} />
+      </section>
+
+      {/* Free ebooks */}
+      <section className="mx-auto max-w-6xl px-4 mt-24">
+        <EbookDeck decks={decks} signedIn={Boolean(session?.user)} />
       </section>
 
       {/* Live chart */}

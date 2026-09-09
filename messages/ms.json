@@ -299,5 +299,26 @@
     "suits_label": "Sesuai untuk",
     "suits_a": "Trader baru, atau yang belum ada broker.",
     "suits_b": "Trader yang sudah selesa dengan broker sendiri."
+  },
+  "ebooks": {
+    "title": "Risikan percuma",
+    "subtitle": "Empat ebook pendek, tanpa kos. Baca satu di sini, atau tuntut set penuh dengan akaun.",
+    "read": "Baca",
+    "download": "Muat turun",
+    "claim": "Tuntut percuma",
+    "prev": "Ebook sebelum",
+    "next": "Ebook seterusnya",
+    "lang_group": "Bahasa ebook",
+    "lang_ms": "Bahasa Melayu",
+    "lang_en": "English",
+    "page_of": "Halaman {n} daripada {total}",
+    "loading": "Membuka",
+    "close": "Tutup",
+    "error": "Ebook ini tidak dapat dibuka. Cuba di kedai.",
+    "gate_title": "Itu bahagian pratonton",
+    "gate_body": "Buka akaun untuk baca selebihnya dan muat turun setiap ebook percuma.",
+    "gate_cta": "Buka akaun",
+    "end_title": "Tamat buku",
+    "end_body": "Simpan satu salinan untuk meja anda."
   }
 }

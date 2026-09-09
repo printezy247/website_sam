@@ -22,11 +22,16 @@ export function resolveProductFile(fp: string): { kind: "url"; url: string } | {
   return { kind: "missing" };
 }
 
-/** Stream a local file as a download. */
-export function fileResponse(abs: string) {
+/** Stream a local file. Downloads by default; `inline` lets the browser render it (used by the ebook reader). */
+export function fileResponse(abs: string, opts: { inline?: boolean } = {}) {
   const name = basename(abs);
   const type = /\.pdf$/i.test(name) ? "application/pdf" : "application/octet-stream";
+  const disposition = opts.inline ? "inline" : "attachment";
   return new Response(Readable.toWeb(createReadStream(abs)) as ReadableStream, {
-    headers: { "content-type": type, "content-length": String(statSync(abs).size), "content-disposition": `attachment; filename="${name}"` },
+    headers: {
+      "content-type": type, "content-length": String(statSync(abs).size),
+      "content-disposition": `${disposition}; filename="${name}"`,
+      ...(opts.inline ? { "accept-ranges": "bytes" } : {}),
+    },
   });
 }

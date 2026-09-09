@@ -1,0 +1,18 @@
+<!doctype html><meta charset="utf-8">
+<style>html,body{margin:0;background:#0b0e14}canvas{display:block}</style>
+<canvas id="c"></canvas>
+<script type="module">
+  import * as pdfjs from "/pdfjs/pdf.mjs";
+  pdfjs.GlobalWorkerOptions.workerSrc = "/pdfjs/pdf.worker.mjs";
+  const q = new URLSearchParams(location.search);
+  const doc = await pdfjs.getDocument({ url: "/pdf/" + q.get("f") }).promise;
+  const page = await doc.getPage(1);
+  const width = Number(q.get("w") || 720);
+  const base = page.getViewport({ scale: 1 });
+  const viewport = page.getViewport({ scale: width / base.width });
+  const c = document.getElementById("c");
+  c.width = Math.round(viewport.width); c.height = Math.round(viewport.height);
+  await page.render({ canvasContext: c.getContext("2d"), viewport, background: "#ffffff" }).promise;
+  window.__size = { w: c.width, h: c.height };
+  window.__done = true;
+</script>

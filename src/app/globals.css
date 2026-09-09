@@ -105,3 +105,81 @@ body { background: var(--color-bg); color: var(--color-fg); }
 .claim-cover > span { position: absolute; inset: 0; border-radius: 2px 5px 5px 2px; background: linear-gradient(135deg, #f5d76e 0%, #d4af37 45%, #7a4003 100%); box-shadow: inset 0 0 0 1px rgba(255,255,255,.25), 4px 0 0 -1px #050609, 5px 0 0 0 #3a2a05, 8px 6px 14px rgba(0,0,0,.6); }
 .claim-cover > span::after { content: ""; position: absolute; left: 5px; right: 5px; top: 8px; height: 3px; background: rgba(5,6,9,.55); border-radius: 2px; box-shadow: 0 6px 0 rgba(5,6,9,.4), 0 12px 0 rgba(5,6,9,.25); }
 @media (prefers-reduced-motion: reduce) { .claim-sheen, .claim-mascot, .claim-book { animation: none } .claim-card { transition: none } }
+
+/* ---- Free ebook deck (landing page) ---- */
+/* overflow-x: clip keeps the rolled-back neighbours from widening the page while the
+   hover actions can still sit below the front cover. */
+.deck-stage { position: relative; height: 470px; perspective: 1400px; outline: none; overflow-x: clip; }
+.deck-stage:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 8px; border-radius: 1rem; }
+.deck-card {
+  position: absolute; top: 0; left: 50%; width: 300px; height: 390px; margin-left: -150px;
+  transform-style: preserve-3d; will-change: transform, opacity;
+  transition: transform .52s cubic-bezier(.22,.61,.36,1), opacity .52s ease, filter .52s ease;
+  transform: translateX(var(--x)) translateZ(var(--z)) rotateY(var(--ry)) scale(var(--s));
+  opacity: var(--o); filter: blur(var(--b));
+}
+.deck-card[data-front] { opacity: 1; filter: none; }
+.deck-cover {
+  display: block; position: relative; width: 100%; border-radius: 10px; overflow: hidden; cursor: pointer;
+  background: var(--color-surface-2); border: 1px solid color-mix(in oklab, var(--color-gold) 28%, transparent);
+  box-shadow: 0 1px 0 rgba(255,255,255,.12) inset, 18px 22px 44px rgba(0,0,0,.6), 0 0 0 1px rgba(0,0,0,.4);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+.deck-card[data-front] .deck-cover:hover, .deck-card[data-front] .deck-cover:focus-visible { transform: translateY(-6px); box-shadow: 0 1px 0 rgba(255,255,255,.16) inset, 22px 28px 56px rgba(0,0,0,.66), 0 0 34px color-mix(in oklab, var(--color-gold) 26%, transparent); }
+.deck-img { width: 100%; height: auto; display: block; }
+.deck-spine { position: absolute; inset: 0 auto 0 0; width: 10px; background: linear-gradient(180deg, var(--color-gold-2), var(--color-gold) 40%, var(--color-gold-deep)); box-shadow: 2px 0 8px rgba(0,0,0,.5); }
+.deck-actions {
+  position: absolute; left: 0; right: 0; bottom: -18px; transform: translateZ(60px);
+  display: flex; justify-content: center; gap: .5rem; opacity: 0; pointer-events: none;
+  transition: opacity .28s ease, bottom .28s ease;
+}
+.deck-card[data-front]:hover .deck-actions, .deck-card[data-front]:focus-within .deck-actions { opacity: 1; bottom: 6px; pointer-events: auto; }
+@media (max-width: 640px) {
+  .deck-stage { height: 380px; }
+  .deck-card { width: 216px; height: 280px; margin-left: -108px; }
+}
+.deck-dot { width: 8px; height: 8px; border-radius: 999px; background: var(--color-border); transition: background .2s ease, width .2s ease; }
+.deck-dot-on { width: 22px; background: var(--color-gold); }
+
+/* Holographic control */
+.holo-btn {
+  position: relative; display: inline-flex; align-items: center; justify-content: center;
+  min-width: 44px; height: 44px; padding: 0 .9rem; border-radius: 999px; isolation: isolate;
+  color: var(--color-fg); background: color-mix(in oklab, var(--color-surface) 70%, transparent);
+  backdrop-filter: blur(10px); cursor: pointer; font-size: 1.25rem; line-height: 1; white-space: nowrap;
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-chrome) 30%, transparent), 0 8px 24px rgba(0,0,0,.5);
+  transition: color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+.holo-wide { min-width: 0; height: auto; padding: .5rem 1rem; font-size: .875rem; }
+.holo-btn::before {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; z-index: -1;
+  background: conic-gradient(from var(--a, 0deg), var(--color-gold), var(--color-chrome), #7ee8ff, var(--color-gold-2), var(--color-gold));
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude; -webkit-mask-composite: xor;
+  opacity: .75; animation: holo-spin 6s linear infinite;
+}
+.holo-btn:hover, .holo-btn:focus-visible { transform: translateY(-2px); box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-gold) 45%, transparent), 0 10px 30px rgba(0,0,0,.55), 0 0 26px color-mix(in oklab, #7ee8ff 22%, transparent); }
+.holo-btn:hover::before, .holo-btn:focus-visible::before { opacity: 1; animation-duration: 2.2s; }
+@property --a { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+@keyframes holo-spin { to { --a: 360deg; } }
+
+/* Reader overlay */
+.reader-overlay { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 1rem; background: rgba(3,4,7,.82); backdrop-filter: blur(10px); animation: claim-in .25s ease-out; }
+.reader-frame {
+  width: min(920px, 100%); height: min(90vh, 100%); display: flex; flex-direction: column; overflow: hidden;
+  border-radius: 1.25rem; background: linear-gradient(160deg, rgba(255,255,255,.08), rgba(255,255,255,.02) 40%, rgba(5,6,9,.75));
+  box-shadow: 0 1px 0 rgba(255,255,255,.14) inset, 0 0 0 1px color-mix(in oklab, var(--color-gold) 34%, transparent), 0 0 60px rgba(212,175,55,.14), 0 40px 90px rgba(0,0,0,.7);
+  backdrop-filter: blur(18px) saturate(140%); outline: none;
+}
+.reader-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .9rem 1.1rem; border-bottom: 1px solid var(--color-border); }
+.reader-scroll { flex: 1; overflow-y: auto; scroll-snap-type: y proximity; padding: 1rem; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+.reader-page { flex: 0 0 auto; scroll-snap-align: center; width: 100%; max-width: 760px; border-radius: 8px; overflow: hidden; background: var(--color-graphite); box-shadow: 0 18px 40px rgba(0,0,0,.55); animation: reader-page-in .5s ease-out both; }
+.reader-canvas { display: block; width: 100%; height: auto; }
+.reader-gate { display: grid; place-items: center; min-height: 320px; background: color-mix(in oklab, var(--color-surface-2) 92%, transparent); border: 1px solid color-mix(in oklab, var(--color-gold) 30%, transparent); padding: 2rem; }
+@keyframes reader-page-in { from { opacity: 0; transform: perspective(1200px) rotateX(8deg) translateY(24px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-card { transition: opacity .2s ease; }
+  .holo-btn::before { animation: none; }
+  .reader-page, .reader-overlay { animation: none; }
+  .deck-actions { transition: none; }
+}

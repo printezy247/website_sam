@@ -299,5 +299,26 @@
     "suits_label": "Best for",
     "suits_a": "New traders, or anyone without a broker yet.",
     "suits_b": "Traders already happy with their broker."
+  },
+  "ebooks": {
+    "title": "Free intel",
+    "subtitle": "Four short ebooks, no cost. Read one here, or claim the set with an account.",
+    "read": "Read",
+    "download": "Download",
+    "claim": "Claim free",
+    "prev": "Previous ebook",
+    "next": "Next ebook",
+    "lang_group": "Ebook language",
+    "lang_ms": "Bahasa Melayu",
+    "lang_en": "English",
+    "page_of": "Page {n} of {total}",
+    "loading": "Opening",
+    "close": "Close",
+    "error": "This ebook could not be opened. Try the store.",
+    "gate_title": "That is the preview",
+    "gate_body": "Create an account to read the rest and download every Free ebook.",
+    "gate_cta": "Create account",
+    "end_title": "End of the book",
+    "end_body": "Keep a copy for the desk."
   }
 }
