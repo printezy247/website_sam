@@ -279,3 +279,29 @@ export async function adminTranslateArticle(fd: FormData) {
   revalidatePath("/", "layout");
   redirect(`/admin/articles/edit?id=${id}&r=${encodeURIComponent(msg)}`);
 }
+
+// ---- P7: copier ----
+import { copierLinks } from "@/db/schema";
+
+/** A member changes how the robot trades on one of their terminals. */
+export async function saveCopierSettings(fd: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("unauthenticated");
+  const id = str(fd, "id");
+  const [link] = await db.select().from(copierLinks).where(eq(copierLinks.id, id));
+  if (!link || link.userId !== session.user.id) throw new Error("forbidden");
+  const clamp = (v: string, lo: number, hi: number, fallback: number) => {
+    const n = Number(v);
+    return Number.isFinite(n) ? Math.min(Math.max(n, lo), hi) : fallback;
+  };
+  await db.update(copierLinks).set({
+    riskMode: str(fd, "riskMode") === "fixed" ? "fixed" : "percent",
+    riskPercent: String(clamp(str(fd, "riskPercent"), 0.05, 10, 1)),
+    lotFixed: String(clamp(str(fd, "lotFixed"), 0.01, 100, 0.01)),
+    maxLot: String(clamp(str(fd, "maxLot"), 0.01, 100, 1)),
+    expiryMinutes: Math.round(clamp(str(fd, "expiryMinutes"), 15, 1440, 240)),
+    symbolSuffix: str(fd, "symbolSuffix").slice(0, 12),
+    enabled: fd.get("enabled") === "on",
+  }).where(eq(copierLinks.id, id));
+  revalidatePath("/account");
+}
