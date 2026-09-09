@@ -31,7 +31,7 @@ export function resolveModel(pin: string, found: string[]) {
   const hits = found.filter((id) => { const n = norm(id); return words.every((w) => n.includes(w)); });
   return hits[0] ?? pin;
 }
-export const PROVIDER_ORDER: Provider[] = ["gemini", "ollama", "openrouter", "nvidia", "moonshot", "groq", "custom", "anthropic"];
+export const PROVIDER_ORDER: Provider[] = ["ollama", "gemini", "openrouter", "nvidia", "moonshot", "groq", "custom", "anthropic"];
 
 function hasKey(p: Provider) {
   if (p === "anthropic") return Boolean(process.env.ANTHROPIC_API_KEY);
