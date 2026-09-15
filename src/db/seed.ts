@@ -33,6 +33,7 @@ async function main() {
       priceCents: 4900,
       billing: "lifetime",
       tierIncluded: "elite",
+      filePath: "indicators/SamGoldLevels.mq5",
     },
     // Ebook catalog. PDFs are bundled under assets/ebooks (copied from designresources Sam/Ebooks); UPLOAD_DIR overrides.
     { slug: "sniper-checklist", type: "ebook", name: "Sniper Checklist", description: "One-page pre-trade checklist for XAUUSD entries.", priceCents: 0, billing: "one_time", tierIncluded: null, ebookTier: "free", language: "en", filePath: "ebooks/English/Free/SniperChecklist_v1.pdf", pairSlug: "checklist-sniper" },
@@ -116,6 +117,9 @@ async function main() {
     await db.update(products).set({ filePath: p.filePath, ebookTier: p.ebookTier, language: p.language, tierIncluded: p.tierIncluded, pairSlug: p.pairSlug }).where(eq(products.slug, p.slug));
   }
   await db.update(products).set({ active: false }).where(eq(products.slug, "ebook-gold-starter")); // replaced by the catalog
+  // Tools ship one at a time. The SMC suite stays out of the store until it exists and is approved.
+  await db.update(products).set({ active: false }).where(eq(products.slug, "sam-smc-suite-tv"));
+  await db.update(products).set({ filePath: "indicators/SamGoldLevels.mq5" }).where(eq(products.slug, "sam-gold-levels-mt5"));
   const [{ n }] = await db.select({ n: count() }).from(signals);
   if (n === 0) await db.insert(signals).values(sampleSignals());
   else console.log(`signals already seeded (${n}), skipping`);

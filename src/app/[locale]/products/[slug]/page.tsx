@@ -37,6 +37,8 @@ export default async function Product({ params }: { params: Promise<{ locale: st
         <Link href={`/account?product=${p.slug}`} className="rounded-md bg-gold text-black font-semibold px-5 py-2.5">{t("buy")}</Link>
       </div>
       <div className="mt-10 space-y-4 text-muted leading-relaxed">
+        {p.slug.startsWith("sam-gold-levels") && <p className="glass lux rounded-xl p-4 text-sm"><Link href="/levels" className="text-gold underline">{t("levels_guide")}</Link></p>}
+        {p.slug === "telegram-mt5-copier" && <p className="glass lux rounded-xl p-4 text-sm"><Link href="/copier" className="text-gold underline">{t("copier_guide")}</Link></p>}
         {p.tierIncluded && <p className="glass rounded-xl p-4 text-sm">{t("sticky_included", { tier: tt(p.tierIncluded as "free") })} <Link href="/pricing" className="text-gold underline">{tt("choose", { tier: tt(p.tierIncluded as "free") })}</Link></p>}
       </div>
       <StickyBuyBar name={p.name} price={p.priceCents ? `$${p.priceCents / 100}` : "$0"} note={p.tierIncluded ? t("sticky_included", { tier: tt(p.tierIncluded as "free") }) : undefined} href={`/account?product=${p.slug}`} label={t("buy")} />

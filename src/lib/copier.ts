@@ -14,11 +14,11 @@ export async function copierProduct() {
 }
 
 /**
- * The member's copier licence, created on first ask when their rank includes the copier
+ * The member's licence for an MT5 product, created on first ask when their rank includes it
  * or they have paid for it. The licence id is the key they paste into MT5.
  */
-export async function ensureCopierLicense(userId: string) {
-  const p = await copierProduct();
+export async function ensureLicense(userId: string, slug: string) {
+  const [p] = await db.select().from(products).where(eq(products.slug, slug)).catch(() => []);
   if (!p) return null;
   const [existing] = await db.select().from(licenses).where(and(eq(licenses.userId, userId), eq(licenses.productId, p.id)));
   if (existing) return existing;
@@ -27,6 +27,8 @@ export async function ensureCopierLicense(userId: string) {
   const [made] = await db.insert(licenses).values({ userId, productId: p.id, maxActivations: 2 }).returning();
   return made ?? null;
 }
+
+export const ensureCopierLicense = (userId: string) => ensureLicense(userId, COPIER_SLUG);
 
 /** The member's terminal links, newest first. */
 export async function copierLinksOf(userId: string) {

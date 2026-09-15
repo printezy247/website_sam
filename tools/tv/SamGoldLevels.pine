@@ -1,0 +1,191 @@
+// © SAMBANGGOLD. Invite-only script. Distribution is by TradingView access grant only.
+//@version=6
+indicator("Sam Gold Levels", "SBG Levels", overlay = true, max_lines_count = 60, max_boxes_count = 120, max_labels_count = 60)
+
+// ---------------------------------------------------------------------------
+// Sam Gold Levels
+// Daily bias, the levels that matter for the day and the three session boxes,
+// on one chart. Built for XAUUSD on M5 to H1. Works on any symbol.
+//
+// Bias rule (simple on purpose, so it is the same rule every day):
+//   BUY  when price trades above the previous day midpoint AND above today's open.
+//   SELL when price trades below the previous day midpoint AND below today's open.
+//   WAIT otherwise. Wait is a position too.
+// ---------------------------------------------------------------------------
+
+// ---- Inputs ----------------------------------------------------------------
+gLv  = "Levels"
+showPD   = input.bool(true,  "Previous day high, low, midpoint", group = gLv)
+showOpen = input.bool(true,  "Today's open",                     group = gLv)
+showPW   = input.bool(true,  "Previous week high and low",       group = gLv)
+showAsia = input.bool(true,  "Asia range high and low",          group = gLv)
+extendR  = input.bool(true,  "Extend levels to the right",       group = gLv)
+showLbl  = input.bool(true,  "Level labels",                     group = gLv)
+
+gSe  = "Sessions"
+tz      = input.string("Asia/Kuala_Lumpur", "Time zone", options = ["Asia/Kuala_Lumpur", "Asia/Jakarta", "Europe/London", "America/New_York", "UTC"], group = gSe)
+asiaS   = input.session("0700-1500", "Asia",     group = gSe)
+lonS    = input.session("1500-2300", "London",   group = gSe)
+nyS     = input.session("2030-0400", "New York", group = gSe)
+showBox = input.bool(true, "Session boxes", group = gSe)
+boxDays = input.int(5, "Days of boxes to keep", minval = 1, maxval = 20, group = gSe)
+
+gBi  = "Bias"
+showBias = input.bool(true, "Bias panel", group = gBi)
+biasPos  = input.string("Top right", "Panel position", options = ["Top right", "Top left", "Bottom right", "Bottom left"], group = gBi)
+
+gCo  = "Colours"
+cGold   = input.color(color.new(#d4af37, 0),  "Gold",    group = gCo)
+cChrome = input.color(color.new(#b7c0ce, 0),  "Chrome",  group = gCo)
+cAsia   = input.color(color.new(#b7c0ce, 88), "Asia",    group = gCo)
+cLon    = input.color(color.new(#d4af37, 86), "London",  group = gCo)
+cNy     = input.color(color.new(#7a4003, 82), "New York", group = gCo)
+cBuy    = input.color(#1f9d55, "Buy",  group = gCo)
+cSell   = input.color(#d64545, "Sell", group = gCo)
+
+// ---- Higher timeframe data -------------------------------------------------
+[pdH, pdL, dOpen] = request.security(syminfo.tickerid, "D", [high[1], low[1], open], lookahead = barmerge.lookahead_on)
+[pwH, pwL]        = request.security(syminfo.tickerid, "W", [high[1], low[1]],       lookahead = barmerge.lookahead_on)
+pdMid = (pdH + pdL) / 2
+
+newDay = ta.change(time("D")) != 0
+
+// ---- Asia range (built bar by bar from the session input) ------------------
+inAsia = not na(time(timeframe.period, asiaS, tz))
+var float asiaH = na
+var float asiaL = na
+var float asiaHDone = na
+var float asiaLDone = na
+if inAsia and not inAsia[1]
+    asiaH := high
+    asiaL := low
+else if inAsia
+    asiaH := math.max(asiaH, high)
+    asiaL := math.min(asiaL, low)
+if not inAsia and inAsia[1]
+    asiaHDone := asiaH
+    asiaLDone := asiaL
+
+// ---- Level lines (one set, moved every bar so the chart stays clean) -------
+var line lPdH  = na
+var line lPdL  = na
+var line lPdM  = na
+var line lOpen = na
+var line lPwH  = na
+var line lPwL  = na
+var line lAsH  = na
+var line lAsL  = na
+var label bPdH  = na
+var label bPdL  = na
+var label bPdM  = na
+var label bOpen = na
+var label bPwH  = na
+var label bPwL  = na
+var label bAsH  = na
+var label bAsL  = na
+
+// Start of the current day on this chart, so lines begin where the day begins.
+var int dayStart = na
+if newDay
+    dayStart := bar_index
+
+drawLevel(line ln, label lb, bool on, float price, string name, color col, string style, int width) =>
+    line  l = ln
+    label b = lb
+    if on and not na(price)
+        if na(l)
+            l := line.new(bar_index, price, bar_index + 1, price, color = col, style = style, width = width, extend = extendR ? extend.right : extend.none)
+            b := label.new(bar_index, price, name, style = label.style_label_left, color = color.new(col, 100), textcolor = col, size = size.small)
+        line.set_xy1(l, nz(dayStart, bar_index), price)
+        line.set_xy2(l, bar_index + 1, price)
+        line.set_color(l, col)
+        if showLbl
+            label.set_xy(b, bar_index + 2, price)
+            label.set_text(b, name + "  " + str.tostring(price, format.mintick))
+            label.set_textcolor(b, col)
+        else
+            label.set_text(b, "")
+    else
+        if not na(l)
+            line.delete(l)
+            l := na
+        if not na(b)
+            label.delete(b)
+            b := na
+    [l, b]
+
+if barstate.islast
+    [a1, a2] = drawLevel(lPdH,  bPdH,  showPD,   pdH,   "PDH",  cChrome, line.style_solid,  1)
+    lPdH := a1,  bPdH := a2
+    [c1, c2] = drawLevel(lPdL,  bPdL,  showPD,   pdL,   "PDL",  cChrome, line.style_solid,  1)
+    lPdL := c1,  bPdL := c2
+    [d1, d2] = drawLevel(lPdM,  bPdM,  showPD,   pdMid, "PD mid", cChrome, line.style_dotted, 1)
+    lPdM := d1,  bPdM := d2
+    [e1, e2] = drawLevel(lOpen, bOpen, showOpen, dOpen, "Open", cGold,   line.style_dashed, 1)
+    lOpen := e1, bOpen := e2
+    [f1, f2] = drawLevel(lPwH,  bPwH,  showPW,   pwH,   "PWH",  cGold,   line.style_solid,  2)
+    lPwH := f1,  bPwH := f2
+    [g1, g2] = drawLevel(lPwL,  bPwL,  showPW,   pwL,   "PWL",  cGold,   line.style_solid,  2)
+    lPwL := g1,  bPwL := g2
+    float ah = inAsia ? asiaH : asiaHDone
+    float al = inAsia ? asiaL : asiaLDone
+    [h1, h2] = drawLevel(lAsH,  bAsH,  showAsia, ah,    "Asia H", cChrome, line.style_dotted, 1)
+    lAsH := h1,  bAsH := h2
+    [i1, i2] = drawLevel(lAsL,  bAsL,  showAsia, al,    "Asia L", cChrome, line.style_dotted, 1)
+    lAsL := i1,  bAsL := i2
+
+// ---- Session boxes ---------------------------------------------------------
+var box[] boxes = array.new_box()
+
+sessionBox(string sess, color col, string name) =>
+    inS = not na(time(timeframe.period, sess, tz))
+    var box b = na
+    var float h = na
+    var float l = na
+    if inS and not inS[1]
+        h := high
+        l := low
+        if showBox
+            b := box.new(bar_index, h, bar_index, l, border_color = color.new(col, 60), bgcolor = col, text = name, text_color = color.new(cChrome, 40), text_size = size.tiny, text_halign = text.align_left, text_valign = text.align_top)
+            array.push(boxes, b)
+            // Keep only the last N days of boxes, three sessions a day.
+            while array.size(boxes) > boxDays * 3
+                box.delete(array.shift(boxes))
+    else if inS and not na(b)
+        h := math.max(h, high)
+        l := math.min(l, low)
+        box.set_right(b, bar_index)
+        box.set_top(b, h)
+        box.set_bottom(b, l)
+    inS
+
+sessionBox(asiaS, cAsia, "Asia")
+sessionBox(lonS,  cLon,  "London")
+sessionBox(nyS,   cNy,   "New York")
+
+// ---- Bias ------------------------------------------------------------------
+bull = close > pdMid and close > dOpen
+bear = close < pdMid and close < dOpen
+bias = bull ? "BUY" : bear ? "SELL" : "WAIT"
+biasCol = bull ? cBuy : bear ? cSell : cChrome
+
+pos = biasPos == "Top right" ? position.top_right : biasPos == "Top left" ? position.top_left : biasPos == "Bottom right" ? position.bottom_right : position.bottom_left
+var table panel = table.new(pos, 2, 5, bgcolor = color.new(#050609, 15), border_color = color.new(cGold, 70), border_width = 1)
+if showBias and barstate.islast
+    table.cell(panel, 0, 0, "SAMBANGGOLD", text_color = cGold, text_size = size.small, text_halign = text.align_left)
+    table.cell(panel, 1, 0, syminfo.ticker, text_color = cChrome, text_size = size.small, text_halign = text.align_right)
+    table.cell(panel, 0, 1, "Bias", text_color = cChrome, text_size = size.small, text_halign = text.align_left)
+    table.cell(panel, 1, 1, bias, text_color = biasCol, text_size = size.normal, text_halign = text.align_right)
+    table.cell(panel, 0, 2, "PD range", text_color = cChrome, text_size = size.small, text_halign = text.align_left)
+    table.cell(panel, 1, 2, str.tostring(pdH - pdL, format.mintick), text_color = cChrome, text_size = size.small, text_halign = text.align_right)
+    table.cell(panel, 0, 3, "From open", text_color = cChrome, text_size = size.small, text_halign = text.align_left)
+    table.cell(panel, 1, 3, str.tostring(close - dOpen, format.mintick), text_color = close >= dOpen ? cBuy : cSell, text_size = size.small, text_halign = text.align_right)
+    table.cell(panel, 0, 4, "Session", text_color = cChrome, text_size = size.small, text_halign = text.align_left)
+    sessNow = not na(time(timeframe.period, nyS, tz)) ? "New York" : not na(time(timeframe.period, lonS, tz)) ? "London" : inAsia ? "Asia" : "Closed"
+    table.cell(panel, 1, 4, sessNow, text_color = cChrome, text_size = size.small, text_halign = text.align_right)
+
+// ---- Alerts ----------------------------------------------------------------
+alertcondition(ta.crossover(close, pdH),  "Break above PDH", "{{ticker}} above previous day high {{close}}")
+alertcondition(ta.crossunder(close, pdL), "Break below PDL", "{{ticker}} below previous day low {{close}}")
+alertcondition(bull and not bull[1], "Bias turns BUY",  "{{ticker}} bias BUY at {{close}}")
+alertcondition(bear and not bear[1], "Bias turns SELL", "{{ticker}} bias SELL at {{close}}")

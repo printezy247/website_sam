@@ -8,7 +8,7 @@ import { attachReferrer } from "@/lib/referral";
 import { attachCampaign } from "@/lib/analytics";
 import { captureLead } from "@/lib/leads";
 import { CopierPanel } from "@/components/CopierPanel";
-import { copierLinksOf, ensureCopierLicense, isLive } from "@/lib/copier";
+import { copierLinksOf, ensureCopierLicense, ensureLicense, isLive } from "@/lib/copier";
 import { copierTrades } from "@/db/schema";
 import { inArray } from "drizzle-orm";
 import { accessibleProducts } from "@/lib/access";
@@ -41,18 +41,20 @@ export default async function Account({ params, searchParams }: { params: Promis
   await attachCampaign(uid, jar.get("camp")?.value).catch(() => {});
   // Free ebook claim after sign-up: start the ebook drip for this email once.
   if (sp.claim === "free" && session.user.email) await captureLead({ email: session.user.email, name: session.user.name ?? undefined, locale, source: "site_signup" }).catch(() => {});
-  const [[u], tier, ents, ibs, tvs, lics, [refs], dl] = await Promise.all([
+  const [[u], tier, ents, ibs, tvs, [refs], dl] = await Promise.all([
     db.select().from(users).where(eq(users.id, uid)),
     effectiveTier(uid), activeEntitlements(uid),
     db.select().from(ibAccounts).where(eq(ibAccounts.userId, uid)).orderBy(desc(ibAccounts.createdAt)),
     db.select().from(tvAccessRequests).where(eq(tvAccessRequests.userId, uid)),
-    db.select({ l: licenses, p: products }).from(licenses).innerJoin(products, eq(products.id, licenses.productId)).where(eq(licenses.userId, uid)),
     db.select({ n: count() }).from(users).where(eq(users.referredBy, uid)),
     accessibleProducts(uid),
   ]);
   const wantTier = TIERS.find((t) => t.key === sp.checkout);
   // Copier: the licence appears the moment the member's rank includes it.
   const copierLicense = await ensureCopierLicense(uid).catch(() => null);
+  // MT5 indicators included in the member's rank get their licence the same way.
+  for (const p of dl.filter((x) => x.type === "mt5_indicator")) await ensureLicense(uid, p.slug).catch(() => null);
+  const mt5 = (await db.select({ l: licenses, p: products }).from(licenses).innerJoin(products, eq(products.id, licenses.productId)).where(eq(licenses.userId, uid)).catch(() => [])).filter(({ p }) => p.type === "mt5_indicator");
   const copier = (copierLicense ? await copierLinksOf(uid) : []).map((l) => ({ ...l, live: isLive(l.lastSeenAt) }));
   const copierLog = copier.length
     ? await db.select().from(copierTrades).where(inArray(copierTrades.linkId, copier.map((l) => l.id))).orderBy(desc(copierTrades.createdAt)).limit(8).catch(() => [])
@@ -146,11 +148,24 @@ export default async function Account({ params, searchParams }: { params: Promis
       {copierLicense && (
         <CopierPanel licenseKey={copierLicense.id} links={copier} trades={copierLog} guideHref={`/${locale}/copier`} robotHref={"/api/copier/robot"} />
       )}
-      {lics.length > 0 && (
-        <section className="glass rounded-2xl p-6">
-          <h2 className="font-semibold">{ms ? "Lesen MT5" : "MT5 licences"}</h2>
-          <p className="text-xs text-muted mt-1">{ms ? "Masukkan kunci lesen dalam input indicator. Terikat pada akaun MT5 pertama yang digunakan." : "Paste the licence key into the indicator inputs. It binds to the first MT5 accounts used."}</p>
-          <ul className="mt-3 text-sm space-y-1">{lics.map(({ l, p }) => <li key={l.id}>{p.name} · <code className="font-mono text-gold">{l.id}</code> · {l.mt5Account ?? (ms ? "belum diaktifkan" : "not activated")} · {l.activations}/{l.maxActivations}</li>)}</ul>
+      {mt5.length > 0 && (
+        <section className="glass lux rounded-2xl p-6">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="font-semibold">{ms ? "Indicator MT5" : "MT5 indicators"}</h2>
+              <p className="text-xs text-muted mt-1">{ms ? "Masukkan kunci lesen dalam input indicator. Terikat pada dua akaun MT5 pertama yang digunakan." : "Paste the licence key into the indicator inputs. It binds to the first two MT5 accounts used."}</p>
+            </div>
+            <Link href="/levels" className="text-sm text-gold underline">{ms ? "Panduan pemasangan" : "Setup guide"}</Link>
+          </div>
+          <ul className="mt-4 text-sm space-y-3">{mt5.map(({ l, p }) => (
+            <li key={l.id} className="grid gap-1 md:grid-cols-[1fr_auto] md:items-center">
+              <div>
+                <p className="font-semibold">{p.name}</p>
+                <p className="text-xs text-muted">{ms ? "Kunci" : "Key"} <code className="font-mono text-gold select-all">{l.id}</code> · {l.mt5Account ? `MT5 ${l.mt5Account}` : (ms ? "belum diaktifkan" : "not activated")} · {l.activations}/{l.maxActivations}</p>
+              </div>
+              {p.filePath && <a href={`/api/downloads/${p.id}`} className="btn-gold rounded-md px-4 py-2 text-sm text-center">{ms ? "Muat turun indicator" : "Download indicator"}</a>}
+            </li>
+          ))}</ul>
         </section>
       )}
 
