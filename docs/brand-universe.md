@@ -30,6 +30,12 @@ Each signal becomes a pending order at our published entry, cancelled after the 
 
 Members manage it on the account page (`src/components/CopierPanel.tsx`): key, download, a green light per terminal, risk settings and the last trades. The bot answers `/copier` with the same state. Setup guide lives at `/copier` in both languages. Sam compiles the robot once in MetaEditor and drops the `.ex5` into `assets/copier/`; until then the download hands over the source.
 
+## Sam Gold Levels
+
+The first indicator, shipped alone; the SMC suite row stays inactive until it exists and is approved. One rule every day: BUY above the previous day midpoint and today's open, SELL below both, WAIT otherwise. It draws previous day high, low and midpoint, today's open, previous week high and low, the Asia range, and five days of Asia, London and New York boxes on Malaysia hours, with a corner panel and alerts.
+
+Two builds of the same thing. TradingView: `tools/tv/SamGoldLevels.pine`, published invite-only by Sam, granted per username from the admin TV queue (A-Team includes it). MT5: `tools/mt5/SamGoldLevels.mq5`, bundled at `assets/indicators/` and downloaded from the account page, which creates the licence when the rank includes it (Rambo) or the store order is paid; the indicator posts the key to `/api/license/check` on load and daily after. Guide at `/levels` in both languages. Sam compiles once in MetaEditor and drops the `.ex5` next to the source.
+
 ## Source assets
 
 Design files live in `printezy247/designresources`, folder `Sam/` (channel code `SAM`, naming `SAM_{Project}_{Description}_v{N}.{ext}`). Current: `BrandAssets/3DModels/SamBangGoldMascot_v1.obj` + `.mtl` (mesh with named parts: anvil, gold_bar, legs, torso, belt, hammer), `BrandAssets/Fonts/Anton_v1.woff2`. This repo keeps its own copies under `public/brand/` (including `mascot-raise.png` and `mascot-strike.png`, rendered from the mesh with three.js) and `src/app/fonts/`.

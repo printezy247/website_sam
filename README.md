@@ -406,6 +406,7 @@ timeline
 
 - [x] **P0 – P6** shipped, live on Railway
 - [x] **P7a** Telegram→MT5 copier: MQL5 robot, `/api/copier/*`, account panel, `/copier` guide, bot `/copier`
+- [x] **P7a2** Sam Gold Levels: Pine script (invite-only) + MT5 indicator on the licence API, `/levels` guide; SMC suite parked
 - [ ] **P7b** mentorship tier · prop-firm plans · PWA · Myfxbook verification
 
 <br/>
