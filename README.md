@@ -2,13 +2,13 @@
 
 <div align="center">
 
-<a href="https://websitesam-production.up.railway.app"><img src="docs/assets/hero.svg" width="100%" alt="SAMBANGGOLD — live XAUUSD signals" /></a>
+<a href="https://sambang.gold"><img src="docs/assets/hero.svg" width="100%" alt="SAMBANGGOLD — live XAUUSD signals" /></a>
 
 <br/>
 
-<a href="https://websitesam-production.up.railway.app"><img src="docs/assets/visit.svg" width="420" alt="Open the live site" /></a>
+<a href="https://sambang.gold"><img src="docs/assets/visit.svg" width="420" alt="Open the live site" /></a>
 
-**🔗 https://websitesam-production.up.railway.app** · 🤖 Telegram bot: [@samproducts_bot](https://t.me/samproducts_bot)
+**🔗 https://sambang.gold** · 🤖 Telegram bot: [@samproducts_bot](https://t.me/samproducts_bot)
 
 <img src="https://readme-typing-svg.demolab.com/?font=JetBrains+Mono&size=20&duration=2800&pause=800&color=D4AF37&center=true&vCenter=true&width=720&lines=Gold+signals+with+transparency.;Two+ways+in%3A+HFM+account+or+monthly+plan.;Live+chart+%C2%B7+auto+TP%2FSL+tally+%C2%B7+weekly+recap.;Bahasa+Melayu+first%2C+English+second.;Education+only.+Not+financial+advice." alt="typing banner" />
 
@@ -70,8 +70,8 @@
 | 📡 Feeds | Yahoo Finance · Forex Factory |
 | 🧠 LLM | Gemini · Groq · OpenRouter · Claude |
 | 🔐 Auth | Magic link · Google · Telegram |
-| ☁️ Host | Railway `web` + `jobs` cron |
-| 🔗 Live | [websitesam-production.up.railway.app](https://websitesam-production.up.railway.app) |
+| ☁️ Host | Vercel Hobby + Neon Postgres, cron-job.org for schedules (Railway still works) |
+| 🔗 Live | [sambang.gold](https://sambang.gold) |
 
 </td>
 </tr>
@@ -126,7 +126,7 @@ flowchart LR
 flowchart TB
     subgraph Railway
         W[🖥️ web · Next.js 16<br/>pages · API routes · bot webhook]
-        J[⏱️ jobs · daily cron<br/>article · recap · drip · expiry]
+        J[⏱️ /api/cron/jobs · daily<br/>article · recap · drip · expiry]
         P[(🗄️ Postgres)]
     end
     subgraph External
@@ -297,23 +297,39 @@ sequenceDiagram
 | Content | Gemini (default, auto model discovery) · Groq · OpenRouter · Anthropic |
 | Email | Resend (magic links, lead drip) |
 | Security | CSP, HSTS, frame / referrer / permissions headers · hash-verified Telegram login |
-| Hosting | Railway `web` + `jobs` cron · cron-job.org → `/api/cron/evaluate` |
+| Hosting | Vercel + Neon · cron-job.org → `/api/cron/evaluate` (5 min) and `/api/cron/jobs` (daily) |
 | Languages | 🇲🇾 Bahasa Melayu (default) · 🇬🇧 English |
 
 <p align="right"><a href="#top">⬆ back to top</a></p>
 
-## 🚀 Deploy on Railway
+## 🚀 Deploy on Vercel
+
+Free to run: Vercel Hobby for the site, Neon free tier for Postgres, cron-job.org for schedules. The only bill is the domain. Files are bundled in the repo (`assets/`), so no volume is needed.
 
 <details open>
-<summary><b>1 · Project & database</b></summary>
+<summary><b>1 · Database, project, domain</b></summary>
 
 <br/>
 
-1. **New Project → Deploy from GitHub** → this repo, branch `main`.
-2. `+ New → Database → PostgreSQL`.
-3. Web service → **Variables** → `DATABASE_URL = ${{Postgres.DATABASE_URL}}` plus everything in [`.env.example`](.env.example). Generate a domain; set `AUTH_URL` and `NEXT_PUBLIC_SITE_URL` to it.
-4. `npm start` runs migrations and the idempotent seed on every boot. `SEED_ADMIN_EMAIL` makes that user admin → `/admin`.
+1. **Neon** → New project (region Singapore) → copy the **pooled** connection string (ends in `-pooler…neon.tech/…?sslmode=require`).
+2. **Vercel** → Add New → Project → import this repo. Framework Next.js. `vercel.json` sets the build command to `npm run build:vercel`, which runs migrations and the idempotent seed before `next build`, and pins functions to Singapore.
+3. Environment variables: `DATABASE_URL` (the Neon string) plus everything in [`.env.example`](.env.example). Set `AUTH_URL` and `NEXT_PUBLIC_SITE_URL` to `https://sambang.gold`. `SEED_ADMIN_EMAIL` makes that user admin → `/admin`.
+4. Deploy. Then Settings → Domains → add `sambang.gold` and `www.sambang.gold` (the domain is already in this Vercel account, so DNS is filled in for you).
 5. Ebook covers: `npm run covers` renders page one of every bundled PDF to `public/ebooks/<slug>.png` (headless Chromium + pdf.js). Run it after adding an ebook and commit the PNGs; the landing page deck and the reader use them.
+
+Moving from Railway: `pg_dump "$RAILWAY_DATABASE_URL" --no-owner --no-acl -Fc > sam.dump` then `pg_restore -d "$NEON_DATABASE_URL" --no-owner --no-acl sam.dump` before the first Vercel deploy, so members, orders and signals come across. Anything on the Railway volume (`UPLOAD_DIR`) must be committed under `assets/` instead.
+
+</details>
+
+<details>
+<summary><b>Alternative · Railway</b></summary>
+
+<br/>
+
+1. **New Project → Deploy from GitHub** → this repo, branch `main`. `+ New → Database → PostgreSQL`.
+2. Web service → **Variables** → `DATABASE_URL = ${{Postgres.DATABASE_URL}}` plus `.env.example`. `npm start` runs migrations and the seed on every boot.
+3. Optional second service from the same repo for the daily jobs: start `npm run jobs`, cron `0 3 * * *`, same variables. On Vercel that work runs through `/api/cron/jobs` instead.
+4. A volume mounted at `UPLOAD_DIR` overrides bundled files with the same relative path.
 
 </details>
 
@@ -354,7 +370,7 @@ curl "https://api.telegram.org/bot$TOKEN/setWebhook" \
 |---|---|
 | ⏱️ Signal tally + auto setups + daily article safety net | Set `CRON_SECRET`; on [cron-job.org](https://cron-job.org) call `https://<domain>/api/cron/evaluate?key=<CRON_SECRET>` every 5 minutes. The same call generates the daily article when the jobs service missed it (needs the LLM key on the web service too) |
 | ✍️ Article on demand | `https://<domain>/api/cron/article?key=<CRON_SECRET>` generates one now (add `&wait=1` to wait for the result). On the jobs service, set `ARTICLE_FORCE=1` to bypass the 20h guard for one run, then remove it |
-| 🗓️ Daily article · Monday recap · drip · expiry | Second Railway service from the same repo: start `npm run jobs`, cron `0 3 * * *`, **same variables** (paste the literal `DATABASE_URL` if the reference shows empty; the log prints the env names it sees) |
+| 🗓️ Daily article · Monday recap · drip · expiry | On cron-job.org call `https://<domain>/api/cron/jobs?key=<CRON_SECRET>` once a day at 03:00 UTC (timeout 300 s). Each job checks its own guard, so a second call the same day does nothing. On Railway the same work can run as a cron service: `npm run jobs` |
 | 🧠 LLM | Add any of `GEMINI_API_KEY`, `GROQ_API_KEY`, `NVIDIA_API_KEY`, `OPENROUTER_API_KEY`, `OLLAMA_API_KEY`, `LLM_BASE_URL`+`LLM_API_KEY`, `ANTHROPIC_API_KEY`. All keys are used in this order: ollama, gemini, openrouter, nvidia, groq, custom, anthropic. `LLM_PROVIDER` moves one to the front; the rest are failover. Models are discovered per key; `/admin/articles` lists them and shows which one each provider will use. Pin per provider with `LLM_MODEL_NVIDIA`, `LLM_MODEL_OLLAMA`, `LLM_MODEL_OPENROUTER`, `LLM_MODEL_GEMINI` (exact id, or words such as `nemotron 3.5 lightning` matched against the live list). Test any provider and model with the **Test** button on `/admin/articles` (one tiny prompt, shows the answer time); `/api/cron/article?key=…&provider=nvidia&models=1` lists what a key can see |
 | ✉️ Leads | `RESEND_API_KEY` + `AUTH_EMAIL_FROM` on a verified domain → welcome + day-2 + day-5 emails |
 | 🔐 Google sign-in | OAuth client (Web) → redirect URI `https://<domain>/api/auth/callback/google` → `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` |
@@ -406,6 +422,7 @@ timeline
 
 - [x] **P0 – P6** shipped, live on Railway
 - [x] **P7a** Telegram→MT5 copier: MQL5 robot, `/api/copier/*`, account panel, `/copier` guide, bot `/copier`
+- [x] **P7a3** Move to Vercel + Neon: `build:vercel`, `/api/cron/jobs`, file tracing, `sambang.gold`
 - [x] **P7a2** Sam Gold Levels: Pine script (invite-only) + MT5 indicator on the licence API, `/levels` guide; SMC suite parked
 - [ ] **P7b** mentorship tier · prop-firm plans · PWA · Myfxbook verification
 
@@ -415,7 +432,7 @@ timeline
 
 <img src="https://capsule-render.vercel.app/api?type=waving&height=120&section=footer&color=0:d4af37,50:1a1607,100:050505" width="100%" alt="" />
 
-<a href="https://websitesam-production.up.railway.app"><b>🌐 websitesam-production.up.railway.app</b></a> · <a href="https://t.me/samproducts_bot">🤖 @samproducts_bot</a>
+<a href="https://sambang.gold"><b>🌐 sambang.gold</b></a> · <a href="https://t.me/samproducts_bot">🤖 @samproducts_bot</a>
 
 <sub>Made with ☕ and gold candles · Bahasa Melayu 🇲🇾 first · <b>Not financial advice.</b></sub>
 

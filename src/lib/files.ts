@@ -6,7 +6,7 @@ import { Readable } from "node:stream";
  * Resolve a product file path to something we can serve.
  * - "https://…" → redirect target
  * - "tg:<file_id>" → Telegram document (served by the bot)
- * - anything else → first match of UPLOAD_DIR/<path> (Railway volume) or <repo>/assets/<path> (bundled ebooks).
+ * - anything else → first match of UPLOAD_DIR/<path> (a host volume, absent on Vercel) or <repo>/assets/<path> (bundled files).
  *   Relative paths with subfolders are allowed; ".." is rejected.
  */
 export function resolveProductFile(fp: string): { kind: "url"; url: string } | { kind: "telegram"; fileId: string } | { kind: "file"; abs: string } | { kind: "missing" } {
