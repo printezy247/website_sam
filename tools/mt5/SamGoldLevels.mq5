@@ -5,7 +5,7 @@
 //|  on one chart. Licensed to your MT5 account through the site.    |
 //+------------------------------------------------------------------+
 #property copyright "SAMBANGGOLD"
-#property link      "https://sambanggold.com"
+#property link      "https://sambang.gold"
 #property version   "1.00"
 #property indicator_chart_window
 #property indicator_plots 0
@@ -15,7 +15,7 @@
 //   SELL when price is below both.
 //   WAIT otherwise.
 
-input string InpApiBase   = "https://sambanggold.com"; // Site address
+input string InpApiBase   = "https://sambang.gold"; // Site address
 input string InpKey       = "";                        // Licence key (from your account page)
 input bool   InpShowPD    = true;   // Previous day high, low, midpoint
 input bool   InpShowOpen  = true;   // Today's open

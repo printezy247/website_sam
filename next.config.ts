@@ -32,6 +32,8 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["postgres", "pdfjs-dist"],
+  // Files read from disk at runtime (bundled ebooks, robots, migrations). On a serverless host only traced files ship.
+  outputFileTracingIncludes: { "/**": ["./assets/**", "./drizzle/**"] },
   poweredByHeader: false,
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];

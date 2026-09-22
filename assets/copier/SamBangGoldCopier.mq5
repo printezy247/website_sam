@@ -14,13 +14,13 @@
 //| Education only. Trading carries risk. Test on a demo first.      |
 //+------------------------------------------------------------------+
 #property copyright "SAMBANGGOLD"
-#property link      "https://websitesam-production.up.railway.app"
+#property link      "https://sambang.gold"
 #property version   "1.00"
 #property strict
 
 #include <Trade\Trade.mqh>
 
-input string  InpApiBase      = "https://websitesam-production.up.railway.app"; // Site address
+input string  InpApiBase      = "https://sambang.gold"; // Site address
 input string  InpKey          = "";        // Your copier key, from the dashboard
 input bool    InpUseServerRisk = true;     // Take risk settings from the dashboard
 input string  InpRiskMode     = "percent"; // fixed or percent, when not using the dashboard
